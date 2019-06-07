@@ -10,12 +10,12 @@
  + [Installation](#installation)
 
 
-### Description
+## Description
 
 SLUPipe is a Bioinformatics Pipeline based on NIH & GDC guidelines focused towards automating and hastening the GDC's DNA-Sequencing  Analysis Pipeline proposal. SLUPipe automates and aggreagates the workflows for aligned BAM files as described by the National Cancer Institute:
 
 
-### Installation 
+## Installation 
 
 **1. Download Anacaonda 4.5+**
 **2. Create an Anaconda Environment which uses Python3.6.8 as default:**
@@ -97,7 +97,7 @@ conda install -c bioconda vcf2maf
  VCF2MAF May Downgrade Samtools 1.9 to 1.7  causing issues. Reinstall Samtools (1.9) to solve. 
 
 
-### Usage
+## Usage
 
 1. **Activate Anaconda Environment**
 ``` console

@@ -37,6 +37,8 @@ SLUPipe provides variant calling for paired (Normal & Tumor) and non-paired (Tum
 - Platypus
 - Mutect2
 
+Variants callers can be toggled off as requested by the user. 
+
 ### Variant Annotation
 
 Raw VCF files are annotated using Ensembl VEP (v95). The following databases are used for VCF Annotation:
@@ -51,7 +53,7 @@ Raw VCF files are annotated using Ensembl VEP (v95). The following databases are
 - HGMD public v.20154
 - ClinVar v.201601
 
-## Installation 
+## Installation
 
 For convenience, SLUPipe has been configured to run in Anaconda Environments
 
@@ -149,6 +151,8 @@ source activate SLUPipe
     2. Chromosome Range: Set Chromosome Range Used for Workflow
     3. Input Directory: Set Input Directory Filepath
     4. VEP Script & Cache Directory: Set Script & Cache Directory Filepath
+    5. Human Genome Reference: .fasta Human Genome reference file 
+  
 5. **Pipeline Execution**
     
 ```console

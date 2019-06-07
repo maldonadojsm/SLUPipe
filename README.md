@@ -1,4 +1,7 @@
-# SLUPipe: A (S)omatic Ana(L)ysis (U)mbrella (Pipe)line <img src="src/misc/slupipe.png" align="right" width="125"/>
+
+<img src="src/misc/slupipe.png" align="right" width="200"/>
+
+# SLUPipe: A (S)omatic Ana(L)ysis (U)mbrella (Pipe)line 
 
 **Table of Contents**
 

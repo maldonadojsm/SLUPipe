@@ -12,8 +12,28 @@
 
 ## Description
 
-SLUPipe is a Bioinformatics Pipeline based on NIH & GDC guidelines focused towards automating and hastening the GDC's DNA-Sequencing  Analysis Pipeline proposal. SLUPipe automates and aggreagates the workflows for aligned BAM files as described by the National Cancer Institute:
+SLUPipe is a DNA Sequencing Variant Calling Pipeline based on the National Cancer Institute's GDC guidelines (https://docs.gdc.cancer.gov/Data/Bioinformatics_Pipelines/DNA_Seq_Variant_Calling_Pipeline/). SLUPipe focuses towards automating, merging and parallelizing the following GDC's Variant Calling Worflows to increase sample analysis throughput :
 
+- Somatic Variant Calling
+- Variant Annotation
+- Mutation Aggrestion 
+- Aggregated Mutation Masking
+
+## Features
+
+SLUPipe provides variant calling for paired (Normal & Tumor) and non-paired (Tumor Only) samples at the request of the research group:
+
+**Paired Sample Variant Callers (Normal Mode):**
+- MuSE <img src=https://github.com/BioHPC/SLUPipe/blob/master/src/misc/slupipe.png width="10" height="10"/>
+- Mutect2
+- Somatic Sniper
+- Varscan 
+- Strelka 2
+
+**Non-paired Sample Variant Callers (Tumor Only):**
+- Pindel
+- Platypus
+- Mutect2
 
 ## Installation 
 

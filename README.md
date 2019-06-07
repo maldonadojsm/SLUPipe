@@ -21,7 +21,7 @@ SLUPipe is a DNA Sequencing Variant Calling Pipeline based on the National Cance
 
 ## Features
 
-SLUPipe provides variant calling for paired (Normal & Tumor) and non-paired (Tumor Only) samples at the request of the research group:
+SLUPipe provides variant calling for paired (Normal & Tumor) and non-paired (Tumor Only) aligned samples at the request of the research group:
 
 ### Variant Callers
 

@@ -1,8 +1,33 @@
-### SLUPipe - NGSPipeline
+##  SLUPipe - A (S)omatic Ana(L)ysis (U)mbrella (Pipe)line
+
+![](https://github.com/BioHPC/SLUPipe/blob/master/f1261b75-402f-4883-8a88-8e9a4f292633_200x200.png)
 
 
+**Table of Contents**
 
-### `INSTALLATION`
+[TOC]
+
+### Description
+
+SLUPipe is a Bioinformatics Pipeline based on NIH & GDC guidelines focused towards automating and hastening the GDC's DNA-Sequencing  Analysis Pipeline proposal. SLUPipe automates and aggreagates the workflows for aligned BAM files as described by the National Cancer Institute:
+
+###FlowChart
+
+```flow
+st=>start: Login
+op=>operation: Login operation
+cond=>condition: Successful Yes or No?
+e=>end: To admin
+
+st->op->cond
+cond(yes)->e
+cond(no)->op
+
+
+(Somatic Variant Calling, Variant Annotation, Mutation Aggregation &  )
+
+
+### Installation 
 
 **1. Download Anacaonda 4.5+**
 **2. Create an Anaconda Environment which uses Python3.6.8 as default:**
@@ -84,7 +109,7 @@ conda install -c bioconda vcf2maf
  VCF2MAF May Downgrade Samtools 1.9 to 1.7  causing issues. Reinstall Samtools (1.9) to solve. 
 
 
-### `USAGE`
+### Usage
 
 1. **Activate Anaconda Environment**
 ``` console

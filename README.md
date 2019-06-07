@@ -1,4 +1,8 @@
-<img src=https://github.com/BioHPC/SLUPipe/blob/master/src/misc/slupipe.png width="256" height="256" align="center"/>
+
+<p align="center">
+<img src=https://github.com/BioHPC/SLUPipe/blob/master/src/misc/slupipe.png width="300" height="300" align="center"/>
+</p>
+
 # SLUPipe: A (S)omatic Ana(L)ysis (U)mbrella (Pipe)line 
 
 

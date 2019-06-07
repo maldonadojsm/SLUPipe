@@ -53,7 +53,10 @@ Raw VCF files are annotated using Ensembl VEP (v95). The following databases are
 
 ## Installation 
 
+For convenience, SLUPipe has been configured to run in Anaconda Environments
+
 **1. Download Anacaonda 4.5+**
+
 **2. Create an Anaconda Environment which uses Python3.6.8 as default:**
 ```console
 conda create -n SLUPipe python=3.6

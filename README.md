@@ -1,7 +1,4 @@
-##  SLUPipe - A (S)omatic Ana(L)ysis (U)mbrella (Pipe)line
-
-![](https://github.com/BioHPC/SLUPipe/blob/master/f1261b75-402f-4883-8a88-8e9a4f292633_200x200.png)
-
+# SLUPipe: A (S)omatic Ana(L)ysis (U)mbrella (Pipe)line <img src="src/misc/slupipe.png" align="right" width="125"/>
 
 **Table of Contents**
 

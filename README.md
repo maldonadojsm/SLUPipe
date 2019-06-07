@@ -6,25 +6,27 @@
 
 ## Table of Contents
  + [Description](#description)
- + [Usage](#usage)
+ + [Features](#features)
  + [Installation](#installation)
-
-
+ + [Usage](#usage)
+ 
 ## Description
 
 SLUPipe is a DNA Sequencing Variant Calling Pipeline based on the National Cancer Institute's GDC guidelines (https://docs.gdc.cancer.gov/Data/Bioinformatics_Pipelines/DNA_Seq_Variant_Calling_Pipeline/). SLUPipe focuses towards automating, merging and parallelizing the following GDC's Variant Calling Worflows to increase sample analysis throughput :
 
 - Somatic Variant Calling
 - Variant Annotation
-- Mutation Aggrestion 
-- Aggregated Mutation Masking
+- Aggregated Somatic Mutation
+
 
 ## Features
 
 SLUPipe provides variant calling for paired (Normal & Tumor) and non-paired (Tumor Only) samples at the request of the research group:
 
+### Variant Callers
+
 **Paired Sample Variant Callers (Normal Mode):**
-- MuSE <img src=https://github.com/BioHPC/SLUPipe/blob/master/src/misc/slupipe.png width="10" height="10"/>
+- MuSE 
 - Mutect2
 - Somatic Sniper
 - Varscan 
@@ -34,6 +36,20 @@ SLUPipe provides variant calling for paired (Normal & Tumor) and non-paired (Tum
 - Pindel
 - Platypus
 - Mutect2
+
+### Variant Annotation
+
+Raw VCF files are annotated using Ensembl VEP (v95). The following databases are used for VCF Annotation:
+
+- GENCODE v.22
+- sift v.5.2.2
+- ESP v.20141103
+- polyphen v.2.2.2
+- dbSNP v.146
+- Ensembl genebuild v.2014-07
+- Ensembl regbuild v.13.0
+- HGMD public v.20154
+- ClinVar v.201601
 
 ## Installation 
 

@@ -1,33 +1,18 @@
-
 <p align="center">
-<img src=https://github.com/BioHPC/SLUPipe/blob/master/src/misc/slupipe.png width="300" height="300" align="center"/>
+<img src=https://github.com/BioHPC/SLUPipe/blob/master/src/misc/slupipe.png width="250" height="250"/>
 </p>
 
 # SLUPipe: A (S)omatic Ana(L)ysis (U)mbrella (Pipe)line 
 
+## Table of Contents
+ + [Description](#description)
+ + [Usage](#usage)
+ + [Installation](#installation)
 
-**Table of Contents**
-
-[TOC]
 
 ### Description
 
 SLUPipe is a Bioinformatics Pipeline based on NIH & GDC guidelines focused towards automating and hastening the GDC's DNA-Sequencing  Analysis Pipeline proposal. SLUPipe automates and aggreagates the workflows for aligned BAM files as described by the National Cancer Institute:
-
-###FlowChart
-
-```flow
-st=>start: Login
-op=>operation: Login operation
-cond=>condition: Successful Yes or No?
-e=>end: To admin
-
-st->op->cond
-cond(yes)->e
-cond(no)->op
-
-
-(Somatic Variant Calling, Variant Annotation, Mutation Aggregation &  )
 
 
 ### Installation 

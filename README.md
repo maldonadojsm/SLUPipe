@@ -1,7 +1,6 @@
-
-<img src="src/misc/slupipe.png" width="200"/>
-
+<img src=https://github.com/BioHPC/SLUPipe/blob/master/src/misc/slupipe.png width="256" height="256" align="center"/>
 # SLUPipe: A (S)omatic Ana(L)ysis (U)mbrella (Pipe)line 
+
 
 **Table of Contents**
 

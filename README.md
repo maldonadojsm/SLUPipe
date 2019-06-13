@@ -39,7 +39,7 @@ SLUPipe provides variant calling for paired (Normal & Tumor) and non-paired (Tum
 - Platypus
 - Mutect2
 
-Variants callers can be toggled off as requested by the user. 
+Variants callers can be toggled on/off as requested by the user (config file). 
 
 ### Variant Annotation
 
@@ -59,7 +59,7 @@ Raw VCF files are annotated using Ensembl VEP (v95). The following databases are
 
 For convenience, SLUPipe has been configured to run in Anaconda Environments
 
-**1.Clone Github Repistory**
+**1. Clone Github Repistory**
 ```console
 git clone https://github.com/BioHPC/SLUPipe/tree/master/src
 ```
@@ -132,7 +132,7 @@ conda install -c bioconda varscan
 conda install -c bioconda vcf2maf
 ```
 
-**5. Configuring Ensembl VEP For Variant Annotation & MAF Conversion (Local Cache Installation):**
+**Configuring Ensembl VEP For Variant Annotation & MAF Conversion (Local Cache Installation):**
    1. Create .vep directory to store offline cache: mkdir ~/.vep
    2. cd $HOME/.vep
    3. curl -O ftp://ftp.ensembl.org/pub/release-95/variation/indexed_vep_cache/homo_sapiens_vep_95_GRCh38.tar.gz
@@ -155,12 +155,23 @@ source activate SLUPipe
 python3 NGS.py <config.json>
 ```
 
+**Version Summary & Execution Description**
+```console
+python3 NGS.py 
+```
+
+**Check Latest Software Release**
+```console
+python3 NGS.py --update
+```
+
+
 
 **Non-paired Mode (Tumor Only):** Place Tumor .bam files in **tumor mode directory** (input/tumor_mode).
 
 **Paired Mode (Normal Mode):** Place Normal & Tumor .bam files in **normal mode directory** (input/normal_mode).
 
-**CONFIGURATION FILE STRUCTURE (JSON)**:
+**Configuration File Structure (JSON)**:
 
 
     [
@@ -174,6 +185,67 @@ python3 NGS.py <config.json>
         "cpuCores": "8"
       }
     ]
+    
+    
+**Pipeline Workflow Example (Non-paired Mode):**
+
+    (SLUPipe) MacBook-Pro-2:src username$ python3 NGS.py config.json
+    TUMOR MODE DIRECTORY SUMMARY (X to Exit):
+    --------------------------------------------------------------------------------
+    NO.               ID               TUMOR
+    --------------------------------------------------------------------------------
+    1             tumor2_T         tumor2_T.bam
+    2             tumor1_T         tumor1_T.bam
+    
+    IS THIS CORRECT (Y/N): Y
+    SELECT FILE NUMBERS TO PROCESS (Separate File Numbers By Space): 1
+    
+    ############################
+    COMMENCING PIPELINE WORKFLOW
+    ############################
+    
+    Pindel: Calling Variants -> tumor2_T
+    Pindel: Calling Variants Complete -> tumor2_T
+    Platypus: Calling Variants -> tumor2_T
+    Platypus: Calling Variants Complete -> tumor2_T
+    MuTect2: Calling Variants -> tumor2_T
+    Mutect2: Calling Variants Complete -> tumor2_T
+    Ensembl VEP: Annotating Variants -> tumor2_T-pindel
+    Ensembl VEP: Annotating Variants Complete -> tumor2_T-pindel
+    Ensembl VEP: Annotating Variants -> tumor2_T-platypus
+    Ensembl VEP: Annotating Variants Complete -> tumor2_T-platypus
+    Ensembl VEP: Annotating Variants -> tumor2_T-mutect2
+    Ensembl VEP: Annotating Variants Complete -> tumor2_T-mutect2
+    VCF2MAF: Converting VCF to MAF -> tumor2_T-pindel
+    VCF2MAF: VCF to MAF Conversion Complete -> tumor2_T-pindel
+    VCF2MAF: Converting VCF to MAF -> tumor2_T-platypus
+    VCF2MAF: VCF to MAF Conversion Complete -> tumor2_T-platypus
+    VCF2MAF: Converting VCF to MAF -> tumor2_T-mutect2
+    VCF2MAF: VCF to MAF Conversion Complete -> tumor2_T-mutect2
+    Merging MAF: Saving Merged MAFs -> .output/MAF/tumor2_T.final.maf
+    
+    ---------------------- MERGED MAF SUMMARY ---------------------------
+    
+    <class 'pandas.core.frame.DataFrame'>
+    RangeIndex: 1619 entries, 0 to 1618
+    Columns: 134 entries, Hugo_Symbol to variant_caller
+    dtypes: float64(70), int64(5), object(59)
+    memory usage: 1.7+ MB
+    None
+    count     1619
+    unique       1
+    top        maf
+    freq      1619
+    Name: variant_caller, dtype: object
+    
+    ---------------------------------------------------------------------
+    
+    ############################
+     PIPELINE WORKFLOW COMPLETE
+    ############################
+
+
+
 
 
 

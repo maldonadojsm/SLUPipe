@@ -57,17 +57,21 @@ Raw VCF files are annotated using Ensembl VEP (v95). The following databases are
 
 For convenience, SLUPipe has been configured to run in Anaconda Environments
 
-**1. Download Anacaonda 4.5+**
+**1.Clone Github Repistory**
+```console
+git clone https://github.com/BioHPC/SLUPipe/tree/master/src
+```
+**2. Download & Install Anacaonda 4.5+**
 
-**2. Create an Anaconda Environment which uses Python3.6.8 as default:**
+**3. Create an Anaconda Environment which uses Python3.6.8 as default:**
 ```console
 conda create -n SLUPipe python=3.6
 ```
-**3. Activate the Anaconda Environment:**
+**4. Activate the Anaconda Environment:**
 ```console
 source activate SLUPipe
 ```
-**4. The NGS Pipeline will require the following Python packages for it to be fully functionable:**
+**5. The NGS Pipeline will require the following Python packages for it to be fully functionable:**
 
 **biobambam-2.0.87**
 ```console
@@ -140,25 +144,34 @@ conda install -c bioconda vcf2maf
 
 ## Usage
 
-1. **Activate Anaconda Environment**
+**Activate Anaconda Environment**
 ``` console
 source activate SLUPipe
 ```
-2. **TUMOR MODE:** Place Tumor .bam files in **tumor mode directory** (input/tumor_mode).
-3. **NORMAL MODE:** Place Normal & Tumor .bam files in **normal mode directory** (input/normal_mode).
-4. **CONFIGURATION FILE**:
-    1. Variant Callers: Set Variant Callers for Workflow
-    2. Chromosome Range: Set Chromosome Range Used for Workflow
-    3. Input Directory: Set Input Directory Filepath
-    4. VEP Script & Cache Directory: Set Script & Cache Directory Filepath
-    5. Human Genome Reference: .fasta Human Genome reference file 
-  
-5. **Pipeline Execution**
-    
+**Execute Pipeline Workflow**
 ```console
-python3 NGS.py
+python3 NGS.py <config.json>
 ```
 
+
+**Non-paired Mode (Tumor Only):** Place Tumor .bam files in **tumor mode directory** (input/tumor_mode).
+
+**Paired Mode (Normal Mode):** Place Normal & Tumor .bam files in **normal mode directory** (input/normal_mode).
+
+**CONFIGURATION FILE STRUCTURE (JSON)**:
+
+
+    [
+      {
+        "Pipeline_Mode":"-T",
+        "Variant_Callers":["Pindel","Platypus"],
+        "Input_Directory":"/student/maldonadojs/SLUPipe/SLUPipe_V0.3_TEST/SLUPipe/src/input/tumor_mode",
+        "Chromosome_Range": "chr1:16,000,000-215,000,000",
+        "vep_ScriptPath": "/student/maldonadojs/.conda/envs/SLUPipe/share/ensembl-vep-95.3-0",
+        "vep_CachePath": "/student/maldonadojs/.vep",
+        "cpuCores": "8"
+      }
+    ]
 
 
 

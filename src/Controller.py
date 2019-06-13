@@ -43,49 +43,59 @@ import sys
 
 
 class Controller:
-    def __init__(self ,configFile):
+    def __init__(self , config_dict = None):
         self.samplesToProcess = []
         self.directory = []
-        self.variantcallers_tumorMode = list(configFile["variantCallers_tumorMode"])
-        self.variantcallers_normalMode = list(configFile["variantCallers_normalMode"])
-        self.inputTumorDirectory = configFile["input_tumor"]
-        self.inputNormalDirectory = configFile["input_normal"]
-        self.chromosomeRange = configFile["chromosome_Range"]
-        self.vep_script_path = configFile["vepScriptPath"]
-        self.vep_cache_path = configFile["vepCachePath"]
+        if config_dict is not None:
+            self.pipeline_mode = config_dict[0]['Pipeline_Mode']
+            self.variant_callers = config_dict[0]['Variant_Callers']
+            self.input_directory = config_dict[0]['Input_Directory']
+            self.chromosome_range = config_dict[0]['Chromosome_Range']
+            self.vep_script = config_dict[0]['vep_ScriptPath']
+            self.vep_cache = config_dict[0]['vep_CachePath']
         self.buffer = ""
         self.main_menu = 1
         self.menu = 1
 
-    def run(self):
+    def runGo(self):
+        self.readDirectory(0)
+
+
+    def runSummary(self):
         print()
         print(" #######   #         #     #   #######   #   #######   #######")
         print(" #         #         #     #   #     #   #   #     #   #")
         print(" #######   #         #     #   #######   #   #######   #######")
         print("       #   #         #     #   #         #   #         #")
         print(" #######   #######   #######   #         #   #         #######  ")
+        print("")
+        print("SLUPipe: A (S)omatic Ana(L)ysis (U)mbrella (Pipe)line")
         print()
-        print("Version 1.0, Juan Maldonado & Zohair Siddiqui, St. Louis University, 2019.")
+        print("Version: v0.4")
+        print("         Build Date June 1 2019")
+        print("         Build Time 00:43:02")
+        print("         Authors: Dr. Tae-Hyuk (Ted) Ahn , Juan Maldonado , Zohair Siddiqui. St. Louis University, 2019.")
+        print()
+        print("Usage:   NGS.py <config.json>")
+        print()
+        print("Config File Structure:  Pipeline Mode     -T for Non-paired Mode / -N for Paired Mode")
+        print()
+        print("                        Variant Callers   Specify List of Variant Callers for pipeline workflow")
+        print("                                          in accordance pipeline mode")
+        print()
+        print("                        Input Directory   Samples Directory. Pipeline will automate creation of .bai files")
+        print()
+        print("                        Chromosome Range  Specify Chromosome Range for analysis (Format: chr1:16,000,000-215,000,000")
+        print()
+        print("                        VEP Script        Ensembl VEP absolute path")
+        print()
+        print("                        VEP Cache         Ensemble VEP local cache path")
+        print()
+        print("                        CPU Cores         Cores used for pipeline workflow")
 
-        while self.main_menu == 1:
-            print()
-            self.buffer = input("Welcome to the NGS Pipeline. Type T for TUMOR ONLY Mode, N for NORMAL MODE or X to Exit: ")
-            # TUMOR MODE
-            if self.buffer == 'T':
-                while self.menu == 1:
-                    print()
-                    # STORE USER INPUTS
-                    print("READING TUMOR MODE DIRECTORY")
-                    self.readDirectory(0)
-            # NORMAL MODE
-            elif self.buffer == 'N':
-                while self.menu == 1:
-                    print()
-                    print("READING NORMAL MODE DIRECTORY")
-                    self.readDirectory(1)
-            elif self.buffer == 'X':
-                print("Exiting Program")
-                self.main_menu = 0
+
+
+
 
     """
     
@@ -104,23 +114,13 @@ class Controller:
     """
 
     def checkConfig(self):
-        print(self.vep_cache_path)
-        print(self.vep_script_path)
-        print(self.chromosomeRange)
-        print(self.inputNormalDirectory)
-        print(self.inputTumorDirectory)
-
-        for i in self.variantcallers_normalMode:
-            print(i)
-
-        for a in self.variantcallers_tumorMode:
-            print(a)
+        print(self.pipeline_mode)
 
 
     def readDirectory(self, flag):
         # User Has Indicated TUMOR ONLY MODE
         if flag == 0:
-            directoryListing = os.listdir(self.inputTumorDirectory)
+            directoryListing = os.listdir(self.input_directory)
             for item in directoryListing:
                 if "_T" and '.bam' in item:
                     # Capture Filename
@@ -133,21 +133,23 @@ class Controller:
             self.confirmInputs(0)
 
         # User Has Indicated NORMAL MODE
-        if flag == 1:
-            directoryListing = os.listdir(self.inputNormalDirectory)
-            for item in directoryListing:
-                if "_N" and ".bam" in item:
-                    for item2 in directoryListing:
-                        if "_T" and ".bam" in item2:
-                            normalFile = os.path.splitext(os.path.basename(item))[0].replace("_N", "")
-                            tumorFile = os.path.splitext(os.path.basename(item2))[0].replace("_T", "")
-                            # If BAM Normal and Tumor Files have same ID
-                            if normalFile == tumorFile:
-                                fileName = normalFile
-                                # Store in Sample List
-                                self.directory.append(directoryStruct(os.path.basename(item2), fileName, os.path.basename(item)))
+        # if flag == 1:
+        #     directoryListing = os.listdir(self.inputNormalDirectory)
+        #     for item in directoryListing:
+        #         if "_N" and ".bam" in item:
+        #             for item2 in directoryListing:
+        #                 if "_T" and ".bam" in item2:
+        #                     normalFile = os.path.splitext(os.path.basename(item))[0].replace("_N", "")
+        #                     tumorFile = os.path.splitext(os.path.basename(item2))[0].replace("_T", "")
+        #                     # If BAM Normal and Tumor Files have same ID
+        #                     if normalFile == tumorFile:
+        #                         fileName = normalFile
+        #                         # Store in Sample List
+        #                         self.directory.append(directoryStruct(os.path.basename(item2), fileName, os.path.basename(item)))
 
             self.confirmInputs(1)
+
+        print("OOOOH NOOOO")
 
 
 
@@ -181,7 +183,7 @@ class Controller:
                 print("############################")
                 print()
 
-                NGS = Pipeline.Pipeline(self.samplesToProcess, self.chromosomeRange, self.vep_script_path, self.vep_cache_path)
+                NGS = Pipeline.Pipeline(self.samplesToProcess, self.chromosome_range, self.vep_script, self.vep_cache)
 
                 # Pindel, Platypus, MuTect
 
@@ -233,7 +235,7 @@ class Controller:
                 print("############################")
                 print()
 
-                NGS = Pipeline.Pipeline(self.samplesToProcess, self.chromosomeRange, self.vep_script_path, self.vep_cache_path)
+                # NGS = Pipeline.Pipeline(self.samplesToProcess, self.chromosomeRange, self.vep_script_path, self.vep_cache_path)
 
                 # MuSE,MuTect,Varscan,Sniper,Strelka2
                 NGS.runNormalMode("MuSE", "MuTect", "Varscan", "Sniper", "Strelka2") # Add Normal Callers Here

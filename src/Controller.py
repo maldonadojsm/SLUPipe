@@ -1,51 +1,29 @@
+# !/usr/bin/env python
+# title           :Controller.py
+# description     :Configures SLUPipeline Workflow
+# author          :Juan Maldonado
+# date            :6/13/19
+# version         :0.4
+# usage           :SEE NGS.py
+# notes           :SEE README.txt for Usages & List of Dependencies
+# python_version  :3.6.5
+# conda_version   :4.6.14
+# =================================================================================================================
+
 import os
 import Pipeline
 from subprocess import call
-import sys
-#######################################
-#                                     #
-#     ##    #   #######   #######     #
-#     # #   #   #         #           #
-#     #  #  #   #  ####   #######     #
-#     #   # #   #     #         #     #
-#     #    ##   #######   #######     #
-#                                     #
-#######################################
-
-# Version: 1.1 (4/15/19)
-# Anaconda 3.6
-# Authors: Juan Maldonado & Zohair Siddiqui
-# Adviser : Dr. Ahn
-# Client: Dr. Guo
-# CAPSTONE II, Spring 2019
-# Consult README.md for detailed description of installation process and usage.
-
-########################################
-#         PIPELINE CONTROLLER          #
-########################################
-
-# USAGE: python3 NGS.py
-
-# This file will be in charge of managing all instances of variant callers
-
-# To Do List:
-
-# 8. Error Handling
-
-# COMMENTS:
-
-# USAGE: python3 PipelineController.py
-# Generating vcf.gz and vcf.gz.tbi FORMAT (MuSE Sump)
-# bgzip -c file.vcf > file.vcf.gz (generates vcf.gz file)
-# tabix -p vcf file.vcf.gz (generates index file)
-
-
-
 
 class Controller:
+
     def __init__(self , config_dict = None):
+        """
+        Class Constructor
+        :param config_dict: Python Dictionary Storing Pipeline Configuration
+        """
         self.samplesToProcess = []
         self.directory = []
+        # config.json file Dictionary
         if config_dict is not None:
             self.pipeline_mode = config_dict[0]['Pipeline_Mode']
             self.variant_callers = config_dict[0]['Variant_Callers']
@@ -53,15 +31,22 @@ class Controller:
             self.chromosome_range = config_dict[0]['Chromosome_Range']
             self.vep_script = config_dict[0]['vep_ScriptPath']
             self.vep_cache = config_dict[0]['vep_CachePath']
-        self.buffer = ""
-        self.main_menu = 1
-        self.menu = 1
-
-    def runGo(self):
-        self.readDirectory(0)
 
 
-    def runSummary(self):
+    def run(self):
+        """
+        Configures pipeline mode in accordance to config file (-T: Non-Paired Mode, -N: Paired Mode)
+        """
+        if self.pipeline_mode == "-T":
+            self.readDirectory(0)
+
+        elif self.pipeline_mode == "-N":
+            self.readDirectory(1)
+
+    def exeSummary(self):
+        """
+        Provide Execution & Version Summary of SLUPipe
+        """
         print()
         print(" #######   #         #     #   #######   #   #######   #######")
         print(" #         #         #     #   #     #   #   #     #   #")
@@ -76,7 +61,8 @@ class Controller:
         print("         Build Time 00:43:02")
         print("         Authors: Dr. Tae-Hyuk (Ted) Ahn , Juan Maldonado , Zohair Siddiqui. St. Louis University, 2019.")
         print()
-        print("Usage:   NGS.py <config.json>")
+        print("Usage:   NGS.py <config.json> -> Execute Pipeline Workflow")
+        print("         NGS.py --update -> Check for most recent software distribution")
         print()
         print("Config File Structure:  Pipeline Mode     -T for Non-paired Mode / -N for Paired Mode")
         print()
@@ -93,32 +79,11 @@ class Controller:
         print()
         print("                        CPU Cores         Cores used for pipeline workflow")
 
-
-
-
-
-    """
-    
-    Make this section read the entire directory and then ask user to choose which files he would like to process;
-    prompting in case a file already exists
-    
-    DONE:
-    
-    1. LET USER CHOOSE WHICH FILES TO PROCESS
-    2. CREATE DIRECTORY PER SAMPLE
-    
-    PENDING:
-    
-    RELAY RESULT DIRECTORY TO VARIANT CALLER, ANNOTATOR & CONVERTER
-    
-    """
-
-    def checkConfig(self):
-        print(self.pipeline_mode)
-
-
     def readDirectory(self, flag):
-        # User Has Indicated TUMOR ONLY MODE
+        """
+        Read input directory
+        :param flag: 0: Process files required for Non-paired mode (Tumor Mode), 1: Process files required for Paired Mode (Normal Mode)
+        """
         if flag == 0:
             directoryListing = os.listdir(self.input_directory)
             for item in directoryListing:
@@ -131,31 +96,31 @@ class Controller:
                     self.directory.append(directoryStruct(tumorBam, fileName))
 
             self.confirmInputs(0)
+        if flag == 1:
 
-        # User Has Indicated NORMAL MODE
-        # if flag == 1:
-        #     directoryListing = os.listdir(self.inputNormalDirectory)
-        #     for item in directoryListing:
-        #         if "_N" and ".bam" in item:
-        #             for item2 in directoryListing:
-        #                 if "_T" and ".bam" in item2:
-        #                     normalFile = os.path.splitext(os.path.basename(item))[0].replace("_N", "")
-        #                     tumorFile = os.path.splitext(os.path.basename(item2))[0].replace("_T", "")
-        #                     # If BAM Normal and Tumor Files have same ID
-        #                     if normalFile == tumorFile:
-        #                         fileName = normalFile
-        #                         # Store in Sample List
-        #                         self.directory.append(directoryStruct(os.path.basename(item2), fileName, os.path.basename(item)))
+            directoryListing = os.listdir(self.input_directory)
+            for item in directoryListing:
+                if "_N" and ".bam" in item:
+                    for item2 in directoryListing:
+                        if "_T" and ".bam" in item2:
+                            normalFile = os.path.splitext(os.path.basename(item))[0].replace("_N", "")
+                            tumorFile = os.path.splitext(os.path.basename(item2))[0].replace("_T", "")
+                            # If BAM Normal and Tumor Files have same ID
+                            if normalFile == tumorFile:
+                                fileName = normalFile
+                                # Store in Sample List
+                                self.directory.append(directoryStruct(os.path.basename(item2), fileName, os.path.basename(item)))
 
             self.confirmInputs(1)
 
-        print("OOOOH NOOOO")
-
-
 
     def confirmInputs(self, flag):
-        # Confirming TUMOR ONLY MODE Inputs
-        if flag == 0:
+        """
+        Prompts user to confirm correct inputs before initializing pipeline
+        :param flag: -T: Display files that will be used for Non-Paired Mode, -N: Display files that will be used for Paired Mode
+        :return:
+        """
+        if flag == "-T":
             dash = '-' * 80
             print("TUMOR MODE DIRECTORY SUMMARY (X to Exit):")
             print(dash)
@@ -195,20 +160,17 @@ class Controller:
                 print()
                 self.samplesToProcess.clear()
                 self.directory.clear()
-                self.menu = 0
             elif confirmation == 'N':
                 print("Please Insert Sample Files Into Appropriate Directories")
                 self.samplesToProcess.clear()
                 self.directory.clear()
-                self.menu = 0
             elif confirmation == 'X':
                 print("Returning to Main Menu")
                 self.samplesToProcess.clear()
                 self.directory.clear()
-                self.menu = 0
 
         # Confirming NORMAL MODE inputs
-        if flag == 1:
+        if flag == "-N":
             dash = '-'*80
             print("NORMAL MODE DIRECTORY SUMMARY (X to Exit):")
             print(dash)
@@ -246,7 +208,6 @@ class Controller:
                 print()
                 self.directory.clear()
                 self.samplesToProcess.clear()
-                self.menu = 0
                 return 0
 
             # CORRECT USER INPUTS
@@ -261,16 +222,20 @@ class Controller:
 
     # Generate .bai for every .bam file found in directory
     def generateBai(self, flag):
+        """
+        Automates creation of  .bai files from user provided .bam files
+        :param flag: 0: Gen .bai files for Non-paired Mode, 1: Gen .bai for Paired Mode
+        """
         if flag == 0:
 
-            directoryListing = os.listdir(self.inputTumorDirectory)
+            directoryListing = os.listdir(self.input_directory)
             for item in directoryListing:
                 if ".bam" in item:
                     bamFile = os.path.abspath(item)
                     baiFile = bamFile.replace(".bam", ".bai")
                     call(["samtools", "index", item, baiFile])
         if flag == 1:
-            directoryListing = os.listdir(self.inputNormalDirectory)
+            directoryListing = os.listdir(self.input_directory)
             for item in directoryListing:
                 if ".bam" in item:
                     bamFile = os.path.abspath(item)
@@ -286,6 +251,12 @@ class directoryStruct:
 # Structure To Store Sample Information
 class sampleStruct:
     def __init__(self, tumorBAM, fileName, normalBAM = None):
+        """
+        Python structure that stores all relevant files for sample X analysis
+        :param tumorBAM: BAM file necessary for Paired and Non-Paired Mode
+        :param fileName: Sample ID used to track progress throuhgout pipeline worfklow
+        :param normalBAM: BAM file necessary for Paired Mode (Optional)
+        """
         self.normalBAM = normalBAM
         self.tumorBAM = tumorBAM
         self.fileName = fileName
@@ -294,6 +265,9 @@ class sampleStruct:
 
 
     def genDirectory(self):
+        """
+        Create output directory needed to store generated files from pipeline workflow
+        """
         os.mkdir("./output/" + self.fileName + "/")
         os.mkdir("./output/" + self.fileName + "/VCF/")
         os.mkdir("./output/" + self.fileName + "/AnnotatedVCF/")

@@ -1,13 +1,26 @@
-import MuSE
-import Mutect2
-import Varscan
-import Sniper
-import sys
-import Annotator
+# !/usr/bin/env python
+# title           :MAFConverter.py
+# description     :Converts Annotated VCF files into MAF files
+# author          :Juan Maldonado
+# date            :6/13/19
+# version         :0.4
+# usage           :
+# notes           :SEE README.txt for Usages & List of Dependencies
+# python_version  :3.6.5
+# conda_version   :4.6.14
+# =================================================================================================================
+
 from subprocess import call, DEVNULL
+
 
 class MAFCoverter:
     def __init__(self, annotatedInfo, vepScript, vepCache):
+        """
+        Class Constructor
+        :param annotatedInfo: Annotator object storing relevant information to process VCF to MAF conversion
+        :param vepScript: Ensembl VEP Script Path (Absolute)
+        :param vepCache: Ensembl VEP Cache Path (Absolute)
+        """
         self.annotatedObject = annotatedInfo
         self.vepScript = vepScript
         self.vepCache = vepCache
@@ -21,7 +34,7 @@ class MAFCoverter:
             "Filter": ["--filter-vcf", "0"],
             "ncbiBuild": ["--ncbi-build", "GRCh38"]
         }
-
+        #
         self.mafOutput = ""
         self.mafSnvOutput = ""
         self.fileName = self.annotatedObject.fileName
@@ -31,6 +44,9 @@ class MAFCoverter:
         self.bindInputs()
 
     def processConversion(self):
+        """
+        Execute VCF to MAF Conversion Workflow
+        """
         print("VCF2MAF: Converting VCF to MAF -> " + self.fileName + "-" + self.annotatedObject.callerID)
 
         for i in self.conversionDict.values():
@@ -52,6 +68,10 @@ class MAFCoverter:
         print("VCF2MAF: VCF to MAF Conversion Complete -> " + self.fileName + "-" + self.annotatedObject.callerID)
 
     def bindInputs(self):
+        """
+        Updates Conversion Dictionary with relevant arguments needed for proper execution of VCF to MAF conversion.
+        Updates Output Directory file path needed for MAF Merging.
+        """
         # Update Input & Output File Paths
         self.conversionDict["Input"][1] = self.annotatedObject.annotatorOutput
         self.conversionDict["Output"][1] = "./output/" + self.annotatedObject.fileName + "/MAF/" + self.annotatedObject.fileName + "_" + self.annotatedObject.callerID + ".maf"

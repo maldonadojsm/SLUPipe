@@ -1,15 +1,32 @@
+# !/usr/bin/env python
+# title           :Mutect2.py
+# description     :Mutect 2 Variant Caller Framework
+# author          :Juan Maldonado
+# date            :6/13/19
+# version         :0.4
+# usage           :
+# notes           :SEE README.txt for Usages & List of Dependencies
+# python_version  :3.6.5
+# conda_version   :4.6.14
+# =================================================================================================================
+
+
 from subprocess import call, DEVNULL
 import os
 
-# Performance Observations:
-# 1. 8-10% MEM Usage/Instance
-# 2. 150-200% CPU Usage/Instance
-# 3. Avg Duration: 30min (2 Instances)
 
 class Mutect2:
 
     # Constructor
     def __init__(self, normalBAM, tumorBAM, fileName, resultDirectory, chromeRange):
+        """
+        Class Constructor
+        :param normalBAM: normal BAM file
+        :param tumorBAM: tumor BAM file
+        :param fileName: Sample ID
+        :param resultDirectory: Output file path
+        :param chromeRange: Chromosome Range indicated for analysis
+        """
         self.normalBAM = normalBAM
         self.tumorBAM = tumorBAM
         self.fileName = fileName
@@ -39,6 +56,9 @@ class Mutect2:
 
     # Runs MuSE via BASH
     def runVariantCaller(self):
+        """
+        Execute Variant Caller Workflow
+        """
         for i in self.mutectDictionary.values():
             for j in i:
                 self.mutect2.append(j)
@@ -54,11 +74,17 @@ class Mutect2:
 
     # Generate Directory
     def genDir(self):
+        """
+        Generates Output Subdirectory to store VCF results
+        """
         os.mkdir(self.resultDirectory + "VCF/mutect2_output/")
 
     # Updates Dictionaries
     def bindInputs(self):
-
+        """
+        Update Dictionaries with relevant input needed to process workflow
+        Update Output file paths needed to process Annotation Worflow
+        """
         if self.normalBAM is None:
             self.mutectDictionary["tumorBam"][1] = "./input/tumor_mode/" + self.tumorBAM
         else:

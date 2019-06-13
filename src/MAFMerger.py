@@ -1,8 +1,6 @@
 import pandas as pd
 import glob
 
-
-
 def mergeMafs(filename):
 
     #Requires bash command line argument for filename

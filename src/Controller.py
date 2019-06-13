@@ -62,7 +62,7 @@ class Controller:
         print("         Authors: Dr. Tae-Hyuk (Ted) Ahn , Juan Maldonado , Zohair Siddiqui. St. Louis University, 2019.")
         print()
         print("Usage:   NGS.py <config.json> -> Execute Pipeline Workflow")
-        print("         NGS.py --update -> Check for most recent software distribution")
+        print("         NGS.py --update -> Check for most recent software release")
         print()
         print("Config File Structure:  Pipeline Mode     -T for Non-paired Mode / -N for Paired Mode")
         print()
@@ -120,7 +120,7 @@ class Controller:
         :param flag: -T: Display files that will be used for Non-Paired Mode, -N: Display files that will be used for Paired Mode
         :return:
         """
-        if flag == "-T":
+        if flag == 0:
             dash = '-' * 80
             print("TUMOR MODE DIRECTORY SUMMARY (X to Exit):")
             print(dash)
@@ -170,7 +170,7 @@ class Controller:
                 self.directory.clear()
 
         # Confirming NORMAL MODE inputs
-        if flag == "-N":
+        if flag == 1:
             dash = '-'*80
             print("NORMAL MODE DIRECTORY SUMMARY (X to Exit):")
             print(dash)

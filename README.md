@@ -12,11 +12,13 @@
  
 ## Description
 
-SLUPipe is a DNA Sequencing Variant Calling Pipeline based on the National Cancer Institute's GDC guidelines (https://docs.gdc.cancer.gov/Data/Bioinformatics_Pipelines/DNA_Seq_Variant_Calling_Pipeline/). SLUPipe focuses towards automating, merging and parallelizing the following GDC's Variant Calling Worflows to increase sample analysis throughput :
+SLUPipe is a DNA Sequencing Variant Calling Pipeline based on the National Cancer Institute's GDC guidelines. SLUPipe focuses towards automating, merging and parallelizing the following GDC's Variant Calling Worflows to increase sample analysis throughput :
 
 - Somatic Variant Calling
 - Variant Annotation
 - Aggregated Somatic Mutation
+
+For further information on GDC Guidelines visit: https://docs.gdc.cancer.gov/Data/Bioinformatics_Pipelines/DNA_Seq_Variant_Calling_Pipeline/
 
 
 ## Features

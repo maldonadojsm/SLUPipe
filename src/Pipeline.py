@@ -1,3 +1,15 @@
+# !/usr/bin/env python
+# title           :pipeline.py
+# description     :Processes and executes SLUPipe workflow
+# author          :Juan Maldonado
+# date            :6/13/19
+# version         :0.4
+# usage           :SEE NGS.py
+# notes           :SEE README.txt for Usages & List of Dependencies
+# python_version  :3.6.5
+# conda_version   :4.6.14
+# =================================================================================================================
+
 import Parallel
 import MuSE
 import Mutect2
@@ -12,236 +24,192 @@ import MAFMerger
 
 
 class Pipeline:
-    def __init__(self, userInputs, chromosomeRange, vepScript, vepCache):
-        self.inputs = userInputs
-        self.parallelProcesses = []
-        self.workflowQueue = []
-        self.museFlag = ""
-        self.mutectFlag = ""
-        self.varscanFlag = ""
-        self.sniperFlag = ""
-        self.strelkaFlag = ""
-        self.pindelFlag = ""
-        self.platypusFlag = ""
-        self.vepScript = vepScript
-        self.vepCache = vepCache
-        self.chrome_range = chromosomeRange
+    def __init__(self, user_samples, chromosome_range, vep_script_path, vep_cache_path, pipeline_mode, variant_callers):
+        self.parallel_workflow = []
+        self.master_workflow = []
+        self.num_variants = len(variant_callers)
+        self.variant_annotation_workflow = [list() for i in range(self.num_variants)]
+        self.maf_conversion_workflow = [list() for i in range(self.num_variants)]
+        self.variant_caller_workflow = []
+        self.user_samples = user_samples
+        self.vep_script_path = vep_script_path
+        self.vep_cache_path = vep_cache_path
+        self.chrome_range = chromosome_range
+        if pipeline_mode == "-T":
+            self.pipeline_mode = 0
+        if pipeline_mode == "-N":
+            self.pipeline_mode = 1
+        self.pindel_flag = 0
+        self.platypus_flag = 0
+        self.mutect_flag = 0
+        self.muse_flag = 0
+        self.varscan_flag = 0
+        self.sniper_flag = 0
+        self.strelka_flag = 0
+        self.set_variant_caller_flags(variant_callers)
+
 
         #############################################################
 
         # VARIANT CALLER PROCESSING CLUSTERS
 
         # MuSE
-        self.clusterM = []
+        self.muse = []
         # Mutect 2
-        self.clusterT = []
+        self.mutect = []
         # Varscan
-        self.clusterV = []
+        self.varscan = []
         # Somatic Sniper
-        self.clusterS = []
+        self.sniper = []
         # Strelka 2
         self.strelka2 = []
         # Pindel
-        self.clusterP = []
+        self.pindel = []
         # Platypus
-        self.clusterY = []
+        self.platypus = []
 
-        ############################################################
+    def set_variant_caller_flags(self, variant_callers):
+        """
+        Sets variant callers which will be used for analysis (based on user config.json)
+        :param variant_callers: Python list containing variant callers specified in config file
+        """
+        if "MuSE" in variant_callers:
+            self.muse_flag = 1
+        if "MuTect" in variant_callers:
+            self.mutect_flag = 1
+        if "Varscan" in variant_callers:
+            self.varscan_flag = 1
+        if "Sniper" in variant_callers:
+            self.sniper_flag = 1
+        if "Strelka2" in variant_callers:
+            self.strelka_flag = 1
+        if "Pindel" in variant_callers:
+            self.pindel_flag = 1
+        if "Platypus" in variant_callers:
+            self.platypus_flag = 1
 
-        # ANNOTATION PROCESSING CLUSTERS
-
-        # Process N MuSE VCF File Annotations of N Samples in Parallel
-        self.annotationClusterM = []
-        # Process N Mutect 2 VCF File Annotations of N Samples in Parallel
-        self.annotationClusterT = []
-        # Process N Somatic Sniper VCF File Annotations of N Samples in Parallel
-        self.annotationClusterS = []
-        # Process N Varscan VCF File Annotations of N Samples in Parallel
-        self.annotationClusterV = []
-        # Process N Strelka 2 VCF File Annotations of N Samples in Parallel
-        self.annotationClusterK = []
-        # Process N Pindel VCF File Annotations of N Samples in Parallel
-        self.annotationClusterP = []
-        # Process N Platypus VCF File Annotations of N Samples in Parallel
-        self.annotationClusterY = []
-
-        ##########################################################
-
-        # CONVERSION PROCESSING CLUSTERS
-
-        # Process N VCF to MAF Conversion for N Annotated MuSE VCF File of N Samples in Parallel
-        self.conversionClusterM = []
-        # Process N VCF to MAF Conversion for N Annotated Mutect 2 VCF File of N Samples in Parallel
-        self.conversionClusterT = []
-        # Process N VCF to MAF Conversion for N Annotated Somatic Sniper VCF File of N Samples in Parallel
-        self.conversionClusterS = []
-        # Process N VCF to MAF Conversion for N Annotated Varscan VCF File of N Samples in Parallel
-        self.conversionClusterV = []
-        # Process N VCF to MAF Conversion for N Annotated Strelka 2 VCF File of N Samples in Parallel
-        self.conversionClusterK = []
-        # Process N VCF to MAF Conversion for N Annotated Pindel VCF File of N Samples in Parallel
-        self.conversionClusterT = []
-        # Process N VCF to MAF Conversion for N Annotated Platypus VCF File of N Samples in Parallel
-        self.conversionClusterY = []
-        # Process N VCF To MAF Conversion for N Annotated Pindel VCF of N Samples in Parallel
-        self.conversionClusterP = []
-    def runNormalMode(self, MuSE = None, MuTect = None, Varscan = None, SomaticSniper = None, Strelka = None):
-
-        # Update Variant Caller Flags
-        self.museFlag = MuSE
-        self.mutectFlag = MuTect
-        self.varscanFlag = Varscan
-        self.sniperFlag = SomaticSniper
-        self.strelkaFlag = Strelka
-
-        self.buildClusters(1)
-        self.parallelizeProcesses(1)
-        for i in self.parallelProcesses:
-            i.runInParallel()
-        self.mergeMafs()
+    def run_workflow(self):
+        """
+        Builds & Executes SLUPipe Workflow
+        :return: 0 = Process Complete
+        """
+        self.build_workflow(self.pipeline_mode)
+        self.parallelize_processes()
+        for i in self.parallel_workflow:
+            i.run_in_parallel()
+        self.merge_maf()
         return 0
 
-    def runTumorMode(self, Pindel = None, Platypus = None, Mutect = None,):
-        # Update Variant Caller Flags
-        self.mutectFlag = Mutect
-        self.pindelFlag = Pindel
-        self.platypusFlag = Platypus
-
-        self.buildClusters(0)
-        self.parallelizeProcesses(0)
-        for i in self.parallelProcesses:
-            i.runInParallel()
-        self.mergeMafs()
-        return 0
-
-    def buildClusters(self, flag):
+    def build_workflow(self, flag):
+        """
+        Constructs SLUPipe workflow based on which mode the user has selected (Non-paired vs Paired)
+        Builds Variant Caller objects based on the state of variant caller flags (1 = Variant Caller Enabled / 0 = 
+        Variant Caller Disabled)
+        :param flag: 0: Non-paired mode workflow / 1: Paired mode workflow
+        
+        """
         # TUMOR MODE
         if flag == 0:
+
             # Variant Callers
-            for i in self.inputs:
 
-                self.clusterP.append(Pindel.Pindel(i.tumorBAM, i.fileName, i.resultDirectory, self.chrome_range)) # WORKING
+            for j in self.user_samples:
 
-                self.clusterY.append(Platypus.Platypus(i.tumorBAM, i.fileName, i.resultDirectory)) # WORKING
+                if self.pindel_flag == 1:
+                    self.pindel.append(Pindel.Pindel(j.tumor_bam, j.filename, j.results_directory, self.chrome_range))
 
-                self.clusterT.append(Mutect2.Mutect2(None, i.tumorBAM, i.fileName, i.resultDirectory, self.chrome_range)) # WORKING
-            # Annotations
-            for i, j, k in zip(self.clusterP, self.clusterY, self.clusterT):
-                self.annotationClusterP.append(Annotator.Annotator(i))
-                self.annotationClusterY.append(Annotator.Annotator(j))
-                self.annotationClusterT.append(Annotator.Annotator(k)) #
-            # Conversions
-            for i, j, k in zip(self.annotationClusterP, self.annotationClusterY, self.annotationClusterT):
-                self.conversionClusterP.append(MAFConverter.MAFCoverter(i, self.vepScript, self.vepCache))
-                self.conversionClusterY.append(MAFConverter.MAFCoverter(j, self.vepScript, self.vepCache))
-                self.conversionClusterT.append(MAFConverter.MAFCoverter(k, self.vepScript, self.vepCache))
+                if self.platypus_flag == 1:
+                    self.platypus.append(Platypus.Platypus(j.tumor_bam, j.filename, j.results_directory))
+
+                if self.mutect_flag == 1:
+                    self.mutect.append(Mutect2.Mutect2(None, j.tumor_bam, j.filename, j.results_directory, self.chrome_range))
+
+            # Add variant caller objects into variant caller workflow list
+            
+            if self.pindel:
+                self.variant_caller_workflow.append(self.pindel)
+
+            if self.platypus:
+                self.variant_caller_workflow.append(self.platypus)
+
+            if self.mutect:
+                self.variant_caller_workflow.append(self.mutect)
+                
+            self.master_workflow.append(self.variant_caller_workflow)
 
         # NORMAL MODE
         elif flag == 1:
-            for i in self.inputs:
+            for i in self.user_samples:
+                
+                if self.muse_flag == 1:
+                    self.muse.append(MuSE.MuSE(i.normal_bam, i.tumor_bam, i.filename, i.results_directory, self.chrome_range))
+                    
+                if self.mutect_flag == 1:
+                    self.mutect.append(Mutect2.Mutect2(i.normal_bam, i.tumor_bam, i.filename, i.results_directory, self.chrome_range))
+                    
+                if self.varscan_flag:
+                    self.varscan.append(Varscan.Varscan(i.normal_bam, i.tumor_bam, i.filename, i.results_directory))
+                    
+                if self.sniper_flag == 1:
+                    self.sniper.append(Sniper.Sniper(i.normal_bam, i.tumor_bam, i.filename, i.results_directory))
+                    
+                if self.strelka_flag == 1:
+                    self.strelka2.append(Strelka.Strelka(i.normal_bam, i.tumor_bam, i.filename, i.results_directory))
 
-                self.clusterM.append(MuSE.MuSE(i.normalBAM, i.tumorBAM, i.fileName, i.resultDirectory, self.chrome_range))
+            # Add variant caller objects into variant caller workflow list
 
-                self.clusterT.append(Mutect2.Mutect2(i.normalBAM, i.tumorBAM, i.fileName, i.resultDirectory, self.chrome_range))
+            if self.muse:
+                self.variant_caller_workflow.append(self.muse)
 
-                self.clusterV.append(Varscan.Varscan(i.normalBAM, i.tumorBAM, i.fileName, i.resultDirectory))
+            if self.mutect:
+                self.variant_caller_workflow.append(self.mutect)
 
-                self.clusterS.append(Sniper.Sniper(i.normalBAM, i.tumorBAM, i.fileName, i.resultDirectory))
+            if self.varscan:
+                self.variant_caller_workflow.append(self.varscan)
 
-                self.strelka2.append(Strelka.Strelka(i.normalBAM, i.tumorBAM, i.fileName , i.resultDirectory))
-            # Annotations
-            for i, j, k, l, m in zip(self.clusterM, self.clusterT, self.clusterS, self.clusterV, self.strelka2):
-                self.annotationClusterM.append(Annotator.Annotator(i)) # WORKING
-                self.annotationClusterT.append(Annotator.Annotator(j)) #
-                self.annotationClusterS.append(Annotator.Annotator(k))
-                self.annotationClusterV.append(Annotator.Annotator(l))
-                self.annotationClusterK.append(Annotator.Annotator(m))
-            # Conversions
-            for i, j, k, l, m in zip(self.annotationClusterM, self.annotationClusterT, self.annotationClusterS,
-                                  self.annotationClusterV,self.annotationClusterK):
-                self.conversionClusterM.append(MAFConverter.MAFCoverter(i, self.vepScript, self.vepCache))
-                self.conversionClusterT.append(MAFConverter.MAFCoverter(j, self.vepScript, self.vepCache))
-                self.conversionClusterS.append(MAFConverter.MAFCoverter(k, self.vepScript, self.vepCache))
-                self.conversionClusterV.append(MAFConverter.MAFCoverter(l, self.vepScript, self.vepCache))
-                self.conversionClusterK.append(MAFConverter.MAFCoverter(m, self.vepScript, self.vepCache))
+            if self.sniper:
+                self.variant_caller_workflow.append(self.sniper)
 
-    def parallelizeProcesses(self, flag):
+            if self.strelka2:
+                self.variant_caller_workflow.append(self.strelka2)
 
-        # Workflow Containers
-        self.caller_workflowQueue = []
-        self.anno_workflowQueue = []
-        self.conv_workflowQueue = []
+            self.master_workflow.append(self.variant_caller_workflow)
 
-        #TUMOR MODE
-        if flag == 0:
-            # Build Workflow
-            if self.pindelFlag == "Pindel":
-                self.caller_workflowQueue.append(self.clusterP)
-                self.anno_workflowQueue.append(self.annotationClusterP)
-                self.conv_workflowQueue.append(self.conversionClusterP)
+        # Build Variant Annotation Objects
+        for i in range(len(self.variant_annotation_workflow)):
+            for j in range(len(self.variant_caller_workflow[i])):
+                self.variant_annotation_workflow[i].append(Annotator.Annotator(self.variant_caller_workflow[i][j]))
 
-            if self.platypusFlag == "Platypus":
-                self.caller_workflowQueue.append(self.clusterY)
-                self.anno_workflowQueue.append(self.annotationClusterY)
-                self.conv_workflowQueue.append(self.conversionClusterY)
+        self.master_workflow.append(self.variant_annotation_workflow)
 
-            if self.mutectFlag == "MuTect":
-                self.caller_workflowQueue.append(self.clusterT)
-                self.anno_workflowQueue.append(self.annotationClusterT)
-                self.conv_workflowQueue.append(self.conversionClusterT)
+        # Build Conversion Objects
+        for i in range(len(self.maf_conversion_workflow)):
+            for j in range(len(self.variant_annotation_workflow[i])):
+                self.maf_conversion_workflow[i].append(MAFConverter.MAFCoverter(self.variant_annotation_workflow[i][j], self.vep_script_path, self.vep_cache_path))
 
-        # NORMAL MODE
-        if flag == 1:
-            # Build Workflow
-            if self.museFlag == "MuSE":
-                self.caller_workflowQueue.append(self.clusterM)
-                self.anno_workflowQueue.append(self.annotationClusterM)
-                self.conv_workflowQueue.append(self.conversionClusterM)
-
-            if self.mutectFlag == "MuTect":
-                self.caller_workflowQueue.append(self.clusterT)
-                self.anno_workflowQueue.append(self.annotationClusterT)
-                self.conv_workflowQueue.append(self.conversionClusterT)
-
-            if self.sniperFlag == "Sniper":
-                self.caller_workflowQueue.append(self.clusterS)
-                self.anno_workflowQueue.append(self.annotationClusterS)
-                self.conv_workflowQueue.append(self.conversionClusterS)
-
-            if self.varscanFlag == "Varscan":
-                self.caller_workflowQueue.append(self.clusterV)
-                self.anno_workflowQueue.append(self.annotationClusterV)
-                self.conv_workflowQueue.append(self.conversionClusterV)
-
-            if self.strelkaFlag == "Strelka2":
-                self.caller_workflowQueue.append(self.strelka2)
-                self.anno_workflowQueue.append(self.annotationClusterK)
-                self.conv_workflowQueue.append(self.conversionClusterK)
-
-        # Variant Calling
-        for i in self.caller_workflowQueue:
-            process = Parallel.ParallelP(i)
-            process.constructThreads(0)
-            self.parallelProcesses.append(process)
-        # Annotation
-        for i in self.anno_workflowQueue:
-            process = Parallel.ParallelP(i)
-            process.constructThreads(1)
-            self.parallelProcesses.append(process)
-        # Conversion
-        for i in self.conv_workflowQueue:
-            process = Parallel.ParallelP(i)
-            process.constructThreads(2)
-            self.parallelProcesses.append(process)
-
-    def mergeMafs(self):
-        fileNames = []
-        for i in self.inputs:
-            fileNames.append(i.fileName)
+        self.master_workflow.append(self.maf_conversion_workflow)
+               
+    def parallelize_processes(self):
+        """
+        Parallelizes workflow generated from build_workflow method. 
+        """
+        for i in range(len(self.master_workflow)):
+            for j in self.master_workflow[i]:
+                parallel_process = Parallel.ParallelP(j)
+                parallel_process.construct_threads(i)
+                self.parallel_workflow.append(parallel_process)
+                
+    def merge_maf(self):
+        """
+        Consolidates all generated maf files into a final.maf file
+        """
+        filenames = []
+        for i in self.user_samples:
+            filenames.append(i.filename)
         # remove duplicate filenames
-        fileNames = list(dict.fromkeys(fileNames))
-        for i in fileNames:
-            MAFMerger.mergeMafs(i)
+        filenames = list(dict.fromkeys(filenames))
+        for i in filenames:
+            MAFMerger.merge_maf(i)
 
 
 

@@ -16,7 +16,7 @@ import sys
 from subprocess import call
 
 
-def checkVersion():
+def check_version():
     """
     Checks latest software releases found in repository.
     """
@@ -40,19 +40,19 @@ def main():
 
         # User has indicated to check for updates
         if sys.argv[1] == "--update":
-            checkVersion()
+            check_version()
         # User has provided a config.json file
         else:
             with open(sys.argv[1], 'r') as file:
                 config_dict = json.load(file)
 
-            NGS = Controller.Controller(config_dict)
-            NGS.run()
+            slu_pipe = Controller.Controller(config_dict)
+            slu_pipe.configure_pipeline()
 
     # User hasn't provided a config.json file
     else:
-        NGS = Controller.Controller()
-        NGS.exeSummary()
+        slu_pipe = Controller.Controller()
+        slu_pipe.show_summary()
 
 
 if __name__ == '__main__':

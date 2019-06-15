@@ -12,11 +12,14 @@
 
 import os
 import Pipeline
+import sys
+import shutil
 from subprocess import call
+
 
 class Controller:
 
-    def __init__(self , config_dict = None):
+    def __init__(self, config_dict=None):
         """
         Class Constructor
         :param config_dict: Python Dictionary Storing Pipeline Configuration
@@ -32,18 +35,17 @@ class Controller:
             self.vep_script = config_dict[0]['vep_ScriptPath']
             self.vep_cache = config_dict[0]['vep_CachePath']
 
-
-    def run(self):
+    def configure_pipeline(self):
         """
         Configures pipeline mode in accordance to config file (-T: Non-Paired Mode, -N: Paired Mode)
         """
         if self.pipeline_mode == "-T":
-            self.readDirectory(0)
+            self.read_directory(0)
 
         elif self.pipeline_mode == "-N":
-            self.readDirectory(1)
+            self.read_directory(1)
 
-    def exeSummary(self):
+    def show_summary(self):
         """
         Provide Execution & Version Summary of SLUPipe
         """
@@ -79,42 +81,41 @@ class Controller:
         print()
         print("                        CPU Cores         Cores used for pipeline workflow")
 
-    def readDirectory(self, flag):
+    def read_directory(self, flag):
         """
         Read input directory
         :param flag: 0: Process files required for Non-paired mode (Tumor Mode), 1: Process files required for Paired Mode (Normal Mode)
         """
         if flag == 0:
-            directoryListing = os.listdir(self.input_directory)
-            for item in directoryListing:
+            directory_listing = os.listdir(self.input_directory)
+            for item in directory_listing:
                 if "_T" and '.bam' in item:
                     # Capture Filename
-                    fileName = os.path.splitext(os.path.basename(item))[0]
+                    filename = os.path.splitext(os.path.basename(item))[0]
                     # Capture tumorBAM PATH
-                    tumorBam = os.path.basename(item)
+                    tumor_bam = os.path.basename(item)
                     # Store in Sample List
-                    self.directory.append(directoryStruct(tumorBam, fileName))
+                    self.directory.append(directoryStruct(tumor_bam, filename))
 
-            self.confirmInputs(0)
+            self.confirm_inputs(0)
         if flag == 1:
 
-            directoryListing = os.listdir(self.input_directory)
-            for item in directoryListing:
+            directory_listing = os.listdir(self.input_directory)
+            for item in directory_listing:
                 if "_N" and ".bam" in item:
-                    for item2 in directoryListing:
+                    for item2 in directory_listing:
                         if "_T" and ".bam" in item2:
-                            normalFile = os.path.splitext(os.path.basename(item))[0].replace("_N", "")
-                            tumorFile = os.path.splitext(os.path.basename(item2))[0].replace("_T", "")
+                            normal_bam_file = os.path.splitext(os.path.basename(item))[0].replace("_N", "")
+                            tumor_bam_file = os.path.splitext(os.path.basename(item2))[0].replace("_T", "")
                             # If BAM Normal and Tumor Files have same ID
-                            if normalFile == tumorFile:
-                                fileName = normalFile
+                            if normal_bam_file == tumor_bam_file:
+                                filename = normal_bam_file
                                 # Store in Sample List
-                                self.directory.append(directoryStruct(os.path.basename(item2), fileName, os.path.basename(item)))
+                                self.directory.append(directoryStruct(os.path.basename(item2), filename, os.path.basename(item)))
 
-            self.confirmInputs(1)
+            self.confirm_inputs(1)
 
-
-    def confirmInputs(self, flag):
+    def confirm_inputs(self, flag):
         """
         Prompts user to confirm correct inputs before initializing pipeline
         :param flag: -T: Display files that will be used for Non-Paired Mode, -N: Display files that will be used for Paired Mode
@@ -122,155 +123,142 @@ class Controller:
         """
         if flag == 0:
             dash = '-' * 80
-            print("TUMOR MODE DIRECTORY SUMMARY (X to Exit):")
+            print("TUMOR MODE: DIRECTORY SUMMARY (X to Exit):")
             print(dash)
             print("{:<10s}{:>10s}{:>20s}".format('NO.', 'ID', 'TUMOR'))
             print(dash)
             for i in range(len(self.directory)):
-                print("{:<10s}{:>12s}{:>21s}".format(str(i + 1), self.directory[i].fileName, self.directory[i].tumorBAM))
+                print("{:<10s}{:>12s}{:>21s}".format(str(i + 1), self.directory[i].filename, self.directory[i].tumor_bam))
             print()
             confirmation = input("IS THIS CORRECT (Y/N): ")
             # START PIPELINE
             if confirmation == 'Y':
-                fileNo = input("SELECT FILE NUMBERS TO PROCESS (Separate File Numbers By Space): ")
-                args = fileNo.split()
+                file_num = input("SELECT FILE NUMBERS TO PROCESS (Separate File Numbers By Space): ")
+                args = file_num.split()
                 for i in args:
-                    self.samplesToProcess.append(sampleStruct(self.directory[int(i) - 1].tumorBAM, self.directory[int(i) - 1].fileName))
+                    self.samplesToProcess.append(sampleStruct(self.directory[int(i) - 1].tumor_bam, self.directory[int(i) - 1].filename))
 
                 # Generate Output Directories
                 for j in self.samplesToProcess:
-                    j.genDirectory()
+                    j.gen_sample_output_directory()
 
-                ## Add a notifaction stating which variant callers will be used to process bam files.
-                print()
-                print("############################")
-                print("COMMENCING PIPELINE WORKFLOW")
-                print("############################")
-                print()
-
-                NGS = Pipeline.Pipeline(self.samplesToProcess, self.chromosome_range, self.vep_script, self.vep_cache)
-
-                # Pindel, Platypus, MuTect
-
-                NGS.runTumorMode("Pindel", "Platypus", "MuTect") ## Add Callers Here
-                print()
-                print("############################")
-                print(" PIPELINE WORKFLOW COMPLETE")
-                print("############################")
-                print()
-                self.samplesToProcess.clear()
-                self.directory.clear()
+                # Run SLUPipe
+                self.run_pipeline()
+                
             elif confirmation == 'N':
                 print("Please Insert Sample Files Into Appropriate Directories")
-                self.samplesToProcess.clear()
-                self.directory.clear()
+                sys.exit(1)
+
             elif confirmation == 'X':
-                print("Returning to Main Menu")
-                self.samplesToProcess.clear()
-                self.directory.clear()
+                print("Exiting Program")
+                sys.exit(1)
 
         # Confirming NORMAL MODE inputs
         if flag == 1:
             dash = '-'*80
-            print("NORMAL MODE DIRECTORY SUMMARY (X to Exit):")
+            print("NORMAL MODE: DIRECTORY SUMMARY (X to Exit):")
             print(dash)
             print("{:<10s}{:>10s}{:>20s}{:>20s}".format('NO.', 'ID', 'NORMAL', 'TUMOR'))
             print(dash)
             for i in range(len(self.directory)):
-                print("{:<10s}{:>10s}{:>22s}{:>21s}".format(str(i+1), self.directory[i].fileName, self.directory[i].normalBAM, self.directory[i].tumorBAM))
+                print("{:<10s}{:>10s}{:>22s}{:>21s}".format(str(i+1), self.directory[i].filename, self.directory[i].normal_bam, self.directory[i].tumor_bam))
             print()
             confirmation = input("IS THIS CORRECT (Y/N): ")
             # START PIPELINE
             if confirmation == 'Y':
-                fileNo = input("SELECT FILE NUMBERS TO PROCESS (Separate File Numbers By Space): ")
-                args = fileNo.split()
+                file_num = input("SELECT FILE NUMBERS TO PROCESS (Separate File Numbers By Space): ")
+                args = file_num.split()
                 for i in args:
-                    self.samplesToProcess.append(sampleStruct(self.directory[int(i) - 1].tumorBAM, self.directory[int(i) - 1].fileName, self.directory[int(i) - 1].normalBAM))
+                    self.samplesToProcess.append(sampleStruct(self.directory[int(i) - 1].tumor_bam, self.directory[int(i) - 1].filename, self.directory[int(i) - 1].normal_bam))
 
                 # Generate Output Directories
                 for j in self.samplesToProcess:
-                    j.genDirectory()
+                    j.gen_sample_output_directory()
 
-                print()
-                print("############################")
-                print("COMMENCING PIPELINE WORKFLOW")
-                print("############################")
-                print()
+                # Run SLUPipe
+                self.run_pipeline()
 
-                # NGS = Pipeline.Pipeline(self.samplesToProcess, self.chromosomeRange, self.vep_script_path, self.vep_cache_path)
-
-                # MuSE,MuTect,Varscan,Sniper,Strelka2
-                NGS.runNormalMode("MuSE", "MuTect", "Varscan", "Sniper", "Strelka2") # Add Normal Callers Here
-                print()
-                print("############################")
-                print(" PIPELINE WORKFLOW COMPLETE")
-                print("############################")
-                print()
-                self.directory.clear()
-                self.samplesToProcess.clear()
-                return 0
-
-            # CORRECT USER INPUTS
             elif confirmation == 'N':
                 print("Please Insert Sample Files Into Appropriate Directories")
-                self.samplesToProcess.clear()
-                return 0
+                sys.exit(1)
+
             elif confirmation == 'X':
-                print("Returning to Main Menu")
-                self.samplesToProcess.clear()
-                return 0
+                print("Exiting Program")
+                sys.exit(1)
+
+    def run_pipeline(self):
+        """
+        Run SLUPipe.
+        """
+        print()
+        print("############################")
+        print("COMMENCING PIPELINE WORKFLOW")
+        print("############################")
+        print()
+
+        slu_pipe = Pipeline.Pipeline(self.samplesToProcess, self.chromosome_range, self.vep_script, self.vep_cache,
+                                     self.pipeline_mode, self.variant_callers)
+        slu_pipe.run_workflow()
+        print()
+        print("############################")
+        print(" PIPELINE WORKFLOW COMPLETE")
+        print("############################")
+        print()
+
+        self.samplesToProcess.clear()
+        self.directory.clear()
 
     # Generate .bai for every .bam file found in directory
-    def generateBai(self, flag):
+    def generate_bai_files(self, flag):
         """
         Automates creation of  .bai files from user provided .bam files
         :param flag: 0: Gen .bai files for Non-paired Mode, 1: Gen .bai for Paired Mode
         """
         if flag == 0:
 
-            directoryListing = os.listdir(self.input_directory)
-            for item in directoryListing:
+            directory_listing = os.listdir(self.input_directory)
+            for item in directory_listing:
                 if ".bam" in item:
-                    bamFile = os.path.abspath(item)
-                    baiFile = bamFile.replace(".bam", ".bai")
-                    call(["samtools", "index", item, baiFile])
+                    bam_file = os.path.abspath(item)
+                    bai_file = bam_file.replace(".bam", ".bai")
+                    call(["samtools", "index", item, bai_file])
         if flag == 1:
-            directoryListing = os.listdir(self.input_directory)
-            for item in directoryListing:
+            directory_listing = os.listdir(self.input_directory)
+            for item in directory_listing:
                 if ".bam" in item:
-                    bamFile = os.path.abspath(item)
-                    baiFile = bamFile.replace(".bam", ".bai")
-                    call(["samtools", "index", item, baiFile])
+                    bam_file = os.path.abspath(item)
+                    bai_file = bam_file.replace(".bam", ".bai")
+                    call(["samtools", "index", item, bai_file])
 
 class directoryStruct:
-    def __init__(self, tumorBAM, fileName, normalBAM = None):
-        self.normalBAM = normalBAM
-        self.tumorBAM = tumorBAM
-        self.fileName = fileName
+    def __init__(self, tumor_bam, filename, normal_bam = None):
+        self.normal_bam = normal_bam
+        self.tumor_bam = tumor_bam
+        self.filename = filename
 
 # Structure To Store Sample Information
 class sampleStruct:
-    def __init__(self, tumorBAM, fileName, normalBAM = None):
+    def __init__(self, tumor_bam, filename, normal_bam=None):
         """
         Python structure that stores all relevant files for sample X analysis
-        :param tumorBAM: BAM file necessary for Paired and Non-Paired Mode
-        :param fileName: Sample ID used to track progress throuhgout pipeline worfklow
-        :param normalBAM: BAM file necessary for Paired Mode (Optional)
+        :param tumor_bam: BAM file necessary for Paired and Non-Paired Mode
+        :param filename : Sample ID used to track progress throuhgout pipeline worfklow
+        :param normal_bam: BAM file necessary for Paired Mode (Optional)
         """
-        self.normalBAM = normalBAM
-        self.tumorBAM = tumorBAM
-        self.fileName = fileName
-        self.resultDirectory = ""
+        self.normal_bam = normal_bam
+        self.tumor_bam = tumor_bam
+        self.filename = filename
+        self.results_directory = ""
 
-
-
-    def genDirectory(self):
+    def gen_sample_output_directory(self):
         """
         Create output directory needed to store generated files from pipeline workflow
         """
-        os.mkdir("./output/" + self.fileName + "/")
-        os.mkdir("./output/" + self.fileName + "/VCF/")
-        os.mkdir("./output/" + self.fileName + "/AnnotatedVCF/")
-        os.mkdir("./output/" + self.fileName + "/MAF/")
-        self.resultDirectory = "./output/" + self.fileName + "/"
+        if os.path.exists("./output/" + self.filename + "/"):
+            shutil.rmtree("./output/" + self.filename + "/")
 
+        os.mkdir("./output/" + self.filename + "/")
+        os.mkdir("./output/" + self.filename + "/VCF/")
+        os.mkdir("./output/" + self.filename + "/AnnotatedVCF/")
+        os.mkdir("./output/" + self.filename + "/MAF/")
+        self.results_directory = "./output/" + self.filename + "/"

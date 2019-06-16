@@ -154,17 +154,17 @@ source activate SLUPipe
 ```
 **Execute Pipeline Workflow**
 ```console
-python3 NGS.py <config.json>
+python3 slupipe.py <config.json>
 ```
 
 **Version Summary & Execution Description**
 ```console
-python3 NGS.py 
+python3 slupipe.py 
 ```
 
 **Check Latest Software Release**
 ```console
-python3 NGS.py --update
+python3 slupipe.py --update
 ```
 
 

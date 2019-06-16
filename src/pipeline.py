@@ -4,23 +4,23 @@
 # author          :Juan Maldonado
 # date            :6/13/19
 # version         :0.4
-# usage           :SEE NGS.py
+# usage           :SEE slupipe.py
 # notes           :SEE README.txt for Usages & List of Dependencies
 # python_version  :3.6.5
 # conda_version   :4.6.14
 # =================================================================================================================
 
-import Parallel
-import MuSE
-import Mutect2
-import Varscan
-import Sniper
-import Annotator
-import MAFConverter
-import Pindel
-import Platypus
-import Strelka
-import MAFMerger
+import parallel as pl
+import muse as ms
+import mutect2 as mt
+import varscan as vs
+import somatic_sniper as sp
+import annotator as an
+import maf_converter as mc
+import pindel as pd
+import platypus as py
+import strelka as sl
+import maf_merger as mf
 
 
 class Pipeline:
@@ -53,13 +53,13 @@ class Pipeline:
 
         # VARIANT CALLER PROCESSING CLUSTERS
 
-        # MuSE
+        # muse
         self.muse = []
         # Mutect 2
         self.mutect = []
-        # Varscan
+        # varscan
         self.varscan = []
-        # Somatic Sniper
+        # Somatic sniper
         self.sniper = []
         # Strelka 2
         self.strelka2 = []
@@ -73,9 +73,9 @@ class Pipeline:
         Sets variant callers which will be used for analysis (based on user config.json)
         :param variant_callers: Python list containing variant callers specified in config file
         """
-        if "MuSE" in variant_callers:
+        if "Muse" in variant_callers:
             self.muse_flag = 1
-        if "MuTect" in variant_callers:
+        if "Mutect" in variant_callers:
             self.mutect_flag = 1
         if "Varscan" in variant_callers:
             self.varscan_flag = 1
@@ -106,7 +106,6 @@ class Pipeline:
         Builds Variant Caller objects based on the state of variant caller flags (1 = Variant Caller Enabled / 0 = 
         Variant Caller Disabled)
         :param flag: 0: Non-paired mode workflow / 1: Paired mode workflow
-        
         """
         # TUMOR MODE
         if flag == 0:
@@ -116,13 +115,13 @@ class Pipeline:
             for j in self.user_samples:
 
                 if self.pindel_flag == 1:
-                    self.pindel.append(Pindel.Pindel(j.tumor_bam, j.filename, j.results_directory, self.chrome_range))
+                    self.pindel.append(pd.Pindel(j.tumor_bam, j.filename, j.results_directory, self.chrome_range))
 
                 if self.platypus_flag == 1:
-                    self.platypus.append(Platypus.Platypus(j.tumor_bam, j.filename, j.results_directory))
+                    self.platypus.append(py.Platypus(j.tumor_bam, j.filename, j.results_directory))
 
                 if self.mutect_flag == 1:
-                    self.mutect.append(Mutect2.Mutect2(None, j.tumor_bam, j.filename, j.results_directory, self.chrome_range))
+                    self.mutect.append(mt.Mutect2(None, j.tumor_bam, j.filename, j.results_directory, self.chrome_range))
 
             # Add variant caller objects into variant caller workflow list
             
@@ -142,19 +141,19 @@ class Pipeline:
             for i in self.user_samples:
                 
                 if self.muse_flag == 1:
-                    self.muse.append(MuSE.MuSE(i.normal_bam, i.tumor_bam, i.filename, i.results_directory, self.chrome_range))
+                    self.muse.append(ms.Muse(i.normal_bam, i.tumor_bam, i.filename, i.results_directory, self.chrome_range))
                     
                 if self.mutect_flag == 1:
-                    self.mutect.append(Mutect2.Mutect2(i.normal_bam, i.tumor_bam, i.filename, i.results_directory, self.chrome_range))
+                    self.mutect.append(mt.Mutect2(i.normal_bam, i.tumor_bam, i.filename, i.results_directory, self.chrome_range))
                     
                 if self.varscan_flag:
-                    self.varscan.append(Varscan.Varscan(i.normal_bam, i.tumor_bam, i.filename, i.results_directory))
+                    self.varscan.append(vs.Varscan(i.normal_bam, i.tumor_bam, i.filename, i.results_directory))
                     
                 if self.sniper_flag == 1:
-                    self.sniper.append(Sniper.Sniper(i.normal_bam, i.tumor_bam, i.filename, i.results_directory))
+                    self.sniper.append(sp.sniper(i.normal_bam, i.tumor_bam, i.filename, i.results_directory))
                     
                 if self.strelka_flag == 1:
-                    self.strelka2.append(Strelka.Strelka(i.normal_bam, i.tumor_bam, i.filename, i.results_directory))
+                    self.strelka2.append(sl.Strelka(i.normal_bam, i.tumor_bam, i.filename, i.results_directory))
 
             # Add variant caller objects into variant caller workflow list
 
@@ -178,24 +177,24 @@ class Pipeline:
         # Build Variant Annotation Objects
         for i in range(len(self.variant_annotation_workflow)):
             for j in range(len(self.variant_caller_workflow[i])):
-                self.variant_annotation_workflow[i].append(Annotator.Annotator(self.variant_caller_workflow[i][j]))
+                self.variant_annotation_workflow[i].append(an.Annotator(self.variant_caller_workflow[i][j]))
 
         self.master_workflow.append(self.variant_annotation_workflow)
 
         # Build Conversion Objects
         for i in range(len(self.maf_conversion_workflow)):
             for j in range(len(self.variant_annotation_workflow[i])):
-                self.maf_conversion_workflow[i].append(MAFConverter.MAFCoverter(self.variant_annotation_workflow[i][j], self.vep_script_path, self.vep_cache_path))
+                self.maf_conversion_workflow[i].append(mc.mafConverter(self.variant_annotation_workflow[i][j], self.vep_script_path, self.vep_cache_path))
 
         self.master_workflow.append(self.maf_conversion_workflow)
                
     def parallelize_processes(self):
         """
-        Parallelizes workflow generated from build_workflow method. 
+        parallelizes workflow generated from build_workflow method. 
         """
         for i in range(len(self.master_workflow)):
             for j in self.master_workflow[i]:
-                parallel_process = Parallel.ParallelP(j)
+                parallel_process = pl.ParallelP(j)
                 parallel_process.construct_threads(i)
                 self.parallel_workflow.append(parallel_process)
                 
@@ -209,7 +208,7 @@ class Pipeline:
         # remove duplicate filenames
         filenames = list(dict.fromkeys(filenames))
         for i in filenames:
-            MAFMerger.merge_maf(i)
+            mf.merge_maf(i)
 
 
 

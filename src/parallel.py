@@ -1,5 +1,5 @@
 # !/usr/bin/env python
-# title           :Parallel.py
+# title           :parallel.py
 # description     :Parallelizes Variant Calling, Variant Annotation, MAF Conversion & Merging Workflow
 # author          :Juan Maldonado
 # date            :6/13/19
@@ -14,7 +14,6 @@ import multiprocessing as mp
 
 
 class ParallelP:
-
     def __init__(self, incoming_workflow):
         """
 
@@ -52,17 +51,17 @@ class ParallelP:
         """
 
         if flag == 0:
-            m = mp.Process(target=workflow_object.runVariantCaller)
+            m = mp.Process(target=workflow_object.run_variant_caller)
             return m
 
         elif flag == 1:
-            m = mp.Process(target=workflow_object.processAnnotation)
+            m = mp.Process(target=workflow_object.process_annotation)
             return m
 
         # Conversions
 
         elif flag == 2:
-            m = mp.Process(target=workflow_object.processConversion)
+            m = mp.Process(target=workflow_object.process_conversion)
             return m
 
     def run_in_parallel(self):

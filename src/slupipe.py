@@ -1,16 +1,16 @@
 # !/usr/bin/env python
-# title           :NGS.py
+# title           :slupipe.py
 # description     :SLUPipe Execution Script
 # author          :Juan Maldonado
 # date            :6/13/19
 # version         :0.4
-# usage           :python3 NGS.py <config.json>
+# usage           :python3 slupipe.py <config.json>
 # notes           :SEE README.txt for Usages & List of Dependencies
 # python_version  :3.6.5
 # conda_version   :4.6.14
 # =================================================================================================================
 
-import Controller
+import controller as cn
 import json
 import sys
 from subprocess import call
@@ -46,12 +46,12 @@ def main():
             with open(sys.argv[1], 'r') as file:
                 config_dict = json.load(file)
 
-            slu_pipe = Controller.Controller(config_dict)
+            slu_pipe = cn.Controller(config_dict)
             slu_pipe.configure_pipeline()
 
     # User hasn't provided a config.json file
     else:
-        slu_pipe = Controller.Controller()
+        slu_pipe = cn.Controller()
         slu_pipe.show_summary()
 
 

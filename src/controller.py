@@ -1,17 +1,17 @@
 # !/usr/bin/env python
-# title           :Controller.py
+# title           :controller.py
 # description     :Configures SLUPipeline Workflow
 # author          :Juan Maldonado
 # date            :6/13/19
 # version         :0.4
-# usage           :SEE NGS.py
+# usage           :SEE slupipe.py
 # notes           :SEE README.txt for Usages & List of Dependencies
 # python_version  :3.6.5
 # conda_version   :4.6.14
 # =================================================================================================================
 
 import os
-import Pipeline
+import pipeline as pl
 import sys
 import shutil
 from subprocess import call
@@ -63,8 +63,8 @@ class Controller:
         print("         Build Time 00:43:02")
         print("         Authors: Dr. Tae-Hyuk (Ted) Ahn , Juan Maldonado , Zohair Siddiqui. St. Louis University, 2019.")
         print()
-        print("Usage:   NGS.py <config.json> -> Execute Pipeline Workflow")
-        print("         NGS.py --update -> Check for most recent software release")
+        print("Usage:   slupipe.py <config.json> -> Execute Pipeline Workflow")
+        print("         slupipe.py --update -> Check for most recent software release")
         print()
         print("Config File Structure:  Pipeline Mode     -T for Non-paired Mode / -N for Paired Mode")
         print()
@@ -196,7 +196,7 @@ class Controller:
         print("############################")
         print()
 
-        slu_pipe = Pipeline.Pipeline(self.samplesToProcess, self.chromosome_range, self.vep_script, self.vep_cache,
+        slu_pipe = pl.Pipeline(self.samplesToProcess, self.chromosome_range, self.vep_script, self.vep_cache,
                                      self.pipeline_mode, self.variant_callers)
         slu_pipe.run_workflow()
         print()
@@ -258,7 +258,7 @@ class sampleStruct:
             shutil.rmtree("./output/" + self.filename + "/")
 
         os.mkdir("./output/" + self.filename + "/")
-        os.mkdir("./output/" + self.filename + "/VCF/")
-        os.mkdir("./output/" + self.filename + "/AnnotatedVCF/")
-        os.mkdir("./output/" + self.filename + "/MAF/")
+        os.mkdir("./output/" + self.filename + "/vcf/")
+        os.mkdir("./output/" + self.filename + "/annotated_vcf/")
+        os.mkdir("./output/" + self.filename + "/maf/")
         self.results_directory = "./output/" + self.filename + "/"

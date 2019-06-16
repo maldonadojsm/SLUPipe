@@ -240,7 +240,7 @@ python3 slupipe.py --update
     VCF2MAF: VCF to MAF Conversion Complete -> tumor2_T-platypus
     VCF2MAF: Converting VCF to MAF -> tumor2_T-mutect2
     VCF2MAF: VCF to MAF Conversion Complete -> tumor2_T-mutect2
-    Merging MAF: Saving Merged MAFs -> .output/MAF/tumor2_T.final.maf
+    Merging MAF: Saving Merged MAFs -> ./output/maf/tumor2_T.final.maf
     
     ---------------------- MERGED MAF SUMMARY ---------------------------
     

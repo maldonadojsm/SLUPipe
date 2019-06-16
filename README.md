@@ -168,31 +168,47 @@ python3 slupipe.py --update
 ```
 
 
+**Reference Files:** Place reference .fasta files in **referenceFiles** directory.
 
-**Non-paired Mode (Tumor Only):** Place Tumor .bam files in **tumor mode directory** (input/tumor_mode).
+**Non-paired Mode (Tumor Only) Input Entries:** Place Tumor .bam files in **tumor mode directory** (input/tumor_mode).
 
-**Paired Mode (Normal Mode):** Place Normal & Tumor .bam files in **normal mode directory** (input/normal_mode).
+**Paired Mode (Normal Mode) Input Entries:** Place Normal & Tumor .bam files in **normal mode directory** (input/normal_mode).
 
-**Configuration File Structure (JSON)**:
 
+**Configuration File Structure Format (JSON)**:
 
     [
       {
         "Pipeline_Mode":"-T",
         "Variant_Callers":["Pindel","Platypus"],
-        "Input_Directory":"/student/maldonadojs/SLUPipe/SLUPipe_V0.3_TEST/SLUPipe/src/input/tumor_mode",
+        "Input_Directory":"/student/foo/SLUPipe/src/input/tumor_mode",
         "Chromosome_Range": "chr1:16,000,000-215,000,000",
-        "vep_ScriptPath": "/student/maldonadojs/.conda/envs/SLUPipe/share/ensembl-vep-95.3-0",
-        "vep_CachePath": "/student/maldonadojs/.vep",
+        "vep_ScriptPath": "/student/foo/.conda/envs/SLUPipe/share/ensembl-vep-95.3-0",
+        "vep_CachePath": "/student/foo/.vep",
         "cpuCores": "8"
       }
     ]
+    
+**Pipeline Mode & Variant Callers are indicated in the JSON file as followed:**
+
+    Non-paired Mode (Tumor Only) = "-T"
+    
+    Paired Mode (Normal Mode) = "-N"
+    
+    MuSE = "Muse"
+    MuTect2 = "Mutect"
+    Varscan = "Varscan"
+    Somatic Sniper = "Sniper"
+    Strelka 2 = "Strelka2"
+    Pindel = "Pindel"
+    Platypus "Platypus"
+
     
     
 **Pipeline Workflow Example (Non-paired Mode):**
 
     (SLUPipe) MacBook-Pro-2:src username$ python3 NGS.py config.json
-    TUMOR MODE DIRECTORY SUMMARY (X to Exit):
+    TUMOR MODE: DIRECTORY SUMMARY (X to Exit):
     --------------------------------------------------------------------------------
     NO.               ID               TUMOR
     --------------------------------------------------------------------------------

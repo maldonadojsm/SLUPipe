@@ -13,7 +13,7 @@
 import controller as cn
 import json
 import sys
-from subprocess import call
+from subprocess import call, check_output
 
 
 def check_version():
@@ -21,15 +21,15 @@ def check_version():
     Checks latest software releases found in repository.
     """
     call(["git", "fetch"])
-    local_branch = call(["git", "rev-parse", "HEAD"])
-    master_branch = call(["git", "rev-parse", "master@{upstream}"])
+    local_branch = check_output(["git", "rev-parse", "HEAD"])
+    master_branch = check_output(["git", "rev-parse", "master@{upstream}"])
 
     if local_branch != master_branch:
         print("New Software Release Found. Please head to "
-              "https://github.com/BioHPC/SLUPipe/tree/master/src for further information")
+              "https://github.com/BioHPC/SLUPipe/tree/master/src for further information.")
 
     elif local_branch == master_branch:
-        print("Running Latest Software Release ")
+        print("Running Latest Software Release.")
 
 
 def main():

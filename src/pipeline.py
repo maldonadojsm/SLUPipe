@@ -21,15 +21,14 @@ import pindel as pd
 import platypus as py
 import strelka as sl
 import maf_merger as mf
+import sys
 
 
 class Pipeline:
     def __init__(self, user_samples, chromosome_range, vep_script_path, vep_cache_path, pipeline_mode, variant_callers):
         self.parallel_workflow = []
         self.master_workflow = []
-        self.num_variants = len(variant_callers)
-        self.variant_annotation_workflow = [list() for i in range(self.num_variants)]
-        self.maf_conversion_workflow = [list() for i in range(self.num_variants)]
+        self.num_variants = 0
         self.variant_caller_workflow = []
         self.user_samples = user_samples
         self.vep_script_path = vep_script_path
@@ -47,7 +46,8 @@ class Pipeline:
         self.sniper_flag = 0
         self.strelka_flag = 0
         self.set_variant_caller_flags(variant_callers)
-
+        self.variant_annotation_workflow = [list() for i in range(self.num_variants)]
+        self.maf_conversion_workflow = [list() for i in range(self.num_variants)]
 
         #############################################################
 
@@ -75,18 +75,25 @@ class Pipeline:
         """
         if "Muse" in variant_callers:
             self.muse_flag = 1
+            self.num_variants += 1
         if "Mutect" in variant_callers:
             self.mutect_flag = 1
+            self.num_variants += 1
         if "Varscan" in variant_callers:
             self.varscan_flag = 1
+            self.num_variants += 1
         if "Sniper" in variant_callers:
             self.sniper_flag = 1
+            self.num_variants += 1
         if "Strelka2" in variant_callers:
             self.strelka_flag = 1
+            self.num_variants += 1
         if "Pindel" in variant_callers:
             self.pindel_flag = 1
+            self.num_variants += 1
         if "Platypus" in variant_callers:
             self.platypus_flag = 1
+            self.num_variants += 1
 
     def run_workflow(self):
         """
@@ -102,91 +109,95 @@ class Pipeline:
 
     def build_workflow(self, flag):
         """
-        Constructs SLUPipe workflow based on which mode the user has selected (Non-paired vs Paired)
-        Builds Variant Caller objects based on the state of variant caller flags (1 = Variant Caller Enabled / 0 = 
-        Variant Caller Disabled)
-        :param flag: 0: Non-paired mode workflow / 1: Paired mode workflow
-        """
-        # TUMOR MODE
-        if flag == 0:
+            Constructs SLUPipe workflow based on which mode the user has selected (Non-paired vs Paired)
+            Builds Variant Caller objects based on the state of variant caller flags (1 = Variant Caller Enabled / 0 =
+            Variant Caller Disabled)
+            :param flag: 0: Non-paired mode workflow / 1: Paired mode workflow
+            """
+        if self.num_variants >= 1 and (self.pipeline_mode == 1 or self.pipeline_mode == 0):
+            # TUMOR MODE
+            if flag == 0:
 
-            # Variant Callers
+                # Variant Callers
 
-            for j in self.user_samples:
+                for j in self.user_samples:
 
-                if self.pindel_flag == 1:
-                    self.pindel.append(pd.Pindel(j.tumor_bam, j.filename, j.results_directory, self.chrome_range))
+                    if self.pindel_flag == 1:
+                        self.pindel.append(pd.Pindel(j.tumor_bam, j.filename, j.results_directory, self.chrome_range))
 
-                if self.platypus_flag == 1:
-                    self.platypus.append(py.Platypus(j.tumor_bam, j.filename, j.results_directory))
+                    if self.platypus_flag == 1:
+                        self.platypus.append(py.Platypus(j.tumor_bam, j.filename, j.results_directory))
 
-                if self.mutect_flag == 1:
-                    self.mutect.append(mt.Mutect2(None, j.tumor_bam, j.filename, j.results_directory, self.chrome_range))
+                    if self.mutect_flag == 1:
+                        self.mutect.append(mt.Mutect2(None, j.tumor_bam, j.filename, j.results_directory, self.chrome_range))
 
-            # Add variant caller objects into variant caller workflow list
-            
-            if self.pindel:
-                self.variant_caller_workflow.append(self.pindel)
+                # Add variant caller objects into variant caller workflow list
 
-            if self.platypus:
-                self.variant_caller_workflow.append(self.platypus)
+                if self.pindel:
+                    self.variant_caller_workflow.append(self.pindel)
 
-            if self.mutect:
-                self.variant_caller_workflow.append(self.mutect)
-                
-            self.master_workflow.append(self.variant_caller_workflow)
+                if self.platypus:
+                    self.variant_caller_workflow.append(self.platypus)
 
-        # NORMAL MODE
-        elif flag == 1:
-            for i in self.user_samples:
-                
-                if self.muse_flag == 1:
-                    self.muse.append(ms.Muse(i.normal_bam, i.tumor_bam, i.filename, i.results_directory, self.chrome_range))
-                    
-                if self.mutect_flag == 1:
-                    self.mutect.append(mt.Mutect2(i.normal_bam, i.tumor_bam, i.filename, i.results_directory, self.chrome_range))
-                    
-                if self.varscan_flag:
-                    self.varscan.append(vs.Varscan(i.normal_bam, i.tumor_bam, i.filename, i.results_directory))
-                    
-                if self.sniper_flag == 1:
-                    self.sniper.append(sp.sniper(i.normal_bam, i.tumor_bam, i.filename, i.results_directory))
-                    
-                if self.strelka_flag == 1:
-                    self.strelka2.append(sl.Strelka(i.normal_bam, i.tumor_bam, i.filename, i.results_directory))
+                if self.mutect:
+                    self.variant_caller_workflow.append(self.mutect)
 
-            # Add variant caller objects into variant caller workflow list
+                self.master_workflow.append(self.variant_caller_workflow)
 
-            if self.muse:
-                self.variant_caller_workflow.append(self.muse)
+            # NORMAL MODE
+            elif flag == 1:
+                for i in self.user_samples:
 
-            if self.mutect:
-                self.variant_caller_workflow.append(self.mutect)
+                    if self.muse_flag == 1:
+                        self.muse.append(ms.Muse(i.normal_bam, i.tumor_bam, i.filename, i.results_directory, self.chrome_range))
 
-            if self.varscan:
-                self.variant_caller_workflow.append(self.varscan)
+                    if self.mutect_flag == 1:
+                        self.mutect.append(mt.Mutect2(i.normal_bam, i.tumor_bam, i.filename, i.results_directory, self.chrome_range))
 
-            if self.sniper:
-                self.variant_caller_workflow.append(self.sniper)
+                    if self.varscan_flag:
+                        self.varscan.append(vs.Varscan(i.normal_bam, i.tumor_bam, i.filename, i.results_directory))
 
-            if self.strelka2:
-                self.variant_caller_workflow.append(self.strelka2)
+                    if self.sniper_flag == 1:
+                        self.sniper.append(sp.sniper(i.normal_bam, i.tumor_bam, i.filename, i.results_directory))
 
-            self.master_workflow.append(self.variant_caller_workflow)
+                    if self.strelka_flag == 1:
+                        self.strelka2.append(sl.Strelka(i.normal_bam, i.tumor_bam, i.filename, i.results_directory))
 
-        # Build Variant Annotation Objects
-        for i in range(len(self.variant_annotation_workflow)):
-            for j in range(len(self.variant_caller_workflow[i])):
-                self.variant_annotation_workflow[i].append(an.Annotator(self.variant_caller_workflow[i][j]))
+                # Add variant caller objects into variant caller workflow list
 
-        self.master_workflow.append(self.variant_annotation_workflow)
+                if self.muse:
+                    self.variant_caller_workflow.append(self.muse)
 
-        # Build Conversion Objects
-        for i in range(len(self.maf_conversion_workflow)):
-            for j in range(len(self.variant_annotation_workflow[i])):
-                self.maf_conversion_workflow[i].append(mc.mafConverter(self.variant_annotation_workflow[i][j], self.vep_script_path, self.vep_cache_path))
+                if self.mutect:
+                    self.variant_caller_workflow.append(self.mutect)
 
-        self.master_workflow.append(self.maf_conversion_workflow)
+                if self.varscan:
+                    self.variant_caller_workflow.append(self.varscan)
+
+                if self.sniper:
+                    self.variant_caller_workflow.append(self.sniper)
+
+                if self.strelka2:
+                    self.variant_caller_workflow.append(self.strelka2)
+
+                self.master_workflow.append(self.variant_caller_workflow)
+
+            # Build Variant Annotation Objects
+            for i in range(len(self.variant_annotation_workflow)):
+                for j in range(len(self.variant_caller_workflow[i])):
+                    self.variant_annotation_workflow[i].append(an.Annotator(self.variant_caller_workflow[i][j]))
+
+            self.master_workflow.append(self.variant_annotation_workflow)
+
+            # Build Conversion Objects
+            for i in range(len(self.maf_conversion_workflow)):
+                for j in range(len(self.variant_annotation_workflow[i])):
+                    self.maf_conversion_workflow[i].append(mc.mafConverter(self.variant_annotation_workflow[i][j], self.vep_script_path, self.vep_cache_path))
+
+            self.master_workflow.append(self.maf_conversion_workflow)
+        else:
+            print("ERROR: Config.json file hasn't been constructed correctly. Please see guidelines for further information.")
+            sys.exit(1)
                
     def parallelize_processes(self):
         """

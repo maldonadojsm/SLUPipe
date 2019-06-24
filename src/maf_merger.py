@@ -1,3 +1,14 @@
+# !/usr/bin/env python
+# title           :maf_merger.py
+# description     :Aggregates maf files into a master maf file
+# author          :Juan Maldonado
+# date            :6/13/19
+# version         :0.5
+# usage           :
+# notes           :SEE README.txt for Usages & List of Dependencies
+# python_version  :3.6.5
+# conda_version   :4.6.14
+# ============================
 import pandas as pd
 import glob
 

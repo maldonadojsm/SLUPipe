@@ -3,7 +3,7 @@
 # description     :Configures SLUPipeline Workflow
 # author          :Juan Maldonado
 # date            :6/13/19
-# version         :0.4
+# version         :0.5
 # usage           :SEE slupipe.py
 # notes           :SEE README.txt for Usages & List of Dependencies
 # python_version  :3.6.5
@@ -15,6 +15,23 @@ import pipeline as pl
 import sys
 import shutil
 from subprocess import call
+
+
+# Pending:
+#
+# 1. Automate Bai Generation:
+
+#
+# User Story 1:
+#
+# 1. Reads input directory and then proceeds to check if there is a .bai file for the .bam in question. If there isn't,
+# the program them proceeds to generating the .bai. I think this process should be performed based on which files are
+# were chosen to be processed.
+#
+# User Story 2:
+
+
+
 
 
 class Controller:
@@ -58,8 +75,8 @@ class Controller:
         print("")
         print("SLUPipe: A (S)omatic Ana(L)ysis (U)mbrella (Pipe)line")
         print()
-        print("Version: v0.4")
-        print("         Build Date June 1 2019")
+        print("Version: v0.5")
+        print("         Build Date June 22 2019")
         print("         Build Time 00:43:02")
         print("         Authors: Dr. Tae-Hyuk (Ted) Ahn , Juan Maldonado , Zohair Siddiqui. St. Louis University, 2019.")
         print()
@@ -87,6 +104,7 @@ class Controller:
         :param flag: 0: Process files required for Non-paired mode (Tumor Mode), 1: Process files required for Paired Mode (Normal Mode)
         """
         if flag == 0:
+            self.generate_bai_files()
             directory_listing = os.listdir(self.input_directory)
             for item in directory_listing:
                 if "_T" and '.bam' in item:
@@ -96,10 +114,10 @@ class Controller:
                     tumor_bam = os.path.basename(item)
                     # Store in Sample List
                     self.directory.append(directoryStruct(tumor_bam, filename))
-
             self.confirm_inputs(0)
-        if flag == 1:
 
+        if flag == 1:
+            self.generate_bai_files()
             directory_listing = os.listdir(self.input_directory)
             for item in directory_listing:
                 if "_N" and ".bam" in item:
@@ -107,12 +125,12 @@ class Controller:
                         if "_T" and ".bam" in item2:
                             normal_bam_file = os.path.splitext(os.path.basename(item))[0].replace("_N", "")
                             tumor_bam_file = os.path.splitext(os.path.basename(item2))[0].replace("_T", "")
+
                             # If BAM Normal and Tumor Files have same ID
                             if normal_bam_file == tumor_bam_file:
                                 filename = normal_bam_file
                                 # Store in Sample List
                                 self.directory.append(directoryStruct(os.path.basename(item2), filename, os.path.basename(item)))
-
             self.confirm_inputs(1)
 
     def confirm_inputs(self, flag):
@@ -155,13 +173,14 @@ class Controller:
 
         # Confirming NORMAL MODE inputs
         if flag == 1:
-            dash = '-'*80
+            dash = '-' * 80
             print("NORMAL MODE: DIRECTORY SUMMARY (X to Exit):")
             print(dash)
             print("{:<10s}{:>10s}{:>20s}{:>20s}".format('NO.', 'ID', 'NORMAL', 'TUMOR'))
             print(dash)
             for i in range(len(self.directory)):
-                print("{:<10s}{:>10s}{:>22s}{:>21s}".format(str(i+1), self.directory[i].filename, self.directory[i].normal_bam, self.directory[i].tumor_bam))
+                print("{:<10s}{:>10s}{:>22s}{:>21s}".format(str(i + 1), self.directory[i].filename,
+                                                            self.directory[i].normal_bam, self.directory[i].tumor_bam))
             print()
             confirmation = input("IS THIS CORRECT (Y/N): ")
             # START PIPELINE
@@ -209,26 +228,18 @@ class Controller:
         self.directory.clear()
 
     # Generate .bai for every .bam file found in directory
-    def generate_bai_files(self, flag):
+    def generate_bai_files(self):
         """
-        Automates creation of  .bai files from user provided .bam files
-        :param flag: 0: Gen .bai files for Non-paired Mode, 1: Gen .bai for Paired Mode
+        Automate creation of .bai needed to process variant calling workflow
         """
-        if flag == 0:
+        directory_listing = os.listdir(self.input_directory)
+        for item in directory_listing:
+            if ".bam" in item:
+                bam_file = os.path.abspath("input/" + item)
+                bai_file = bam_file.replace(".bam", ".bai")
+                call(["samtools", "index", bam_file, bai_file])
 
-            directory_listing = os.listdir(self.input_directory)
-            for item in directory_listing:
-                if ".bam" in item:
-                    bam_file = os.path.abspath(item)
-                    bai_file = bam_file.replace(".bam", ".bai")
-                    call(["samtools", "index", item, bai_file])
-        if flag == 1:
-            directory_listing = os.listdir(self.input_directory)
-            for item in directory_listing:
-                if ".bam" in item:
-                    bam_file = os.path.abspath(item)
-                    bai_file = bam_file.replace(".bam", ".bai")
-                    call(["samtools", "index", item, bai_file])
+
 
 class directoryStruct:
     def __init__(self, tumor_bam, filename, normal_bam = None):

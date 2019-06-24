@@ -80,10 +80,10 @@ class Mutect2:
         Update Output file paths needed to process Annotation Worflow
         """
         if self.normal_bam is None:
-            self.mutect_dict["tumor_bam"][1] = "./input/tumor_mode/" + self.tumor_bam
+            self.mutect_dict["tumor_bam"][1] = "./input/" + self.tumor_bam
         else:
-            self.mutect_dict["tumor_bam"][1] = "./input/normal_mode/" + self.tumor_bam
-            self.mutect_dict["normal_bam"][1] = "./input/normal_mode/" + self.normal_bam
+            self.mutect_dict["tumor_bam"][1] = "./input/" + self.tumor_bam
+            self.mutect_dict["normal_bam"][1] = "./input/" + self.normal_bam
         self.mutect_dict["output"][1] = "./output/" + self.filename + "/vcf/mutect2_output/" + self.filename + ".vcf"
         self.variant_caller_output += self.mutect_dict["output"][1]
 

@@ -112,8 +112,8 @@ class Varscan:
         """
 
         # samtools User Specific Arguments
-        self.samtools_dict["bamFiles"][1] = "./input/normal_mode/" + self.normal_bam
-        self.samtools_dict["bamFiles"][2] = "./input/normal_mode/" + self.tumor_bam
+        self.samtools_dict["bamFiles"][1] = "./input/" + self.normal_bam
+        self.samtools_dict["bamFiles"][2] = "./input/" + self.tumor_bam
         self.samtools_dict["output"][1] = "./output/" + self.filename + "/vcf/varscan_output/" + self.filename + ".pileup"
 
         # varscan User Specific Arguments

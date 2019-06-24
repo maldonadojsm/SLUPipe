@@ -89,7 +89,7 @@ class Strelka:
          """
 
         # Strelka Call User Specific Arguments
-        self.strelka_config_dict["tumor_bam"][1] = "./input/normal_mode/" + self.tumor_bam
-        self.strelka_config_dict["normal_bam"][1] = "./input/normal_mode/" + self.normal_bam
+        self.strelka_config_dict["tumor_bam"][1] = "./input/" + self.tumor_bam
+        self.strelka_config_dict["normal_bam"][1] = "./input/" + self.normal_bam
         self.strelka_config_dict["run_directory"][1] = self.run_directory
         self.strelka_run_dict["run_directory"][1] = self.run_directory+"/runWorkflow.py"

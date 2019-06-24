@@ -76,8 +76,8 @@ class Sniper:
         Update Dictionaries with relevant input needed to process workflow
         Update Output file paths needed to process Annotation Worflow
         """
-        self.sniper_dict["tumor_bam"][0] = "./input/normal_mode/" + self.tumor_bam
-        self.sniper_dict["normal_bam"][0] = "./input/normal_mode/" + self.normal_bam
+        self.sniper_dict["tumor_bam"][0] = "./input/" + self.tumor_bam
+        self.sniper_dict["normal_bam"][0] = "./input/" + self.normal_bam
         self.sniper_dict["output"][0] = "./output/" + self.filename + "/vcf/somatic_sniper_output/" + self.filename + ".vcf"
         self.variant_caller_output += self.sniper_dict["output"][0]
 

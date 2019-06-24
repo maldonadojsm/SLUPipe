@@ -86,7 +86,7 @@ class Pindel:
         self.configuration_file = "./output/" + self.filename + "/vcf/pindel_output/" + self.filename + "_config.txt"
         # Forums say it varies from 300-400..
         insert_size = 350
-        parameters = "./input/tumor_mode/"+self.tumor_bam + " " + str(insert_size) + " " + self.filename
+        parameters = "./input/"+self.tumor_bam + " " + str(insert_size) + " " + self.filename
 
         file = open(self.configuration_file, "w+")
         file.write(parameters)

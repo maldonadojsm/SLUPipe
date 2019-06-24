@@ -83,8 +83,8 @@ class Muse:
         Update Output file paths needed to process Annotation Worflow
         """
         # MuSE Call User Specific Arguments
-        self.muse_call_dict["tumor_bam"][0] = "./input/normal_mode/" + self.tumor_bam
-        self.muse_call_dict["normal_bam"][0] = "./input/normal_mode/" + self.normal_bam
+        self.muse_call_dict["tumor_bam"][0] = "./input/" + self.tumor_bam
+        self.muse_call_dict["normal_bam"][0] = "./input/" + self.normal_bam
         self.muse_call_dict["output"][1] = "./output/" + self.filename + "/vcf/muse_output/" + self.filename
 
         # MuSE Sump User Specific Arguments

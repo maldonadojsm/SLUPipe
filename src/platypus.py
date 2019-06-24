@@ -60,7 +60,7 @@ class Platypus:
         Update Dictionaries with relevant input needed to process workflow
         Update Output file paths needed to process Annotation Worflow
         """
-        self.platypusDict["tumor_bam"][0] += "./input/tumor_mode/" + self.tumor_bam
+        self.platypusDict["tumor_bam"][0] += "./input/" + self.tumor_bam
         self.platypusDict["output"][0] += "./output/" + self.filename + "/vcf/platypus_output/" + self.filename + ".vcf"
         self.variant_caller_output = "./output/" + self.filename + "/vcf/platypus_output/" + self.filename + ".vcf"
 

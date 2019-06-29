@@ -34,10 +34,7 @@ class Pipeline:
         self.vep_script_path = vep_script_path
         self.vep_cache_path = vep_cache_path
         self.chrome_range = chromosome_range
-        if pipeline_mode == "-T":
-            self.pipeline_mode = 0
-        if pipeline_mode == "-N":
-            self.pipeline_mode = 1
+        self.pipeline_mode = pipeline_mode
         self.pindel_flag = 0
         self.platypus_flag = 0
         self.mutect_flag = 0
@@ -67,6 +64,15 @@ class Pipeline:
         self.pindel = []
         # Platypus
         self.platypus = []
+
+    def set_pipeline_mode(self):
+
+        if "-T" in self.pipeline_mode:
+            return 0
+        elif "-N" in self.pipeline_mode:
+            return 1
+        else:
+            return 2
 
     def set_variant_caller_flags(self, variant_callers):
         """
@@ -100,7 +106,7 @@ class Pipeline:
         Builds & Executes SLUPipe Workflow
         :return: 0 = Process Complete
         """
-        self.build_workflow(self.pipeline_mode)
+        self.build_workflow(self.set_pipeline_mode())
         self.parallelize_processes()
         for i in self.parallel_workflow:
             i.run_in_parallel()
@@ -114,7 +120,7 @@ class Pipeline:
             Variant Caller Disabled)
             :param flag: 0: Non-paired mode workflow / 1: Paired mode workflow
             """
-        if self.num_variants >= 1 and (self.pipeline_mode == 1 or self.pipeline_mode == 0):
+        if self.num_variants >= 1 and (self.set_pipeline_mode() == 1 or self.set_pipeline_mode() == 0):
             # TUMOR MODE
             if flag == 0:
 
@@ -123,13 +129,16 @@ class Pipeline:
                 for j in self.user_samples:
 
                     if self.pindel_flag == 1:
-                        self.pindel.append(pd.Pindel(j.tumor_bam, j.filename, j.results_directory, self.chrome_range))
+                        self.pindel.append(pd.Pindel(j.tumor_bam, j.filename, j.results_directory,
+                                                     j.input_directory, j.reference_directory, self.chrome_range))
 
                     if self.platypus_flag == 1:
-                        self.platypus.append(py.Platypus(j.tumor_bam, j.filename, j.results_directory))
+                        self.platypus.append(py.Platypus(j.tumor_bam, j.filename, j.results_directory,
+                                                         j.input_directory, j.reference_directory))
 
                     if self.mutect_flag == 1:
-                        self.mutect.append(mt.Mutect2(None, j.tumor_bam, j.filename, j.results_directory, self.chrome_range))
+                        self.mutect.append(mt.Mutect2(None, j.tumor_bam, j.filename, j.results_directory,
+                                                      j.input_directory, j.reference_directory, self.chrome_range))
 
                 # Add variant caller objects into variant caller workflow list
 
@@ -149,19 +158,24 @@ class Pipeline:
                 for i in self.user_samples:
 
                     if self.muse_flag == 1:
-                        self.muse.append(ms.Muse(i.normal_bam, i.tumor_bam, i.filename, i.results_directory, self.chrome_range))
+                        self.muse.append(ms.Muse(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,
+                                                 i.input_directory, i.reference_directory, self.chrome_range))
 
                     if self.mutect_flag == 1:
-                        self.mutect.append(mt.Mutect2(i.normal_bam, i.tumor_bam, i.filename, i.results_directory, self.chrome_range))
+                        self.mutect.append(mt.Mutect2(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,
+                                                      i.input_directory, i.reference_directory, self.chrome_range))
 
                     if self.varscan_flag:
-                        self.varscan.append(vs.Varscan(i.normal_bam, i.tumor_bam, i.filename, i.results_directory))
+                        self.varscan.append(vs.Varscan(i.normal_bam, i.tumor_bam, i.filename,
+                                                       i.results_directory, i.input_directory, i.reference_directory))
 
                     if self.sniper_flag == 1:
-                        self.sniper.append(sp.sniper(i.normal_bam, i.tumor_bam, i.filename, i.results_directory))
+                        self.sniper.append(sp.Sniper(i.normal_bam, i.tumor_bam, i.filename,
+                                                     i.results_directory, i.input_directory, i.reference_directory))
 
                     if self.strelka_flag == 1:
-                        self.strelka2.append(sl.Strelka(i.normal_bam, i.tumor_bam, i.filename, i.results_directory))
+                        self.strelka2.append(sl.Strelka(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,
+                                                        i.input_directory, i.reference_directory))
 
                 # Add variant caller objects into variant caller workflow list
 

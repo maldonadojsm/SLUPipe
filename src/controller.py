@@ -51,6 +51,7 @@ class Controller:
             self.chromosome_range = config_dict[0]['Chromosome_Range']
             self.vep_script = config_dict[0]['vep_ScriptPath']
             self.vep_cache = config_dict[0]['vep_CachePath']
+            self.reference_directory = config_dict[0]["reference_directory"]
 
     def configure_pipeline(self):
         """
@@ -61,6 +62,10 @@ class Controller:
 
         elif self.pipeline_mode == "-N":
             self.read_directory(1)
+
+        else:
+            print("ERROR: Config.json file has been constructed incorrectly. Please see guidelines for further information.")
+            sys.exit(1)
 
     def show_summary(self):
         """
@@ -104,6 +109,7 @@ class Controller:
         :param flag: 0: Process files required for Non-paired mode (Tumor Mode), 1: Process files required for Paired Mode (Normal Mode)
         """
         if flag == 0:
+            print("Generating missing .bai files...")
             self.generate_bai_files()
             directory_listing = os.listdir(self.input_directory)
             for item in directory_listing:
@@ -117,6 +123,7 @@ class Controller:
             self.confirm_inputs(0)
 
         if flag == 1:
+            print("Generating missing .bai files...")
             self.generate_bai_files()
             directory_listing = os.listdir(self.input_directory)
             for item in directory_listing:
@@ -154,7 +161,8 @@ class Controller:
                 file_num = input("SELECT FILE NUMBERS TO PROCESS (Separate File Numbers By Space): ")
                 args = file_num.split()
                 for i in args:
-                    self.samplesToProcess.append(sampleStruct(self.directory[int(i) - 1].tumor_bam, self.directory[int(i) - 1].filename))
+                    self.samplesToProcess.append(sampleStruct(self.directory[int(i) - 1].tumor_bam,
+                                                              self.directory[int(i) - 1].filename, self.input_directory, self.reference_directory))
 
                 # Generate Output Directories
                 for j in self.samplesToProcess:
@@ -188,7 +196,8 @@ class Controller:
                 file_num = input("SELECT FILE NUMBERS TO PROCESS (Separate File Numbers By Space): ")
                 args = file_num.split()
                 for i in args:
-                    self.samplesToProcess.append(sampleStruct(self.directory[int(i) - 1].tumor_bam, self.directory[int(i) - 1].filename, self.directory[int(i) - 1].normal_bam))
+                    self.samplesToProcess.append(sampleStruct(self.directory[int(i) - 1].tumor_bam, self.directory[int(i) - 1].filename,
+                                                              self.input_directory, self.reference_directory, self.directory[int(i) - 1].normal_bam))
 
                 # Generate Output Directories
                 for j in self.samplesToProcess:
@@ -240,16 +249,14 @@ class Controller:
                 call(["samtools", "index", bam_file, bai_file])
 
 
-
 class directoryStruct:
     def __init__(self, tumor_bam, filename, normal_bam = None):
         self.normal_bam = normal_bam
         self.tumor_bam = tumor_bam
         self.filename = filename
 
-# Structure To Store Sample Information
 class sampleStruct:
-    def __init__(self, tumor_bam, filename, normal_bam=None):
+    def __init__(self, tumor_bam, filename, input_dir, reference_dir, normal_bam=None):
         """
         Python structure that stores all relevant files for sample X analysis
         :param tumor_bam: BAM file necessary for Paired and Non-Paired Mode
@@ -260,6 +267,8 @@ class sampleStruct:
         self.tumor_bam = tumor_bam
         self.filename = filename
         self.results_directory = ""
+        self.input_directory = input_dir + "/"
+        self.reference_directory = reference_dir + "/"
 
     def gen_sample_output_directory(self):
         """

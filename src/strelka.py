@@ -2,8 +2,8 @@
 # title           :strelka.py
 # description     :Strelka 2 variant caller framework
 # author          :Juan Maldonado
-# date            :6/13/19
-# version         :0.5
+# date            :6/28/19
+# version         :0.1
 # usage           :
 # notes           :SEE README.txt for Usages & List of Dependencies
 # python_version  :3.6.5
@@ -16,18 +16,22 @@ import os
 
 
 class Strelka:
-    def __init__(self, normal_bam, tumor_bam, filename, result_directory):
+    def __init__(self, normal_bam, tumor_bam, filename, result_directory, input_directory, reference_directory):
         """
         Class Constructor
         :param normal_bam: normal BAM file
-        :param tumor_bam: tumor BAM file   
-        :param filename:  Sample ID
+        :param tumor_bam: tumor BAM file
+        :param filename: Sample ID
         :param result_directory: Output file path
+        :param input_directory: BAM files input directory
+        :param reference_directory: Fasta files input directory
         """
         self.normal_bam = normal_bam
         self.tumor_bam = tumor_bam
         self.filename = filename
-        self.result_directory = result_directory
+        self.result_directory = result_directory + "vcf/strelka2_output/"
+        self.input_directory = input_directory
+        self.reference_directory = reference_directory
         
         self.strelka_config_dict = {
             "Exe": ["python", "./configureStrelkaSomaticWorkflow.py"],
@@ -48,10 +52,10 @@ class Strelka:
         self.strelka_config = []
         self.strelka_run = []
 
-        self.run_directory = "./output/" + self.filename + "/vcf/strelka2_output"
+        self.run_directory = self.result_directory
         # List type signifies to annotator.py to expect 2 VCFs, 1 snvs and 1 indels VCF file
-        self.variant_caller_output = "./output/" + self.filename + "/vcf/strelka2_output/results/variants/somatic.indels.vcf"
-        self.variant_caller_snv_output = "./output/" + self.filename + "/vcf/strelka2_output/results/variants/somatic.snvs.vcf"
+        self.variant_caller_output = self.result_directory + "results/variants/somatic.indels.vcf"
+        self.variant_caller_snv_output = self.result_directory + "results/variants/somatic.snvs.vcf"
         self.variant_caller_id = "strelka2"
         self.generate_dir()
         self.bind_inputs()
@@ -72,7 +76,8 @@ class Strelka:
         call(self.strelka_config, stdout=DEVNULL, stderr=DEVNULL)
 
         call(self.strelka_run, stdout=DEVNULL, stderr=DEVNULL)
-        call(["gunzip", self.run_directory+"/results/variants/somatic.snvs.vcf.gz", self.run_directory + "/results/variants/somatic.indels.vcf.gz"])
+        call(["gunzip", self.run_directory + "/results/variants/somatic.snvs.vcf.gz",
+              self.run_directory + "/results/variants/somatic.indels.vcf.gz"])
 
         print("Strelka 2: Calling Variants Complete -> " + self.filename)
 
@@ -80,16 +85,17 @@ class Strelka:
         """
         Generates Output Subdirectory to store VCF results
         """
-        os.mkdir(self.result_directory + "vcf/strelka2_output/")
+        os.mkdir(self.result_directory)
 
     def bind_inputs(self):
         """
          Update Dictionaries with relevant input needed to process workflow
-         Update Output file paths needed to process Annotation Worflow
+         Update Output file paths needed to process Annotation Workflow
          """
 
         # Strelka Call User Specific Arguments
-        self.strelka_config_dict["tumor_bam"][1] = "./input/" + self.tumor_bam
-        self.strelka_config_dict["normal_bam"][1] = "./input/" + self.normal_bam
+        self.strelka_config_dict["tumor_bam"][1] = self.input_directory + self.tumor_bam
+        self.strelka_config_dict["normal_bam"][1] = self.input_directory + self.normal_bam
         self.strelka_config_dict["run_directory"][1] = self.run_directory
-        self.strelka_run_dict["run_directory"][1] = self.run_directory+"/runWorkflow.py"
+        self.strelka_run_dict["run_directory"][1] = self.run_directory + "/runWorkflow.py"
+        self.strelka_config_dict["reference"][1] = self.reference_directory + "Homo_sapiens_assembly38.fasta"

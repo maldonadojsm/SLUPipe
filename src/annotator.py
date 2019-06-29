@@ -3,7 +3,7 @@
 # description     :Annotates variants using Ensemble VEP
 # author          :Juan Maldonado
 # date            :6/13/19
-# version         :0.5
+# version         :0.1
 # usage           :
 # notes           :SEE README.txt for Usages & List of Dependencies
 # python_version  :3.6.5

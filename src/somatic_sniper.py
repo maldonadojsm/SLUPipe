@@ -2,11 +2,11 @@
 # title           :somatic_sniper.py
 # description     :Somatic Sniper variant caller framework
 # author          :Juan Maldonado
-# date            :6/13/19
-# version         :0.5
+# date            :6/28/19
+# version         :0.1
 # usage           :
 # notes           :SEE README.txt for Usages & List of Dependencies
-# python_version  :3.6.5
+# python_version  :3.5.3
 # conda_version   :4.6.14
 # =================================================================================================================
 
@@ -15,18 +15,22 @@ import os
 
 
 class Sniper:
-    def __init__(self, normal_bam, tumor_bam, filename, result_directory):
+    def __init__(self, normal_bam, tumor_bam, filename, result_directory, input_directory, reference_directory):
         """
-          Class Constructor
-          :param tumor_bam: tumor BAM file
-          :param normal_bam: normal BAM file
-          :param filename: Sample ID
-          :param result_directory: Output file path
-          """
+        Class Constructor
+        :param normal_bam: normal BAM file
+        :param tumor_bam: tumor BAM file
+        :param filename: Sample ID
+        :param result_directory: Output file path
+        :param input_directory: BAM files input directory
+        :param reference_directory: Fasta files input directory
+        """
         self.normal_bam = normal_bam
         self.tumor_bam = tumor_bam
         self.filename = filename
-        self.result_directory = result_directory
+        self.result_directory = result_directory + "vcf/somatic_sniper_output/"
+        self.input_directory = input_directory
+        self.reference_directory = reference_directory
 
         self.sniper_dict = {
             "Exe": ["bam-somaticsniper"],
@@ -69,16 +73,21 @@ class Sniper:
         """
         Generates Output Subdirectory to store VCF results
         """
-        os.mkdir(self.result_directory + "vcf/somatic_sniper_output/")
+        os.mkdir(self.result_directory)
 
     def bind_inputs(self):
         """
         Update Dictionaries with relevant input needed to process workflow
-        Update Output file paths needed to process Annotation Worflow
+        Update Output file paths needed to process Annotation Workflow
+        Updates Input & Reference File paths
         """
-        self.sniper_dict["tumor_bam"][0] = "./input/" + self.tumor_bam
-        self.sniper_dict["normal_bam"][0] = "./input/" + self.normal_bam
-        self.sniper_dict["output"][0] = "./output/" + self.filename + "/vcf/somatic_sniper_output/" + self.filename + ".vcf"
+        self.sniper_dict["tumor_bam"][0] = self.input_directory+ self.tumor_bam
+        self.sniper_dict["normal_bam"][0] = self.input_directory + self.normal_bam
+        self.sniper_dict["output"][0] = self.result_directory + self.filename + ".vcf"
         self.variant_caller_output += self.sniper_dict["output"][0]
+
+        # Update Reference file path
+
+        self.sniper_dict["reference"][1] = self.reference_directory + "Homo_sapiens_assembly38.fasta"
 
 

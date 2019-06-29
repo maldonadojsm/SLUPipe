@@ -2,11 +2,11 @@
 # title           :platypus.py
 # description     :Platypus Variant Caller Framework
 # author          :Juan Maldonado
-# date            :6/13/19
+# date            :6/28/19
 # version         :0.5
 # usage           :
 # notes           :SEE README.txt for Usages & List of Dependencies
-# python_version  :3.6.5
+# python_version  :3.5.3
 # conda_version   :4.6.14
 # =================================================================================================================
 
@@ -15,20 +15,24 @@ import os
 
 
 class Platypus:
-    def __init__(self, tumor_bam, filename, result_directory):
+    def __init__(self, tumor_bam, filename, result_directory, input_directory, reference_directory):
         """
-          Class Constructor
-          :param tumor_bam: tumor BAM file
-          :param filename: Sample ID
-          :param result_directory: Output file path
-          """
+         Class Constructor
+         :param tumor_bam: tumor BAM file
+         :param filename: Sample ID
+         :param result_directory: Output file path
+         :param input_directory: BAM files input directory
+         :param reference_directory: Fasta files input directory
+         """
         self.tumor_bam = tumor_bam
         self.filename = filename
-        self.result_directory = result_directory
+        self.result_directory = result_directory + "vcf/platypus_output/"
+        self.input_directory = input_directory
+        self.reference_directory = reference_directory
         self.platypusDict = {
             "Exe": ["platypus", "callVariants"],
             "tumor_bam": ["--bamFiles="],
-            "reference": ["--refFile=../src/referenceFiles/Homo_sapiens_assembly38.fasta"],
+            "reference": ["--refFile="],
             "output": ["--output="]
         }
         self.platypus = []
@@ -43,7 +47,7 @@ class Platypus:
         """
         Execute Variant Caller Workflow
         """
-        os.mkdir(self.result_directory + "vcf/platypus_output/")
+        os.mkdir(self.result_directory)
 
     def run_variant_caller(self):
 
@@ -58,9 +62,11 @@ class Platypus:
     def bind_inputs(self):
         """
         Update Dictionaries with relevant input needed to process workflow
-        Update Output file paths needed to process Annotation Worflow
+        Update Output file paths needed to process Annotation Workflow
         """
-        self.platypusDict["tumor_bam"][0] += "./input/" + self.tumor_bam
-        self.platypusDict["output"][0] += "./output/" + self.filename + "/vcf/platypus_output/" + self.filename + ".vcf"
-        self.variant_caller_output = "./output/" + self.filename + "/vcf/platypus_output/" + self.filename + ".vcf"
+        self.platypusDict["tumor_bam"][0] += self.input_directory + self.tumor_bam
+        self.platypusDict["output"][0] += self.result_directory + self.filename + ".vcf"
+        self.variant_caller_output = self.result_directory + self.filename + ".vcf"
+
+        self.platypusDict["reference"][0] = self.reference_directory
 

@@ -2,11 +2,11 @@
 # title           :muse.py
 # description     :MuSE Variant Caller Framework
 # author          :Juan Maldonado
-# date            :6/13/19
-# version         :0.5
+# date            :6/28/19
+# version         :0.1
 # usage           :
 # notes           :SEE README.txt for Usages & List of Dependencies
-# python_version  :3.6.5
+# python_version  :3.5.3
 # conda_version   :4.6.14
 # =================================================================================================================
 
@@ -15,7 +15,8 @@ from subprocess import call, DEVNULL
 
 
 class Muse:
-    def __init__(self, normal_bam, tumor_bam, filename, result_directory, chromosome_range):
+    def __init__(self, normal_bam, tumor_bam, filename, result_directory, input_directory,
+                 reference_directory, chromosome_range):
         """
         Class Constructor
         :param normal_bam: normal BAM file
@@ -23,13 +24,16 @@ class Muse:
         :param filename: Sample ID
         :param result_directory: Output file path
         :param chromosome_range: Chromosome Range indicated for analysis
+        :param input_directory: BAM files input directory
+        :param reference_directory: Fasta files input directory
         """
         self.normal_bam = normal_bam
         self.tumor_bam = tumor_bam
         self.filename = filename
-        self.result_directory = result_directory
+        self.result_directory = result_directory + "vcf/muse_output/"
         self.chromosome_range = chromosome_range
-
+        self.input_directory = input_directory
+        self.reference_directory = reference_directory
         self.muse_call_dict = {
             "Exe": ["MuSE", "call"],
             "reference": ["-f", "./referenceFiles/Homo_sapiens_assembly38.fasta"],
@@ -74,23 +78,32 @@ class Muse:
         """
         Generates Output Subdirectory to store VCF results
         """
-        os.mkdir(self.result_directory + "vcf/muse_output/")
-
+        os.mkdir(self.result_directory)
 
     def bind_inputs(self):
         """
         Update Dictionaries with relevant input needed to process workflow
-        Update Output file paths needed to process Annotation Worflow
+        Update Output file paths needed to process Annotation Workflow
+        Updates Input & Reference File paths
         """
         # MuSE Call User Specific Arguments
-        self.muse_call_dict["tumor_bam"][0] = "./input/" + self.tumor_bam
-        self.muse_call_dict["normal_bam"][0] = "./input/" + self.normal_bam
-        self.muse_call_dict["output"][1] = "./output/" + self.filename + "/vcf/muse_output/" + self.filename
+
+        # ./src/input/ + tumor/normal.bam
+        self.muse_call_dict["tumor_bam"][0] = self.input_directory + self.tumor_bam
+        self.muse_call_dict["normal_bam"][0] = self.input_directory + self.normal_bam
+        # ./output/demo1/vcf/muse_output/ + demo1
+        self.muse_call_dict["output"][1] = self.result_directory + self.filename
 
         # MuSE Sump User Specific Arguments
         self.muse_sump_dict["input"][1] = self.muse_call_dict["output"][1] + ".MuSE" + ".txt"
-        self.muse_sump_dict["output"][1] = "./output/" + self.filename + "/vcf/muse_output/" + self.filename + ".vcf"
+        self.muse_sump_dict["output"][1] = self.result_directory + self.filename + ".vcf"
         self.variant_caller_output += self.muse_sump_dict["output"][1]
+
+        # Bind Reference file path
+
+        # ./src/referenceFiles/ + .fasta file
+        self.muse_call_dict["reference"][1] = self.reference_directory + "Homo_sapiens_assembly38.fasta"
+        self.muse_sump_dict["DBSNP"][1] = self.reference_directory + "dbSNP142_GRCh38_subset50k.vcf.gz"
 
         # Bind Chrome Range
 

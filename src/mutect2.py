@@ -2,11 +2,11 @@
 # title           :mutect2.py
 # description     :Mutect 2 Variant Caller Framework
 # author          :Juan Maldonado
-# date            :6/13/19
-# version         :0.5
+# date            :6/28/19
+# version         :0.1
 # usage           :
 # notes           :SEE README.txt for Usages & List of Dependencies
-# python_version  :3.6.5
+# python_version  :3.5.3
 # conda_version   :4.6.14
 # =================================================================================================================
 
@@ -16,7 +16,8 @@ import os
 
 
 class Mutect2:
-    def __init__(self, normal_bam, tumor_bam, filename, result_directory, chromosome_range):
+    def __init__(self, normal_bam, tumor_bam, filename, result_directory, input_directory,
+                 reference_directory, chromosome_range):
         """
         Class Constructor
         :param normal_bam: normal BAM file
@@ -24,12 +25,17 @@ class Mutect2:
         :param filename: Sample ID
         :param result_directory: Output file path
         :param chromosome_range: Chromosome Range indicated for analysis
+        :param input_directory: BAM files input directory
+        :param reference_directory: Fasta files input directory
         """
         self.normal_bam = normal_bam
         self.tumor_bam = tumor_bam
         self.filename = filename
-        self.result_directory = result_directory
+        self.result_directory = result_directory + "vcf/mutect2_output/"
         self.chrome_range = chromosome_range
+        self.input_directory = input_directory
+        self.reference_directory = reference_directory
+
         self.mutect_dict = {
             "Exe": ["java", "-jar", "GenomeAnalysisTK.jar", "-T", "MuTect2"],
             "reference": ["-R", "./referenceFiles/Homo_sapiens_assembly38.fasta"],
@@ -72,20 +78,27 @@ class Mutect2:
         """
         Generates Output Subdirectory to store VCF results
         """
-        os.mkdir(self.result_directory + "vcf/mutect2_output/")
+        os.mkdir(self.result_directory)
 
     def bind_inputs(self):
         """
         Update Dictionaries with relevant input needed to process workflow
-        Update Output file paths needed to process Annotation Worflow
+        Update Output file paths needed to process Annotation Workflow
+        Updates Input & Reference File paths
         """
         if self.normal_bam is None:
-            self.mutect_dict["tumor_bam"][1] = "./input/" + self.tumor_bam
+            self.mutect_dict["tumor_bam"][1] = self.input_directory + self.tumor_bam
         else:
-            self.mutect_dict["tumor_bam"][1] = "./input/" + self.tumor_bam
-            self.mutect_dict["normal_bam"][1] = "./input/" + self.normal_bam
-        self.mutect_dict["output"][1] = "./output/" + self.filename + "/vcf/mutect2_output/" + self.filename + ".vcf"
+            self.mutect_dict["tumor_bam"][1] = self.input_directory + self.tumor_bam
+            self.mutect_dict["normal_bam"][1] = self.input_directory + self.normal_bam
+            self.mutect_dict["normalPanel"][1] = self.reference_directory + "1kg_40_m2pon_sitesonly_subset50k.vcf"
+            self.mutect_dict["DBSNP"][1] = self.reference_directory + "dbSNP142_GRCh38_subset50k.vcf"
+        self.mutect_dict["output"][1] = self.result_directory + self.filename + ".vcf"
         self.variant_caller_output += self.mutect_dict["output"][1]
+
+        # Bind Reference & DBSNP Files
+
+        self.mutect_dict["reference"][1] = self.reference_directory + "Homo_sapiens_assembly38.fasta"
 
         # Bind Chromosome Range
 

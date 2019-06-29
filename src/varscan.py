@@ -2,11 +2,11 @@
 # title           :varscan.py
 # description     :Varscan variant caller framework
 # author          :Juan Maldonado
-# date            :6/13/19
-# version         :0.5
+# date            :6/28/19
+# version         :0.1
 # usage           :
 # notes           :SEE README.txt for Usages & List of Dependencies
-# python_version  :3.6.5
+# python_version  :3.5.3
 # conda_version   :4.6.14
 # =================================================================================================================
 
@@ -15,11 +15,13 @@ import os
 
 
 class Varscan:
-    def __init__(self, normal_bam, tumor_bam, filename, result_directory):
+    def __init__(self, normal_bam, tumor_bam, filename, result_directory, input_directory, reference_directory):
         self.normal_bam = normal_bam
         self.tumor_bam = tumor_bam
         self.filename = filename
-        self.result_directory = result_directory
+        self.result_directory = result_directory + "vcf/varscan_output/"
+        self.input_directory = input_directory
+        self.reference_directory = reference_directory
         self.samtools_dict = {
             "mpileup": ["samtools", "mpileup"],
             "reference": ["-f", "./referenceFiles/Homo_sapiens_assembly38.fasta"],
@@ -89,11 +91,11 @@ class Varscan:
         call(self.varscan, stdout=DEVNULL, stderr=DEVNULL)
         # Process Indels
 
-        call(self.process_indel,  stdout=DEVNULL, stderr=DEVNULL)
+        call(self.process_indel, stdout=DEVNULL, stderr=DEVNULL)
 
         # Process SNV
 
-        self.process_dict["output"][0] = "./output/" + self.filename + "/vcf/varscan_output/" + self.filename + ".snv.vcf"
+        self.process_dict["output"][0] = self.result_directory + self.filename + ".snv.vcf"
         self.variant_caller_snv_output += self.process_dict["output"][0]
 
         print("Varscan: Calling Variants Complete -> " + self.filename)
@@ -102,25 +104,29 @@ class Varscan:
         """
         Generates Output Subdirectory to store VCF results
         """
-        os.mkdir(self.result_directory + "vcf/varscan_output/")
+        os.mkdir(self.result_directory)
 
     def bind_inputs(self):
 
         """
         Update Dictionaries with relevant input needed to process workflow
         Update Output file paths needed to process Annotation Worflow
+        Updates Input & Reference File paths
         """
 
         # samtools User Specific Arguments
-        self.samtools_dict["bamFiles"][1] = "./input/" + self.normal_bam
-        self.samtools_dict["bamFiles"][2] = "./input/" + self.tumor_bam
-        self.samtools_dict["output"][1] = "./output/" + self.filename + "/vcf/varscan_output/" + self.filename + ".pileup"
+        self.samtools_dict["bamFiles"][1] = self.input_directory + self.normal_bam
+        self.samtools_dict["bamFiles"][2] = self.input_directory + self.tumor_bam
+        self.samtools_dict["output"][1] = self.result_directory + self.filename + ".pileup"
 
         # varscan User Specific Arguments
         self.varscan_somatic_dict["input|output"][0] = self.samtools_dict["output"][1]
-        self.varscan_somatic_dict["input|output"][1] = "./output/" + self.filename + "/vcf/varscan_output/" + self.filename
+        self.varscan_somatic_dict["input|output"][1] = self.result_directory + self.filename
         # processIndel
-        self.process_dict["output"][0] = "./output/" + self.filename + "/vcf/varscan_output/" + self.filename + ".indel.vcf"
+        self.process_dict["output"][0] = self.result_directory + self.filename + ".indel.vcf"
         self.variant_caller_output += self.process_dict["output"][0]
+
+        self.samtools_dict["reference"][1] = self.reference_directory + "Homo_sapiens_assembly38.fasta"
+
 
 

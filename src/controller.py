@@ -52,6 +52,7 @@ class Controller:
             self.vep_script = config_dict[0]['vep_ScriptPath']
             self.vep_cache = config_dict[0]['vep_CachePath']
             self.reference_directory = config_dict[0]["reference_directory"]
+            self.output_directory = config_dict[0]["Output_Directory"]
 
     def configure_pipeline(self):
         """
@@ -80,28 +81,30 @@ class Controller:
         print("")
         print("SLUPipe: A (S)omatic Ana(L)ysis (U)mbrella (Pipe)line")
         print()
-        print("Version: v0.5")
-        print("         Build Date June 22 2019")
+        print("Version: v0.1")
+        print("         Build Date June 28 2019")
         print("         Build Time 00:43:02")
         print("         Authors: Dr. Tae-Hyuk (Ted) Ahn , Juan Maldonado , Zohair Siddiqui. St. Louis University, 2019.")
         print()
         print("Usage:   slupipe.py <config.json> -> Execute Pipeline Workflow")
         print("         slupipe.py --update -> Check for most recent software release")
         print()
-        print("Config File Structure:  Pipeline Mode     -T for Non-paired Mode / -N for Paired Mode")
+        print("Config File Structure:  Pipeline Mode       -T for Non-paired Mode / -N for Paired Mode")
         print()
-        print("                        Variant Callers   Specify List of Variant Callers for pipeline workflow")
-        print("                                          in accordance pipeline mode")
+        print("                        Variant Callers     Specify List of Variant Callers for pipeline workflow")
+        print("                                            in accordance pipeline mode")
         print()
-        print("                        Input Directory   Samples Directory. Pipeline will automate creation of .bai files")
+        print("                        Input Directory     Samples Directory. Pipeline will automate creation of .bai files")
         print()
-        print("                        Chromosome Range  Specify Chromosome Range for analysis (Format: chr1:16,000,000-215,000,000")
+        print("                        Chromosome Range    Specify Chromosome Range for analysis (Format: chr1:16,000,000-215,000,000")
         print()
-        print("                        VEP Script        Ensembl VEP absolute path")
+        print("                        VEP Script          Ensembl VEP absolute path")
         print()
-        print("                        VEP Cache         Ensemble VEP local cache path")
+        print("                        VEP Cache           Ensemble VEP local cache path")
         print()
-        print("                        CPU Cores         Cores used for pipeline workflow")
+        print("                        Reference Directory File directory storing .fasta & DBSNP files")
+        print()
+        print("                        CPU Cores           Cores used for pipeline workflow")
 
     def read_directory(self, flag):
         """
@@ -162,7 +165,7 @@ class Controller:
                 args = file_num.split()
                 for i in args:
                     self.samplesToProcess.append(sampleStruct(self.directory[int(i) - 1].tumor_bam,
-                                                              self.directory[int(i) - 1].filename, self.input_directory, self.reference_directory))
+                                                              self.directory[int(i) - 1].filename, self.input_directory, self.output_directory, self.reference_directory))
 
                 # Generate Output Directories
                 for j in self.samplesToProcess:
@@ -197,7 +200,7 @@ class Controller:
                 args = file_num.split()
                 for i in args:
                     self.samplesToProcess.append(sampleStruct(self.directory[int(i) - 1].tumor_bam, self.directory[int(i) - 1].filename,
-                                                              self.input_directory, self.reference_directory, self.directory[int(i) - 1].normal_bam))
+                                                              self.input_directory, self.output_directory, self.reference_directory, self.directory[int(i) - 1].normal_bam))
 
                 # Generate Output Directories
                 for j in self.samplesToProcess:
@@ -256,7 +259,7 @@ class directoryStruct:
         self.filename = filename
 
 class sampleStruct:
-    def __init__(self, tumor_bam, filename, input_dir, reference_dir, normal_bam=None):
+    def __init__(self, tumor_bam, filename, input_dir, output_dir, reference_dir, normal_bam=None):
         """
         Python structure that stores all relevant files for sample X analysis
         :param tumor_bam: BAM file necessary for Paired and Non-Paired Mode
@@ -269,16 +272,18 @@ class sampleStruct:
         self.results_directory = ""
         self.input_directory = input_dir + "/"
         self.reference_directory = reference_dir + "/"
+        self.output_directory = output_dir + "/"
 
     def gen_sample_output_directory(self):
         """
         Create output directory needed to store generated files from pipeline workflow
         """
-        if os.path.exists("./output/" + self.filename + "/"):
-            shutil.rmtree("./output/" + self.filename + "/")
+        self.results_directory = self.output_directory + self.filename + "/"
+        if os.path.exists(self.results_directory):
+            shutil.rmtree(self.results_directory)
 
-        os.mkdir("./output/" + self.filename + "/")
-        os.mkdir("./output/" + self.filename + "/vcf/")
-        os.mkdir("./output/" + self.filename + "/annotated_vcf/")
-        os.mkdir("./output/" + self.filename + "/maf/")
-        self.results_directory = "./output/" + self.filename + "/"
+        os.mkdir(self.results_directory + "/")
+        os.mkdir(self.results_directory + "/vcf/")
+        os.mkdir(self.results_directory + "/annotated_vcf/")
+        os.mkdir(self.results_directory + "/maf/")
+

@@ -44,7 +44,7 @@ class Mutect2:
             "normalPanel": ["--normal_panel", "./referenceFiles/1kg_40_m2pon_sitesonly_subset50k.vcf"],
             "DBSNP": ["--dbsnp", "./referenceFiles/dbSNP142_GRCh38_subset50k.vcf"],
             "threads": ["-nct", "25"],
-            "chromosomeRange": ["-L", "chr6:33,413,000-118,315,000"],
+            #"chromosomeRange": ["-L", "chr6:33,413,000-118,315,000"],
             "output": ["-o", "./mutect2_output/"]
 
         }
@@ -102,6 +102,6 @@ class Mutect2:
 
         # Bind Chromosome Range
 
-        self.mutect_dict["chromosomeRange"][1] = self.chrome_range
+        #self.mutect_dict["chromosomeRange"][1] = self.chrome_range
 
 

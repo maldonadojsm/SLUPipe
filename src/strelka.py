@@ -44,7 +44,7 @@ class Strelka:
         self.strelka_run_dict = {
             "run_directory": ["python", "./strelka2_output/runWorkflow.py"],
             "localMachine": ["-m", "local"],
-            "threads": ["-j", "8"]
+            "threads": ["-j", "25"]
 
         }
 
@@ -52,7 +52,7 @@ class Strelka:
         self.strelka_config = []
         self.strelka_run = []
 
-        self.run_directory = self.result_directory
+        self.run_directory = result_directory + "vcf/strelka2_output"
         # List type signifies to annotator.py to expect 2 VCFs, 1 snvs and 1 indels VCF file
         self.variant_caller_output = self.result_directory + "results/variants/somatic.indels.vcf"
         self.variant_caller_snv_output = self.result_directory + "results/variants/somatic.snvs.vcf"

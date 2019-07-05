@@ -8,9 +8,7 @@
  + [Description](#description)
  + [Features](#features)
  + [Installation - Anaconda](#installation-anaconda)
- + [Installation - Docker](#installation-docker)
  + [Usage - Anaconda](#usage---anaconda)
- + [Usage - Docker](#usage---docker)
  + [Usage - Sample Entry/Output & JSON file Configuration](#usage---sample-entryoutput--json-file-configuration)
  
  
@@ -68,8 +66,6 @@ For convenience, SLUPipe has been configured to run in Anaconda Environments
 **Python 3+**
 
 **Pandas**
-
-
 
 **1. Clone Github Repository**
 ```console
@@ -159,24 +155,6 @@ conda install -c bioconda vcf2maf
 
  VCF2MAF May Downgrade Samtools 1.9 to 1.7  causing issues. Reinstall Samtools (1.9) to solve. 
 
-## Installation (Docker)
-
-**Option 1: Dockerfile**
-
-``` console
-docker build -t slupipe .
-```
-**Option 2: Docker Image**
-
-**1. Download Docker Image:**
-
-www.dockerrepo.com
-
-**2. Run Docker Image**
-``` console
-docker run -it slupipe 
-```
-
 ## Usage - Anaconda  
 
 **Activate Anaconda Environment**
@@ -197,22 +175,6 @@ python3 slupipe.py
 ```console
 python3 slupipe.py --update
 ```
-
-## Usage - Docker 
-
-**1. Initailize Docker Container:**
-```console
-docker run -it slupipe
-```
-**2. Head Towards Root Directory :**
-```console
-cd /root/
-```
-**3. Run SLUPipe:**
-```console
-python3 slupipe.py config.json
-```
-
 ## Usage - Sample Entry/Output & JSON file configuration
 **Reference Files:** Place reference .fasta files in **referenceFiles** directory.
 

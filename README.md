@@ -150,10 +150,10 @@ conda install -c bioconda vcf2maf
    2. cd $HOME/.vep
    3. curl -O ftp://ftp.ensembl.org/pub/release-95/variation/indexed_vep_cache/homo_sapiens_vep_95_GRCh38.tar.gz
    4. tar xzf homo_sapiens_vep_96_GRCh38.tar.gz
-
-**Configuring Strelka 2**
-    1. Locate "configureSomaticWorkflow.py" found in conda env bin directory
-    2. Copy file into SLUPipe working directory 
+   
+**Configuring Strelka 2:**
+   1. Locate "configureSomaticWorkflow.py" found in conda env bin directory
+   2. Copy file into SLUPipe working directory 
 
 **IMPORTANT**
 

@@ -7,8 +7,12 @@
 ## Table of Contents
  + [Description](#description)
  + [Features](#features)
- + [Installation](#installation)
- + [Usage](#usage)
+ + [Installation - Anaconda](#installation-anaconda)
+ + [Installation - Docker](#installation-docker)
+ + [Usage - Anaconda](#usage---anaconda)
+ + [Usage - Docker](#usage---docker)
+ + [Usage - Sample Entry/Output & JSON file Configuration](#usage---sample-entryoutput--json-file-configuration)
+ 
  
 ## Description
 
@@ -55,9 +59,17 @@ Raw VCF files are annotated using Ensembl VEP (v95). The following databases are
 - HGMD public v.20154
 - ClinVar v.201601
 
-## Installation
+## Installation (Anaconda)
 
 For convenience, SLUPipe has been configured to run in Anaconda Environments
+
+**Requirements:**
+
+**Python 3+**
+
+**Pandas**
+
+
 
 **1. Clone Github Repository**
 ```console
@@ -69,7 +81,7 @@ https://www.anaconda.com/distribution/
 
 **3. Create an Anaconda Environment which uses Python3.6.8 as default:**
 ```console
-conda create -n SLUPipe python=3.6
+conda create -n SLUPipe 
 ```
 **4. Activate the Anaconda Environment:**
 ```console
@@ -134,6 +146,8 @@ conda install -c bioconda varscan
 conda install -c bioconda vcf2maf
 ```
 
+ADD that you have to copy over configureSomaticWorkflow from conda env bin directory
+
 **Configuring Ensembl VEP For Variant Annotation & MAF Conversion (Local Cache Installation):**
    1. Create .vep directory to store offline cache: mkdir ~/.vep
    2. cd $HOME/.vep
@@ -145,8 +159,25 @@ conda install -c bioconda vcf2maf
 
  VCF2MAF May Downgrade Samtools 1.9 to 1.7  causing issues. Reinstall Samtools (1.9) to solve. 
 
+## Installation (Docker)
 
-## Usage
+**Option 1: Dockerfile**
+
+``` console
+docker build -t slupipe .
+```
+**Option 2: Docker Image**
+
+**1. Download Docker Image:**
+
+www.dockerrepo.com
+
+**2. Run Docker Image**
+``` console
+docker run -it slupipe 
+```
+
+## Usage - Anaconda  
 
 **Activate Anaconda Environment**
 ``` console
@@ -167,13 +198,27 @@ python3 slupipe.py
 python3 slupipe.py --update
 ```
 
+## Usage - Docker 
 
+**1. Initailize Docker Container:**
+```console
+docker run -it slupipe
+```
+**2. Head Towards Root Directory :**
+```console
+cd /root/
+```
+**3. Run SLUPipe:**
+```console
+python3 slupipe.py config.json
+```
+
+## Usage - Sample Entry/Output & JSON file configuration
 **Reference Files:** Place reference .fasta files in **referenceFiles** directory.
 
-**Non-paired Mode (Tumor Only) Input Entries:** Place Tumor .bam files in **tumor mode directory** (input/tumor_mode).
+**Input Entries:** Place Tumor .bam files in **input**  directory 
 
-**Paired Mode (Normal Mode) Input Entries:** Place Normal & Tumor .bam files in **normal mode directory** (input/normal_mode).
-
+**Analysis Results:** Variant calling results of a sample will be found within the **output** directory under the **sample's ID**.
 
 **Configuration File Structure Format (JSON)**:
 
@@ -181,10 +226,12 @@ python3 slupipe.py --update
       {
         "Pipeline_Mode":"-T",
         "Variant_Callers":["Pindel","Platypus"],
-        "Input_Directory":"/student/foo/SLUPipe/src/input/tumor_mode",
+        "Input_Directory":"/student/foo/SLUPipe/src/input",
+        "Output_Directory":"student/foo/SLUPipe/src/output",
         "Chromosome_Range": "chr1:16,000,000-215,000,000",
         "vep_ScriptPath": "/student/foo/.conda/envs/SLUPipe/share/ensembl-vep-95.3-0",
         "vep_CachePath": "/student/foo/.vep",
+        "reference_directory": "/student/foo/referenceFiles",
         "cpuCores": "8"
       }
     ]

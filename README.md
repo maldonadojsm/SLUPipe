@@ -145,15 +145,15 @@ conda install -c bioconda varscan
 ``` console
 conda install -c bioconda vcf2maf
 ```
-
-ADD that you have to copy over configureSomaticWorkflow from conda env bin directory
-
 **Configuring Ensembl VEP For Variant Annotation & MAF Conversion (Local Cache Installation):**
    1. Create .vep directory to store offline cache: mkdir ~/.vep
    2. cd $HOME/.vep
    3. curl -O ftp://ftp.ensembl.org/pub/release-95/variation/indexed_vep_cache/homo_sapiens_vep_95_GRCh38.tar.gz
    4. tar xzf homo_sapiens_vep_96_GRCh38.tar.gz
 
+**Configuring Strelka 2**
+    1. Locate "configureSomaticWorkflow.py" found in conda env bin directory
+    2. Copy file into SLUPipe working directory 
 
 **IMPORTANT**
 

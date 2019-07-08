@@ -25,7 +25,7 @@ import sys
 
 
 class Pipeline:
-    def __init__(self, user_samples, chromosome_range, vep_script_path, vep_cache_path, pipeline_mode, variant_callers):
+    def __init__(self, user_samples, chromosome_range, vep_script_path, vep_cache_path, pipeline_mode, variant_callers, output_dir):
         self.parallel_workflow = []
         self.master_workflow = []
         self.num_variants = 0
@@ -35,6 +35,7 @@ class Pipeline:
         self.vep_cache_path = vep_cache_path
         self.chrome_range = chromosome_range
         self.pipeline_mode = pipeline_mode
+        self.output_directory = output_dir
         self.pindel_flag = 0
         self.platypus_flag = 0
         self.mutect_flag = 0
@@ -199,14 +200,14 @@ class Pipeline:
             # Build Variant Annotation Objects
             for i in range(len(self.variant_annotation_workflow)):
                 for j in range(len(self.variant_caller_workflow[i])):
-                    self.variant_annotation_workflow[i].append(an.Annotator(self.variant_caller_workflow[i][j]))
+                    self.variant_annotation_workflow[i].append(an.Annotator(self.variant_caller_workflow[i][j], self.output_directory))
 
             self.master_workflow.append(self.variant_annotation_workflow)
 
             # Build Conversion Objects
             for i in range(len(self.maf_conversion_workflow)):
                 for j in range(len(self.variant_annotation_workflow[i])):
-                    self.maf_conversion_workflow[i].append(mc.mafConverter(self.variant_annotation_workflow[i][j], self.vep_script_path, self.vep_cache_path))
+                    self.maf_conversion_workflow[i].append(mc.mafConverter(self.variant_annotation_workflow[i][j], self.vep_script_path, self.vep_cache_path, self.output_directory))
 
             self.master_workflow.append(self.maf_conversion_workflow)
         else:
@@ -233,7 +234,7 @@ class Pipeline:
         # remove duplicate filenames
         filenames = list(dict.fromkeys(filenames))
         for i in filenames:
-            mf.merge_maf(i)
+            mf.merge_maf(i, self.output_directory)
 
 
 

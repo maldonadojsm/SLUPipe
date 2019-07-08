@@ -52,7 +52,7 @@ class Controller:
             self.vep_script = config_dict[0]['vep_ScriptPath']
             self.vep_cache = config_dict[0]['vep_CachePath']
             self.reference_directory = config_dict[0]["reference_directory"]
-            self.output_directory = config_dict[0]["Output_Directory"]
+            self.output_directory = config_dict[0]["Output_Directory"] + "/"
 
     def configure_pipeline(self):
         """
@@ -228,7 +228,7 @@ class Controller:
         print()
 
         slu_pipe = pl.Pipeline(self.samplesToProcess, self.chromosome_range, self.vep_script, self.vep_cache,
-                                     self.pipeline_mode, self.variant_callers)
+                                     self.pipeline_mode, self.variant_callers, self.output_directory)
         slu_pipe.run_workflow()
         print()
         print("############################")
@@ -272,7 +272,7 @@ class sampleStruct:
         self.results_directory = ""
         self.input_directory = input_dir + "/"
         self.reference_directory = reference_dir + "/"
-        self.output_directory = output_dir + "/"
+        self.output_directory = output_dir
 
     def gen_sample_output_directory(self):
         """

@@ -79,7 +79,7 @@ https://www.anaconda.com/distribution/
 conda create -n SLUPipe 
 ```
 
-**3.B Creation of Anaconda environment can be also automated by entering the following command in terminal. If this option is chosen, head towards VEP installation section below.**
+**3.B Creation of Anaconda environment can be also automated by entering the following command in terminal. If this option is chosen, skip steps 4 & 5 and head towards VEP Cache Configuration.**
 ```console
  conda env create -f environment.yml
 ```
@@ -182,7 +182,8 @@ python3 slupipe.py --update
 ## Usage - Sample Entry/Output & JSON file configuration
 **Reference Files:** Place reference .fasta files in **referenceFiles** directory.
 
-**Input Entries:** Place Tumor .bam files in **input**  directory 
+**Input Entries:** Place Tumor .bam files in **input**  directory (User may also )
+
 
 **Analysis Results:** Variant calling results of a sample will be found within the **output** directory under the **sample's ID**.
 

@@ -58,14 +58,13 @@ Raw VCF files are annotated using Ensembl VEP (v95). The following databases are
 - ClinVar v.201601
 
 ## Installation (Anaconda)
-
-For convenience, SLUPipe has been configured to run in Anaconda Environments
-
 **Requirements:**
 
 **Python 3+**
 
 **Pandas**
+
+For convenience, SLUPipe has been configured to run in Anaconda Environments
 
 **1. Clone Github Repository**
 ```console
@@ -75,9 +74,14 @@ git clone https://github.com/BioHPC/SLUPipe/tree/master/src
 
 https://www.anaconda.com/distribution/
 
-**3. Create an Anaconda Environment which uses Python3.6.8 as default:**
+**3.A Create an Anaconda Environment**
 ```console
 conda create -n SLUPipe 
+```
+
+**3.B Creation of Anaconda environment can be also automated by entering the following command in terminal. If this option is chosen, head towards VEP installation section below.**
+```console
+ conda env create -f environment.yml
 ```
 **4. Activate the Anaconda Environment:**
 ```console

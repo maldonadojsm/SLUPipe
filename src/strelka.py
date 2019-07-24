@@ -44,7 +44,7 @@ class Strelka:
         self.strelka_run_dict = {
             "run_directory": ["python", "./strelka2_output/runWorkflow.py"],
             "localMachine": ["-m", "local"],
-            "threads": ["-j", "25"]
+            "threads": ["-j", "4"]
 
         }
 

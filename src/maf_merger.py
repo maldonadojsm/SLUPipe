@@ -11,7 +11,7 @@
 # ============================
 import pandas as pd
 import glob
-
+import str
 
 def merge_maf(filename, output_dir):
 

@@ -43,7 +43,7 @@ class Mutect2:
             "normal_bam": ["-I:normal", "hcc1143_N_subset50K.bam"],
             "normalPanel": ["--normal_panel", "./referenceFiles/1kg_40_m2pon_sitesonly_subset50k.vcf"],
             "DBSNP": ["--dbsnp", "./referenceFiles/dbSNP142_GRCh38_subset50k.vcf"],
-            "threads": ["-nct", "25"],
+            "threads": ["-nct", "4"],
             #"chromosomeRange": ["-L", "chr6:33,413,000-118,315,000"],
             "output": ["-o", "./mutect2_output/"]
 
@@ -66,7 +66,7 @@ class Mutect2:
             for j in i:
                 self.mutect2.append(j)
         print("MuTect2: Calling Variants -> " + self.filename)
-        call(self.mutect2, stdout=DEVNULL, stderr=DEVNULL)
+        call(self.mutect2)#, stdout=DEVNULL, stderr=DEVNULL)
         print("Mutect2: Calling Variants Complete -> " + self.filename)
 
     def adjust_tumor_only(self):

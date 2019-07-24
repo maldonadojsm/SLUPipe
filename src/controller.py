@@ -54,6 +54,8 @@ class Controller:
             self.reference_directory = config_dict[0]["reference_directory"]
             self.output_directory = config_dict[0]["Output_Directory"] + "/"
 
+            print(self.input_directory)
+
     def configure_pipeline(self):
         """
         Configures pipeline mode in accordance to config file (-T: Non-Paired Mode, -N: Paired Mode)
@@ -247,10 +249,10 @@ class Controller:
         directory_listing = os.listdir(self.input_directory)
         for item in directory_listing:
             if ".bam" in item:
-                bam_file = os.path.abspath("input/" + item)
-                bai_file = bam_file.replace(".bam", ".bai")
-                call(["samtools", "index", bam_file, bai_file])
-
+                    bam_file = os.path.abspath(self.input_directory + "/" + item)
+                    bai_file = bam_file.replace(".bam", ".bai")
+                    if not os.path.exists(bai_file):
+                        call(["samtools", "index", bam_file, bai_file])
 
 class directoryStruct:
     def __init__(self, tumor_bam, filename, normal_bam = None):

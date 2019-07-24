@@ -4,6 +4,7 @@
     "Pipeline_Mode":"-T",
     "Variant_Callers":["Platypus","Mutect","Pindel"],
     "Input_Directory":"/student/maldonadojs/SLUPipe/SLUPipe_V0.3_TEST/SLUPipe/src/input",
+    "Output_Directory":"/student/maldonadojs/SLUPipe/SLUPipe_V0.3_TEST/SLUPipe/src/output",
     "Chromosome_Range": "chr1:16,000,000-215,000,000",
     "vep_ScriptPath": "/student/maldonadojs/.conda/envs/SLUPipe/share/ensembl-vep-95.3-0",
     "vep_CachePath": "/student/maldonadojs/.vep",

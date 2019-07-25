@@ -1,13 +1,12 @@
 # !/usr/bin/env python
-# title           :slupipe.py
-# description     :SLUPipe Execution Script
+# title           :slupipe_apex.py
+# description     :Script which configures SLUPipe for HPC
 # author          :Juan Maldonado
-# date            :6/13/19
-# version         :0.5
-# usage           :python3 slupipe.py <config.json>
-# notes           :SEE README.txt for Usages & List of Dependencies
+# date            :7/24/19
+# version         :1.0
+# usage           :python3 slupipe_apex.py
+# notes           :
 # python_version  :3.6.5
-# conda_version   :4.6.14
 # =================================================================================================================
 
 import controller as cn
@@ -32,10 +31,6 @@ def check_version():
         print("Running Latest Software Release.")
 
 
-
-"""
- python3 slupipe.py config.json node_dir(optional)
-"""
 def main():
     """
     Main method will process differing executions of program depending if the user has provided a config.json file
@@ -45,14 +40,17 @@ def main():
         # User has indicated to check for updates
         if sys.argv[1] == "--update":
             check_version()
-        # User has provided a config.json file
+
+        #
+        # SLUPIPE HTC: User has provided a config.json file. This JSON file will contain a key which will store all
+        # of the files that the node will process. The JSON has been generated via an external script.
+        #
         else:
             with open(sys.argv[1], 'r') as file:
                 config_dict = json.load(file)
-
             slu_pipe = cn.Controller(config_dict)
-            slu_pipe.configure_pipeline(0)
-
+            # Input samples to be processed by computer node
+            slu_pipe.configure_pipeline(1)
     # User hasn't provided a config.json file
     else:
         slu_pipe = cn.Controller()
@@ -61,9 +59,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-

@@ -17,23 +17,6 @@ import shutil
 from subprocess import call
 
 
-# Pending:
-#
-# 1. Automate Bai Generation:
-
-#
-# User Story 1:
-#
-# 1. Reads input directory and then proceeds to check if there is a .bai file for the .bam in question. If there isn't,
-# the program them proceeds to generating the .bai. I think this process should be performed based on which files are
-# were chosen to be processed.
-#
-# User Story 2:
-
-
-
-
-
 class Controller:
 
     def __init__(self, config_dict=None):
@@ -54,17 +37,26 @@ class Controller:
             self.reference_directory = config_dict[0]["reference_directory"]
             self.output_directory = config_dict[0]["Output_Directory"] + "/"
 
-            print(self.input_directory)
+            if "node_samples" in config_dict[0]:
+                self.node_samples = config_dict[0]["node_samples"]
+            else:
+                self.node_samples = None
 
-    def configure_pipeline(self):
+    def configure_pipeline(self, flag):
         """
         Configures pipeline mode in accordance to config file (-T: Non-Paired Mode, -N: Paired Mode)
         """
-        if self.pipeline_mode == "-T":
+        if self.pipeline_mode == "-T" and flag == 0:
             self.read_directory(0)
 
-        elif self.pipeline_mode == "-N":
+        elif self.pipeline_mode == "-N" and flag == 0:
             self.read_directory(1)
+
+        elif self.pipeline_mode == "-N" and flag == 1:
+            self.input_node_samples(1)
+
+        elif self.pipeline_mode == "-T" and flag == 1:
+            self.input_node_samples(0)
 
         else:
             print("ERROR: Config.json file has been constructed incorrectly. Please see guidelines for further information.")
@@ -131,6 +123,40 @@ class Controller:
             print("Generating missing .bai files...")
             self.generate_bai_files()
             directory_listing = os.listdir(self.input_directory)
+            for item in directory_listing:
+                if "_N" and ".bam" in item:
+                    for item2 in directory_listing:
+                        if "_T" and ".bam" in item2:
+                            normal_bam_file = os.path.splitext(os.path.basename(item))[0].replace("_N", "")
+                            tumor_bam_file = os.path.splitext(os.path.basename(item2))[0].replace("_T", "")
+
+                            # If BAM Normal and Tumor Files have same ID
+                            if normal_bam_file == tumor_bam_file:
+                                filename = normal_bam_file
+                                # Store in Sample List
+                                self.directory.append(directoryStruct(os.path.basename(item2), filename, os.path.basename(item)))
+            self.confirm_inputs(1)
+
+    # Node samples is a list of input paths to be processed
+    def input_node_samples(self, flag):
+
+        if flag == 0:
+            print("Generating missing .bai files...")
+            self.generate_bai_files()
+            directory_listing = self.node_samples
+            for item in directory_listing:
+                if "_T" and '.bam' in item:
+                    # Capture Filename
+                    filename = os.path.splitext(os.path.basename(item))[0]
+                    # Capture tumorBAM PATH
+                    tumor_bam = os.path.basename(item)
+                    # Store in Sample List
+                    self.directory.append(directoryStruct(tumor_bam, filename))
+            self.confirm_inputs(0)
+        if flag == 1:
+            print("Generating missing .bai files...")
+            self.generate_bai_files()
+            directory_listing = self.node_samples
             for item in directory_listing:
                 if "_N" and ".bam" in item:
                     for item2 in directory_listing:

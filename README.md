@@ -388,7 +388,7 @@ Run BASH Script
 ./run_slupipe_hpc.sh
 ```
 
-Sample results w
+Each job's results will be placed in the output directory specified in base configuration JSON file. 
 
 
 

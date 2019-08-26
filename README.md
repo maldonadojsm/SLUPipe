@@ -319,13 +319,13 @@ Users will construct and provide a base JSON configuration file providing same a
       }
     ]
     
-Once the base configuration file has been constructed, users must then execute the following script to adapt workload for SLURM compatibility:
+**Once the base configuration file has been constructed, users must then execute the following script to adapt workload for SLURM compatibility:**
 
 ``` console
 python3 gen_batches.py <base_configuration_file>
 ```
 
-This scripts divides all the samples found in the input directory into smaller jobs by generating new JSON files, each representing a portion of a the total workload:
+**This scripts divides all the samples found in the input directory into smaller jobs by generating new JSON files, each representing a portion of a the total workload:**
 
     Input Directory:
         -> Demo1_T.bam
@@ -368,7 +368,7 @@ This scripts divides all the samples found in the input directory into smaller j
       }
     ]
 
-Once the JSON files have been created, users can then generate a SLURM compatible BASH script to send jobs to SLURM Job Scheduler:
+**Once the JSON files have been created, users can then generate a SLURM compatible BASH script to send jobs to SLURM Job Scheduler:**
 
     #1/bin/bash
     
@@ -382,7 +382,7 @@ Once the JSON files have been created, users can then generate a SLURM compatibl
     done
     
     
-Run BASH Script
+**Run BASH Script**
 
 ``` console
 ./run_slupipe_hpc.sh

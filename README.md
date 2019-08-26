@@ -10,7 +10,7 @@
  + [Installation - Anaconda](#installation-anaconda)
  + [Usage - Anaconda](#usage---anaconda)
  + [Usage - Sample Entry/Output & JSON file Configuration](#usage---sample-entryoutput--json-file-configuration)
- + [Usage - SLUPipe Configuration For High Performance Computing (HPC - SLURM)](#usage---slupipe-configuration-for-high-throughput-computing-(hpc---slurm))
+ + [Usage - SLUPipe Configuration for High Performance Computing - SLURM](#usage---slupipe-configuration-for-high-performance-computing---slurm)
  
  
 ## Description
@@ -289,9 +289,9 @@ python3 slupipe.py --update
     CENPF   0	.	GRCh38  chr1    214608652	214608652	+	Intron  SNP     G	G	A	rs1482929177            TUMOR   NORMAL  G	G                                                                                                                               c.-41-5062G>A                   ENST00000366955         57	45	11	19	19	0	CENPF,intron_variant,,ENST00000366955,NM_016343.3;CENPF,intron_variant,,ENST00000464322,;CENPF,intron_variant,,ENST00000495259,;,regulatory_region_variant,,ENSR00000386218,;ABHD17AP3,non_coding_transcript_exon_variant,,ENST00000503096,;UBE2V1P13,downstream_gene_variant,,ENST00000436983,;        A	ENSG00000117724 ENST00000366955 Transcript	intron_variant                                          rs1482929177    1               1	CENPF   HGNC    HGNC:1857	protein_coding  YES     CCDS31023.1     ENSP00000355922 P49454          UPI00001AE985   NM_016343.3                             1/19                                                                                                                                            MODIFIER        1	SNV     1                                                                                               1.0     PASS    CGG     .	.                                                                                                                    $
 
 
-## Usage - SLUPipe Configuration For High Performance Computing (HPC - SLURM)
+## Usage - SLUPipe Configuration for High Performance Computing - SLURM
 
-SLUPipe has been developed to be compatible with High Performance Computing (HTC) and SLURM Job Scheduling.
+SLUPipe has been developed to be compatible with High Performance Computing (HPC) and SLURM Job Scheduling.
 
 **SLUPipe Execution:**
 
@@ -388,6 +388,7 @@ Run BASH Script
 ./run_slupipe_hpc.sh
 ```
 
+Sample results w
 
 
 

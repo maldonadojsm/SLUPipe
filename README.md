@@ -32,7 +32,7 @@ SLUPipe provides variant calling for paired (Normal & Tumor) and non-paired (Tum
 
 **Paired Sample Variant Callers (Normal Mode):**
 - MuSE 
-- Mutect2
+- Mutect2 (GATK3.8.1)
 - Somatic Sniper
 - Varscan 
 - Strelka 2
@@ -64,6 +64,10 @@ Raw VCF files are annotated using Ensembl VEP (v95). The following databases are
 **Python 3+**
 
 **Pandas**
+
+**Glob**
+
+**CPU Processors with AVX Instruction Support**
 
 For convenience, SLUPipe has been configured to run in Anaconda Environments
 

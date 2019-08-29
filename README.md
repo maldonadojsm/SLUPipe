@@ -31,15 +31,15 @@ SLUPipe provides variant calling for paired (Normal & Tumor) and non-paired (Tum
 ### Variant Callers
 
 **Paired Sample Variant Callers (Normal Mode):**
-- MuSE 
+- MuSE (1.0.rc)
 - Mutect2 (GATK3.8.1)
-- Somatic Sniper
-- Varscan 
-- Strelka 2
+- Somatic Sniper (1.0.5.0)
+- Varscan (2.4.3.2)
+- Strelka 2 (2.9.10)
 
 **Non-paired Sample Variant Callers (Tumor Only):**
-- Pindel
-- Platypus
+- Pindel (0.2.5b9)
+- Platypus (1.0.3)
 - Mutect2
 
 Variants callers can be toggled on/off as requested by the user (config file). 

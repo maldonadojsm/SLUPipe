@@ -42,9 +42,8 @@ def main():
             check_version()
 
         #
-        # SLUPIPE HPC: This assumes that a user has provided a  base config.json file from where several JSON files have been automatically 
-        # generated via "gen_batches.py" for HPC compatability. Each generated JSON file will contain a determined number of samples that will be processed 
-        # as a single job by SLURM.
+        # SLUPIPE HTC: User has provided a config.json file. This JSON file will contain a key which will store all
+        # of the files that the node will process. The JSON has been generated via an external script.
         #
         else:
             with open(sys.argv[1], 'r') as file:

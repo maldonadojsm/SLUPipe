@@ -76,34 +76,29 @@ class Controller:
         print("SLUPipe: A (S)omatic Ana(L)ysis (U)mbrella (Pipe)line")
         print()
         print("Version: v0.1")
-        print("         Build Date August 25 2019")
-        print("         Build Time 23:26:02")
+        print("         Build Date June 28 2019")
+        print("         Build Time 00:43:02")
         print("         Authors: Dr. Tae-Hyuk (Ted) Ahn , Juan Maldonado , Zohair Siddiqui. St. Louis University, 2019.")
         print()
         print("Usage:   slupipe.py <config.json> -> Execute Pipeline Workflow")
         print("         slupipe.py --update -> Check for most recent software release")
-        print("         slupipe_apex.py <JSON File> Execute HPC Pipeline Workflow (See README.md for details)")
         print()
         print("Config File Structure:  Pipeline Mode       -T for Non-paired Mode / -N for Paired Mode")
         print()
         print("                        Variant Callers     Specify List of Variant Callers for pipeline workflow")
-        print("                                            in accordance pipeline mode.")
+        print("                                            in accordance pipeline mode")
         print()
-        print("                        Input Directory     Samples Directory. Pipeline will automate creation of .bai files.")
+        print("                        Input Directory     Samples Directory. Pipeline will automate creation of .bai files")
         print()
-        print("                        Chromosome Range    Specify Chromosome Range for analysis (Format: chr1:16,000,000-215,000,000.")
+        print("                        Chromosome Range    Specify Chromosome Range for analysis (Format: chr1:16,000,000-215,000,000")
         print()
-        print("                        VEP Script          Ensembl VEP absolute path.")
+        print("                        VEP Script          Ensembl VEP absolute path")
         print()
-        print("                        VEP Cache           Ensemble VEP local cache path.")
+        print("                        VEP Cache           Ensemble VEP local cache path")
         print()
-        print("                        Reference Directory File directory storing .fasta & DBSNP files.")
+        print("                        Reference Directory File directory storing .fasta & DBSNP files")
         print()
-        print("                        CPU Cores           Cores used for pipeline workflow.")
-        print()
-        print("                        Nodes               Number of nodes specified for HPC Workflow (See README.md for details).")
-        print()
-        print("                        Node Samples        Samples processed per node during HPC Workflow (See README.md for details).")
+        print("                        CPU Cores           Cores used for pipeline workflow")
 
     def read_directory(self, flag):
         """
@@ -174,7 +169,9 @@ class Controller:
                                 filename = normal_bam_file
                                 # Store in Sample List
                                 self.directory.append(directoryStruct(os.path.basename(item2), filename, os.path.basename(item)))
-            self.confirm_inputs(1)
+            self.confirm_apex(1)
+
+
 
     def confirm_inputs(self, flag):
         """
@@ -249,6 +246,39 @@ class Controller:
             elif confirmation == 'X':
                 print("Exiting Program")
                 sys.exit(1)
+
+    def confirm_apex(self,flag):
+        if flag == 0:
+            dash = '-' * 80
+            print("TUMOR MODE: DIRECTORY SUMMARY")
+            print(dash)
+            for i in range(len(self.directory)):
+                print("{:<10s}{:>12s}{:>21s}".format(str(i + 1), self.directory[i].filename, self.directory[i].tumor_bam))
+            print(dash)
+            print()
+            for i in self.directory:
+                self.samplesToProcess.append(sampleStruct(i.tumor_bam, i.filename, self.input_directory, self.output_directory, self.reference_directory))
+            for j in self.samplesToProcess:
+                j.gen_sample_output_directory()
+            self.run_pipeline()
+           
+        if flag == 1:
+            dash = '-' * 80
+            print("NORMAL MODE: DIRECTORY SUMMARY")
+            print(dash)
+            for i in range(len(self.directory)):
+                print("{:<10s}{:>10s}{:>22s}{:>21s}".format(str(i + 1), self.directory[i].filename,self.directory[i].normal_bam, self.directory[i].tumor_bam))
+            print(dash)
+            print()
+            for i in self.directory:
+                self.samplesToProcess.append(sampleStruct(i.tumor_bam, i.filename, self.input_directory, self.output_directory, self.reference_directory, i.normal_bam))
+            for j in self.samplesToProcess:
+                j.gen_sample_output_directory()
+            self.run_pipeline()
+
+
+
+
 
     def run_pipeline(self):
         """

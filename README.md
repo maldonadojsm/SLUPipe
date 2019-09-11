@@ -89,7 +89,7 @@ conda create -n SLUPipe
 
 **3.B Creation of Anaconda environment can be also automated by entering the following command in terminal. If this option is chosen, skip steps 4 & 5 and head towards VEP Cache Configuration.**
 ```console
- conda env create -f environment.yml
+ conda env create -f environment.yml (GO TO MAIN DIRECTORY)
 ```
 **4. Activate the Anaconda Environment:**
 ```console

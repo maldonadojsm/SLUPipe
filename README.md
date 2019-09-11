@@ -67,6 +67,8 @@ Raw VCF files are annotated using Ensembl VEP (v95). The following databases are
 
 **Glob**
 
+**Linux**
+
 **CPU Processors with AVX Instruction Support**
 
 For convenience, SLUPipe has been configured to run in Anaconda Environments
@@ -244,7 +246,7 @@ mkdir input
     
 **Pipeline Workflow Example (Non-paired Mode):**
 
-    (SLUPipe) MacBook-Pro-2:src username$ python3 NGS.py config.json
+    (SLUPipe)$ python3 NGS.py config.json
     TUMOR MODE: DIRECTORY SUMMARY (X to Exit):
     --------------------------------------------------------------------------------
     NO.               ID               TUMOR

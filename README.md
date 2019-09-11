@@ -75,7 +75,7 @@ For convenience, SLUPipe has been configured to run in Anaconda Environments
 
 **1. Clone Github Repository**
 ```console
-git clone https://github.com/BioHPC/SLUPipe/tree/master/src
+git clone https://github.com/BioHPC/SLUPipe
 ```
 **2. Download & Install Anacaonda 4.5+**
 

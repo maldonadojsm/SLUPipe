@@ -50,13 +50,13 @@ class Platypus:
         os.mkdir(self.result_directory)
 
     def run_variant_caller(self):
-
+        print(self.platypusDict["reference"][0])
         for i in self.platypusDict.values():
             for j in i:
                 self.platypus.append(j)
 
         print("Platypus: Calling Variants -> " + self.filename)
-        call(self.platypus, stdout=DEVNULL, stderr=DEVNULL)
+        call(self.platypus,stdout=DEVNULL, stderr=DEVNULL)
         print("Platypus: Calling Variants Complete -> " + self.filename)
 
     def bind_inputs(self):
@@ -68,5 +68,5 @@ class Platypus:
         self.platypusDict["output"][0] += self.result_directory + self.filename + ".vcf"
         self.variant_caller_output = self.result_directory + self.filename + ".vcf"
 
-        self.platypusDict["reference"][0] = self.reference_directory
+        self.platypusDict["reference"][0] += self.reference_directory +  "Homo_sapiens_assembly38.fasta"
 

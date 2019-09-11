@@ -111,7 +111,7 @@ class Pipeline:
         self.parallelize_processes()
         for i in self.parallel_workflow:
             i.run_in_parallel()
-        self.merge_maf()
+        # self.merge_maf()
         return 0
 
     def build_workflow(self, flag):

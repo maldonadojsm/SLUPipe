@@ -36,7 +36,7 @@ class Pindel:
             "Exe": ["pindel"],
             "reference": ["-f", "./referenceFiles/Homo_sapiens_assembly38.fasta"],
             "configuration_file": ["-i", "config.txt"],
-            "chromosomeRange": ["-c", "chr6:33,413,000-118,315,000"],
+            #"chromosomeRange": ["-c", "chr6:33,413,000-118,315,000"],
             "threads": ["-T", "8"],
             "output": ["-o", "./pindel_output/"]
         }
@@ -113,7 +113,7 @@ class Pindel:
 
         # Bind Chromosome Range
 
-        self.pindel_read_dict["chromosomeRange"][1] = self.chrome_range
+        #self.pindel_read_dict["chromosomeRange"][1] = self.chrome_range
 
         self.pindel_read_dict["reference"][1] = self.reference_directory + "Homo_sapiens_assembly38.fasta"
         self.pindel_convert_dict["reference"][1] = self.reference_directory + "Homo_sapiens_assembly38.fasta"

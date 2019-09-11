@@ -152,7 +152,7 @@ class Controller:
                     tumor_bam = os.path.basename(item)
                     # Store in Sample List
                     self.directory.append(directoryStruct(tumor_bam, filename))
-            self.confirm_inputs(0)
+            self.confirm_apex(0)
         if flag == 1:
             print("Generating missing .bai files...")
             self.generate_bai_files()
@@ -252,6 +252,8 @@ class Controller:
             dash = '-' * 80
             print("TUMOR MODE: DIRECTORY SUMMARY")
             print(dash)
+            print("{:<10s}{:>10s}{:>20s}".format('NO.', 'ID', 'TUMOR'))
+            print(dash)
             for i in range(len(self.directory)):
                 print("{:<10s}{:>12s}{:>21s}".format(str(i + 1), self.directory[i].filename, self.directory[i].tumor_bam))
             print(dash)
@@ -265,6 +267,8 @@ class Controller:
         if flag == 1:
             dash = '-' * 80
             print("NORMAL MODE: DIRECTORY SUMMARY")
+            print(dash)
+            print("{:<10s}{:>10s}{:>20s}{:>20s}".format('NO.', 'ID', 'NORMAL', 'TUMOR'))
             print(dash)
             for i in range(len(self.directory)):
                 print("{:<10s}{:>10s}{:>22s}{:>21s}".format(str(i + 1), self.directory[i].filename,self.directory[i].normal_bam, self.directory[i].tumor_bam))

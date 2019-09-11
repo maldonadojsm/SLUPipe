@@ -50,7 +50,6 @@ class Platypus:
         os.mkdir(self.result_directory)
 
     def run_variant_caller(self):
-        print(self.platypusDict["reference"][0])
         for i in self.platypusDict.values():
             for j in i:
                 self.platypus.append(j)

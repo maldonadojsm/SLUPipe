@@ -8,6 +8,7 @@
  + [Description](#description)
  + [Features](#features)
  + [Installation - Anaconda](#installation-anaconda)
+ + [Automate Installation (Recommended) - Anaconda](#aumotate-installation)
  + [Usage - Anaconda](#usage---anaconda)
  + [Usage - Sample Entry/Output & JSON file Configuration](#usage---sample-entryoutput--json-file-configuration)
  + [Usage - SLUPipe Configuration for High Performance Computing - SLURM](#usage---slupipe-configuration-for-high-performance-computing---slurm)

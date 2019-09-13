@@ -102,8 +102,8 @@ https://www.anaconda.com/distribution/
 **Please Note:** Download time will vary depending on time of day (1 Hr+)
    
 **5. Configuring Strelka 2:**
-   1. Locate "configureSomaticWorkflow.py" found in conda env bin directory
-   2. Copy file into SLUPipe working directory 
+   1. Locate "configureSomaticWorkflow.py" found in conda env bin directory (/.conda/envs/SLUPipe/bin)
+   2. Copy file into SLUPipe working directory (/SLUPipe/src)
 
 
 ## Installation - Anaconda 

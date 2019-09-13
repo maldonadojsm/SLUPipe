@@ -216,9 +216,39 @@ python3 slupipe.py --update
 
 SLUPipe processes and stores results using the following directories found within SLUPipe/src/:
 
-**Reference Files (referenceFiles):** Place reference .fasta, .fai, dnSNP, normal panels files within this directory. Head to https://software.broadinstitute.org/gatk/download/bundle to download references files if needed.
+**Reference Files (referenceFiles):** Place reference .fasta, .fai, dnSNP, normal panels files within this directory. Head to https://software.broadinstitute.org/gatk/download/bundle and to download references files if needed.
+
+Reference Files Needed:
+
+**GATK Tutorial Data 9183 Somatic Variants: https://drive.google.com/drive/folders/1QdtVEronIzs04L37BFkw29TLjNWcyOpf**
+
+1. 1kg_40_m2pon_sitesonly_subset50k.vcf            
+2. 1kg_40_m2pon_sitesonly_subset50k.vcf.gz 
+3. 1kg_40_m2pon_sitesonly_subset50k.vcf.idx 
+4. 1kg_40_m2pon_sitesonly_subset50k.vcf.gz.tbi 
+5. dbSNP142_GRCh38_subset50k.vcf.gz 
+6. dbSNP142_GRCh38_subset50k.vcf            
+7. dbSNP142_GRCh38_subset50k.vcf.idx 
+8. dbSNP142_GRCh38_subset50k.vcf.gz.tbi   
+
+**GATK Resource Bundle: https://software.broadinstitute.org/gatk/download/bundle**
+   
+9. Homo_sapiens_assembly38.dict         
+10. Homo_sapiens_assembly38.fasta.index 
+11. Homo_sapiens_assembly38.fasta.fai 
+12. Homo_sapiens_assembly38.fasta 
+
 
 **Input Files (Input):**  Place all .bam files to be processed in here (SLUPipe will automate generation of .bai files within this directory). Sample files for testing can be found here: https://drive.google.com/drive/folders/1QdtVEronIzs04L37BFkw29TLjNWcyOpf
+
+Sample Files:
+
+**GATK Tutorial Data 9183 Somatic Variants: https://drive.google.com/drive/folders/1QdtVEronIzs04L37BFkw29TLjNWcyOpf**
+
+1. hcc1143_T_subset50K.bam
+2. hcc1143_T_subset50K.bai
+3. hcc1143_N_subset50K.bam
+4. hcc1143_N_subset50K.bai
 
 **Output Files (Output):**  SLUPipe workflow results will be placed here. Each sample result will have its files organized with the following directory structure:
 

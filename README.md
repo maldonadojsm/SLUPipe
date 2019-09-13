@@ -92,7 +92,7 @@ https://www.anaconda.com/distribution/
  conda env create -f environment.yml (environment.yml can be found in SLUPipe root directory)
 ```
 **Please Note:** Environment creation will take around 30-45 minutes to complete.
-**This port
+
 **4. Configure Ensembl VEP For Variant Annotation & MAF Conversion (Local Cache Installation):**
    1. Create .vep directory to store offline cache: mkdir ~/.vep
    2. cd $HOME/.vep
@@ -186,6 +186,8 @@ conda install -c bioconda vcf2maf
    2. cd $HOME/.vep
    3. curl -O ftp://ftp.ensembl.org/pub/release-95/variation/indexed_vep_cache/homo_sapiens_vep_95_GRCh38.tar.gz
    4. tar xzf homo_sapiens_vep_96_GRCh38.tar.gz
+  
+**Please Note:** Download time will vary depending on time of day (1 Hr+)
    
 **7. Configuring Strelka 2:**
    1. Locate "configureSomaticWorkflow.py" found in conda env bin directory

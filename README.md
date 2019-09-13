@@ -7,7 +7,8 @@
 ## Table of Contents
  + [Description](#description)
  + [Features](#features)
- + [Express Installation - Anaconda](#express-installation---anacaonda)
+ + [Requirements](#requirements)
+ + [Express Installation - Anaconda](#express-installation---anaconda)
  + [Installation - Anaconda](#installation-anaconda)
  + [Usage - Anaconda](#usage---anaconda)
  + [Usage - Sample Entry/Output](#usage---sample-entryoutput)
@@ -61,7 +62,7 @@ Raw VCF files are annotated using Ensembl VEP (v95). The following databases are
 - HGMD public v.20154
 - ClinVar v.201601
 
-## Installation (Anaconda)
+## Requirements 
 **Requirements:**
 
 **Python 3+**

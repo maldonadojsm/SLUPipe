@@ -96,7 +96,7 @@ $ conda env create -f environment.yml (environment.yml can be found in SLUPipe r
 
 **4. Configure Ensembl VEP For Variant Annotation & MAF Conversion (Local Cache Installation):**
    Create .vep directory at your home directory ($HOME) to store offline cache. 
-   1. $ cd
+   1. $ cd ~ (Takes you to your home directory. You can also use cd $HOME as well)
    2. $ mkdir .vep
    3. $ cd .vep
    3. $ curl -O ftp://ftp.ensembl.org/pub/release-95/variation/indexed_vep_cache/homo_sapiens_vep_95_GRCh38.tar.gz
@@ -107,8 +107,12 @@ $ conda env create -f environment.yml (environment.yml can be found in SLUPipe r
 **5. Configuring Strelka 2:**
    1. Locate "configureSomaticWorkflow.py" found in conda env bin directory (/.conda/envs/SLUPipe/bin)
    2. Copy file into SLUPipe working directory (/SLUPipe/src)
-
-
+   
+**Tip:** If unable to locate ./conda/envs/SLUPipe/bin directory, please run the following two commands to locate path:
+```
+$ source activate SLUPipe (start SLUPipe environment)
+$ which python (prints full path related to SLUPipe conda environment)
+```
 ## Installation - Anaconda 
 **1. Clone Github Repository**
 ```console
@@ -146,7 +150,7 @@ $ conda install -c bioconda gatk
 ```
 **MuSE 1.0.rc**
 ``` console
-$conda install -c bioconda muse 
+$ conda install -c bioconda muse 
 ```
 **pandas 0.24.2**
 ``` console

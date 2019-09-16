@@ -81,7 +81,7 @@ For convenience, SLUPipe has been configured to run in Anaconda Environments
 
 **1. Clone Github Repository**
 ```console
-git clone https://github.com/BioHPC/SLUPipe.git
+$ git clone https://github.com/BioHPC/SLUPipe.git
 ```
 **2. Download & Install Anacaonda 4.5+**
 
@@ -89,15 +89,16 @@ https://www.anaconda.com/distribution/
 
 **3. Automate creation of Anaconda environment.**
 ```console
- conda env create -f environment.yml (environment.yml can be found in SLUPipe root directory)
+$ cd SLUPipe
+$ conda env create -f environment.yml (environment.yml can be found in SLUPipe root directory)
 ```
 **Please Note:** Environment creation will take around 30-45 minutes to complete.
 
 **4. Configure Ensembl VEP For Variant Annotation & MAF Conversion (Local Cache Installation):**
    1. Create .vep directory to store offline cache: mkdir ~/.vep
-   2. cd $HOME/.vep
-   3. curl -O ftp://ftp.ensembl.org/pub/release-95/variation/indexed_vep_cache/homo_sapiens_vep_95_GRCh38.tar.gz
-   4. tar xzf homo_sapiens_vep_96_GRCh38.tar.gz
+   2. $ cd $HOME/.vep
+   3. $ curl -O ftp://ftp.ensembl.org/pub/release-95/variation/indexed_vep_cache/homo_sapiens_vep_95_GRCh38.tar.gz
+   4. $ tar xzf homo_sapiens_vep_96_GRCh38.tar.gz
    
 **Please Note:** Download time will vary depending on time of day (1 Hr+)
    
@@ -109,7 +110,7 @@ https://www.anaconda.com/distribution/
 ## Installation - Anaconda 
 **1. Clone Github Repository**
 ```console
-git clone https://github.com/BioHPC/SLUPipe.git
+$ git clone https://github.com/BioHPC/SLUPipe.git
 ```
 **2. Download & Install Anacaonda 4.5+**
 
@@ -117,75 +118,75 @@ https://www.anaconda.com/distribution/
 
 **3.A Create an Anaconda Environment**
 ```console
-conda create -n SLUPipe 
+$ conda create -n SLUPipe 
 ```
 **4. Activate the Anaconda Environment:**
 ```console
-source activate SLUPipe
+$ source activate SLUPipe
 ```
 **5. The SLUPipe will require the following Python packages for it to be functionable**
 
 **biobambam-2.0.87**
 ```console
-conda install -c bioconda biobambam 
+$ conda install -c bioconda biobambam 
 ```
 **bwa.kit-0.7.15**
 ```console
-conda install -c bioconda bwakit 
+$ conda install -c bioconda bwakit 
 ```
 **ensembl-vep 95.3**
 ``` console
-conda install -c bioconda ensembl-vep=95.3 
+$ conda install -c bioconda ensembl-vep=95.3 
 ```
 **GenomeAnalysisTK-3.8.0**
 ``` console
-conda install -c bioconda gatk
+$ conda install -c bioconda gatk
 ```
 **MuSE 1.0.rc**
 ``` console
-conda install -c bioconda muse 
+$conda install -c bioconda muse 
 ```
 **pandas 0.24.2**
 ``` console
-conda install -c anaconda pandas 
+$ conda install -c anaconda pandas 
 ```
 **pindel-0.2.5b9**
 ``` console
-conda install -c bioconda pindel 
+$ conda install -c bioconda pindel 
 ```
 **platypus-opt 1.0.3**
 ``` console
-conda install -c bioconda platypus-variant 
+$ conda install -c bioconda platypus-variant 
 ```
 **psycopg2 - 2.7.6.1**
 ``` console
-conda install -c anaconda psycopg2 
+$ conda install -c anaconda psycopg2 
 ```
 **samtools-1.9**
 ``` console 
-conda install -c bioconda samtools
+$ conda install -c bioconda samtools
 ```
 **strelka 2.9.10**
 ``` console
-conda install -c bioconda strelka 
+$ conda install -c bioconda strelka 
 ```
 **somatic-sniper 1.0.5.0**
 ``` console
-conda install -c bioconda somatic-sniper 
+$ conda install -c bioconda somatic-sniper 
 ```
 **varscan - 2.4.3.2**
 ``` console
-conda install -c bioconda varscan 
+$ conda install -c bioconda varscan 
 ```
 **vcf2maf - 1.6.16**
 ``` console
-conda install -c bioconda vcf2maf
+$ conda install -c bioconda vcf2maf
 ```
 **6. Configuring Ensembl VEP For Variant Annotation & MAF Conversion (Local Cache Installation):**
    1. Create .vep directory to store offline cache: mkdir ~/.vep
-   2. cd $HOME/.vep
-   3. curl -O ftp://ftp.ensembl.org/pub/release-95/variation/indexed_vep_cache/homo_sapiens_vep_95_GRCh38.tar.gz
-   4. tar xzf homo_sapiens_vep_96_GRCh38.tar.gz
+   2. $ cd $HOME/.vep
+   3. $ curl -O ftp://ftp.ensembl.org/pub/release-95/variation/indexed_vep_cache/homo_sapiens_vep_95_GRCh38.tar.gz
+   4. $ tar xzf homo_sapiens_vep_96_GRCh38.tar.gz
   
 **Please Note:** Download time will vary depending on time of day (1 Hr+)
    
@@ -197,20 +198,20 @@ conda install -c bioconda vcf2maf
 
 **Activate Anaconda Environment**
 ``` console
-source activate SLUPipe
+$ source activate SLUPipe
 ```
 **Execute Pipeline Workflow**
 ```console
-python3 slupipe.py <config.json>
+$ python3 slupipe.py <config.json>
 ```
 
 **Version Summary & Execution Description**
 ```console
-python3 slupipe.py 
+$ python3 slupipe.py 
 ```
 **Check Latest Software Release**
 ```console
-python3 slupipe.py --update
+$ python3 slupipe.py --update
 ```
 ## Usage - Sample Entry/Output 
 
@@ -409,7 +410,7 @@ Users will construct and provide a base JSON configuration file providing same a
 **Once the base configuration file has been constructed, users must then execute the following script to adapt workload for SLURM compatibility:**
 
 ``` console
-python3 gen_batches.py <base_configuration_file>
+$ python3 gen_batches.py <base_configuration_file>
 ```
 
 **This scripts divides all the samples found in the input directory into smaller jobs by generating new JSON files, each representing a portion of a the total workload:**
@@ -472,7 +473,7 @@ python3 gen_batches.py <base_configuration_file>
 **Run BASH Script**
 
 ``` console
-./run_slupipe_hpc.sh
+$ ./run_slupipe_hpc.sh
 ```
 
 Each job's results will be placed in the output directory specified in base configuration JSON file. 

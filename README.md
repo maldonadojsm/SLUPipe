@@ -95,8 +95,10 @@ $ conda env create -f environment.yml (environment.yml can be found in SLUPipe r
 **Please Note:** Environment creation will take around 30-45 minutes to complete.
 
 **4. Configure Ensembl VEP For Variant Annotation & MAF Conversion (Local Cache Installation):**
-   1. Create .vep directory to store offline cache: mkdir ~/.vep
-   2. $ cd $HOME/.vep
+   Create .vep directory to store offline cache: 
+   1. $ cd
+   2. $ mkdir .vep
+   3. $ cd .vep
    3. $ curl -O ftp://ftp.ensembl.org/pub/release-95/variation/indexed_vep_cache/homo_sapiens_vep_95_GRCh38.tar.gz
    4. $ tar xzf homo_sapiens_vep_96_GRCh38.tar.gz
    

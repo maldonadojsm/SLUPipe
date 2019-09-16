@@ -199,6 +199,12 @@ $ conda install -c bioconda vcf2maf
 **7. Configuring Strelka 2:**
    1. Locate "configureSomaticWorkflow.py" found in SLUPipe conda env bin directory (/.conda/envs/SLUPipe/bin)
    2. Copy file into SLUPipe working directory (/SLUPipe/src)
+   
+**Tip:** If unable to locate ./conda/envs/SLUPipe/bin directory, please run the following two commands to locate path:
+```
+$ source activate SLUPipe (start SLUPipe environment)
+$ which python (prints full path related to SLUPipe conda environment)
+```
 
 ## Usage - Anaconda  
 
@@ -223,7 +229,7 @@ $ python3 slupipe.py --update
 
 SLUPipe processes and stores results using the following directories found within SLUPipe/src/:
 
-**Reference Files (referenceFiles):** Place reference .fasta, .fai, dnSNP, normal panels files within this directory. Head to https://software.broadinstitute.org/gatk/download/bundle and to download references files if needed.
+**Reference Files (referenceFiles):** Place reference .fasta, .fai, dnSNP, normal panels files within this directory. 
 
 Reference Files Needed:
 

@@ -9,12 +9,12 @@
  + [Features](#features)
  + [Requirements](#requirements)
  + [Express Installation - Anaconda](#express-installation---anaconda)
- + [Installation - Anaconda](#installation-anaconda)
- + [Usage - Anaconda](#usage-anaconda)
+ + [Running SLUPipe](#running-slupipe)
  + [Usage - Sample Entry/Output](#usage---sample-entryoutput)
  + [Usage - JSON file Configuration](#usage---json-file-configuration)
  + [Usage - Example Workflow](#usage---example-workflow)
  + [Usage - SLUPipe Configuration for High Performance Computing - SLURM](#usage---slupipe-configuration-for-high-performance-computing---slurm)
+ + [Manual Installation - Anaconda](#manual-installation-anaconda)
  
  
 ## Description
@@ -79,6 +79,8 @@ Raw VCF files are annotated using Ensembl VEP (v95). The following databases are
 
 For convenience, SLUPipe has been configured to run in Anaconda Environments
 
+**Please Note:** If problems have appeared installing SLUPipe, please head to the manual installation.
+
 **1. Clone Github Repository**
 ```console
 $ git clone https://github.com/BioHPC/SLUPipe.git
@@ -120,107 +122,10 @@ $ conda env create -f environment.yml (environment.yml can be found in SLUPipe r
 $ source activate SLUPipe (start SLUPipe environment)
 $ which python (prints full path related to SLUPipe conda environment)
 ```
-## Installation - Anaconda 
-**1. Clone Github Repository**
-```console
-$ git clone https://github.com/BioHPC/SLUPipe.git
-```
-**2. Download & Install Anacaonda 4.5+**
 
-https://www.anaconda.com/distribution/
+**Please Note:** If problems have appeared installing SLUPipe, please head to the manual installation.
 
-**3.A Create an Anaconda Environment**
-```console
-$ conda create -n SLUPipe 
-```
-**4. Activate the Anaconda Environment:**
-```console
-$ source activate SLUPipe
-```
-**5. The SLUPipe will require the following Python packages for it to be functionable**
-
-**biobambam-2.0.87**
-```console
-$ conda install -c bioconda biobambam 
-```
-**bwa.kit-0.7.15**
-```console
-$ conda install -c bioconda bwakit 
-```
-**ensembl-vep 95.3**
-``` console
-$ conda install -c bioconda ensembl-vep=95.3 
-```
-**GenomeAnalysisTK-3.8.0**
-``` console
-$ conda install -c bioconda gatk
-```
-**MuSE 1.0.rc**
-``` console
-$ conda install -c bioconda muse 
-```
-**pandas 0.24.2**
-``` console
-$ conda install -c anaconda pandas 
-```
-**pindel-0.2.5b9**
-``` console
-$ conda install -c bioconda pindel 
-```
-**platypus-opt 1.0.3**
-``` console
-$ conda install -c bioconda platypus-variant 
-```
-**psycopg2 - 2.7.6.1**
-``` console
-$ conda install -c anaconda psycopg2 
-```
-**samtools-1.9**
-``` console 
-$ conda install -c bioconda samtools
-```
-**strelka 2.9.10**
-``` console
-$ conda install -c bioconda strelka 
-```
-**somatic-sniper 1.0.5.0**
-``` console
-$ conda install -c bioconda somatic-sniper 
-```
-**varscan - 2.4.3.2**
-``` console
-$ conda install -c bioconda varscan 
-```
-**vcf2maf - 1.6.16**
-``` console
-$ conda install -c bioconda vcf2maf
-```
-**6. Configuring Ensembl VEP For Variant Annotation & MAF Conversion (Local Cache Installation):**
-   1. Create .vep directory to store offline cache: mkdir ~/.vep
-   2. $ cd $HOME/.vep
-   3. $ curl -O -C - ftp://ftp.ensembl.org/pub/release-95/variation/indexed_vep_cache/homo_sapiens_vep_95_GRCh38.tar.gz
-   4. $ tar xzf homo_sapiens_vep_96_GRCh38.tar.gz
-  
-**Please Note:** Download time will vary depending on time of day (1 Hr+)
-   
-**7. Copying Strelka 2 Configuration File to SLUPipe Working Directory:**
-   1. Locate "configureStrelkaSomaticWorkflow.py" found in SLUPipe conda env bin directory (~/.conda/envs/SLUPipe/bin)
-   2. Copy file into SLUPipe working directory ($SLUPipe/src)
-   
-   ``` console
-   $ cp ~/.conda/envs/SLUPipe/bin/configureStrelkaSomaticWorkflow.py $SLUPipe/src/
-   ```
-   
-   
-   **Please Note:** $SLUIPipePATH is your current working directory (user can check this by typing "pwd" in terminal)
-   
-**Tip:** If unable to locate ./conda/envs/SLUPipe/bin directory, please run the following two commands to locate path:
-```
-$ source activate SLUPipe (start SLUPipe environment)
-$ which python (prints full path related to SLUPipe conda environment)
-```
-
-## Usage - Anaconda  
+## Running SLUPipe 
 
 **Activate Anaconda Environment**
 ``` console
@@ -503,6 +408,109 @@ $ ./run_slupipe_hpc.sh
 ```
 
 Each job's results will be placed in the output directory specified in base configuration JSON file. 
+
+
+
+## Installation - Anaconda 
+**1. Clone Github Repository**
+```console
+$ git clone https://github.com/BioHPC/SLUPipe.git
+```
+**2. Download & Install Anacaonda 4.5+**
+
+https://www.anaconda.com/distribution/
+
+**3.A Create an Anaconda Environment**
+```console
+$ conda create -n SLUPipe 
+```
+**4. Activate the Anaconda Environment:**
+```console
+$ source activate SLUPipe
+```
+**5. The SLUPipe will require the following Python packages for it to be functionable**
+
+**biobambam-2.0.87**
+```console
+$ conda install -c bioconda biobambam 
+```
+**bwa.kit-0.7.15**
+```console
+$ conda install -c bioconda bwakit 
+```
+**ensembl-vep 95.3**
+``` console
+$ conda install -c bioconda ensembl-vep=95.3 
+```
+**GenomeAnalysisTK-3.8.0**
+``` console
+$ conda install -c bioconda gatk
+```
+**MuSE 1.0.rc**
+``` console
+$ conda install -c bioconda muse 
+```
+**pandas 0.24.2**
+``` console
+$ conda install -c anaconda pandas 
+```
+**pindel-0.2.5b9**
+``` console
+$ conda install -c bioconda pindel 
+```
+**platypus-opt 1.0.3**
+``` console
+$ conda install -c bioconda platypus-variant 
+```
+**psycopg2 - 2.7.6.1**
+``` console
+$ conda install -c anaconda psycopg2 
+```
+**samtools-1.9**
+``` console 
+$ conda install -c bioconda samtools
+```
+**strelka 2.9.10**
+``` console
+$ conda install -c bioconda strelka 
+```
+**somatic-sniper 1.0.5.0**
+``` console
+$ conda install -c bioconda somatic-sniper 
+```
+**varscan - 2.4.3.2**
+``` console
+$ conda install -c bioconda varscan 
+```
+**vcf2maf - 1.6.16**
+``` console
+$ conda install -c bioconda vcf2maf
+```
+**6. Configuring Ensembl VEP For Variant Annotation & MAF Conversion (Local Cache Installation):**
+   1. Create .vep directory to store offline cache: mkdir ~/.vep
+   2. $ cd $HOME/.vep
+   3. $ curl -O -C - ftp://ftp.ensembl.org/pub/release-95/variation/indexed_vep_cache/homo_sapiens_vep_95_GRCh38.tar.gz
+   4. $ tar xzf homo_sapiens_vep_96_GRCh38.tar.gz
+  
+**Please Note:** Download time will vary depending on time of day (1 Hr+)
+   
+**7. Copying Strelka 2 Configuration File to SLUPipe Working Directory:**
+   1. Locate "configureStrelkaSomaticWorkflow.py" found in SLUPipe conda env bin directory (~/.conda/envs/SLUPipe/bin)
+   2. Copy file into SLUPipe working directory ($SLUPipe/src)
+   
+   ``` console
+   $ cp ~/.conda/envs/SLUPipe/bin/configureStrelkaSomaticWorkflow.py $SLUPipe/src/
+   ```
+   
+   
+   **Please Note:** $SLUIPipePATH is your current working directory (user can check this by typing "pwd" in terminal)
+   
+**Tip:** If unable to locate ./conda/envs/SLUPipe/bin directory, please run the following two commands to locate path:
+```
+$ source activate SLUPipe (start SLUPipe environment)
+$ which python (prints full path related to SLUPipe conda environment)
+```
+
 
 
 

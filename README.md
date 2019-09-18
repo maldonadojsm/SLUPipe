@@ -105,8 +105,8 @@ $ conda env create -f environment.yml (environment.yml can be found in SLUPipe r
 **Please Note:** Download time will vary depending on time of day (1 Hr+)
    
 **5. Configuring Strelka 2:**
-   1. Locate "configureSomaticWorkflow.py" found in conda env bin directory (/.conda/envs/SLUPipe/bin)
-   2. Copy file into SLUPipe working directory (/SLUPipe/src)
+   1. Locate "configureSomaticWorkflow.py" found in conda env bin directory (~/.conda/envs/SLUPipe/bin)
+   2. Copy file into SLUPipe working directory (~/SLUPipe/src)
    
 **Tip:** If unable to locate ./conda/envs/SLUPipe/bin directory, please run the following two commands to locate path:
 ```
@@ -197,8 +197,8 @@ $ conda install -c bioconda vcf2maf
 **Please Note:** Download time will vary depending on time of day (1 Hr+)
    
 **7. Configuring Strelka 2:**
-   1. Locate "configureSomaticWorkflow.py" found in SLUPipe conda env bin directory (/.conda/envs/SLUPipe/bin)
-   2. Copy file into SLUPipe working directory (/SLUPipe/src)
+   1. Locate "configureSomaticWorkflow.py" found in SLUPipe conda env bin directory (~/.conda/envs/SLUPipe/bin)
+   2. Copy file into SLUPipe working directory (~/SLUPipe/src)
    
 **Tip:** If unable to locate ./conda/envs/SLUPipe/bin directory, please run the following two commands to locate path:
 ```

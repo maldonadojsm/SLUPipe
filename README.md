@@ -10,7 +10,7 @@
  + [Requirements](#requirements)
  + [Express Installation - Anaconda](#express-installation---anaconda)
  + [Installation - Anaconda](#installation-anaconda)
- + [Usage - Anaconda](#usage---anaconda)
+ + [Usage - Anaconda](#usage-anaconda)
  + [Usage - Sample Entry/Output](#usage---sample-entryoutput)
  + [Usage - JSON file Configuration](#usage---json-file-configuration)
  + [Usage - Example Workflow](#usage---example-workflow)
@@ -111,7 +111,7 @@ $ conda env create -f environment.yml (environment.yml can be found in SLUPipe r
    2. Copy file into SLUPipe working directory ($SLUPipe/src)
    
    ``` console
-   $ cp ~/.conda/envs/SLUPipe/bin/configureStrelkaSomaticWorkflow.py $SLUPipe/src
+   $ cp ~/.conda/envs/SLUPipe/bin/configureStrelkaSomaticWorkflow.py $SLUPipe/src/
    ```
    
    
@@ -208,7 +208,7 @@ $ conda install -c bioconda vcf2maf
    2. Copy file into SLUPipe working directory ($SLUPipe/src)
    
    ``` console
-   $ cp ~/.conda/envs/SLUPipe/bin/configureStrelkaSomaticWorkflow.py $SLUPipe/src
+   $ cp ~/.conda/envs/SLUPipe/bin/configureStrelkaSomaticWorkflow.py $SLUPipe/src/
    ```
    
    

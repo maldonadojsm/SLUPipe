@@ -92,6 +92,8 @@ https://www.anaconda.com/distribution/
 $ cd SLUPipe
 $ conda env create -f environment.yml (environment.yml can be found in SLUPipe root directory)
 ```
+**IMPORTANT :** $SLUIPipePATH is your current working directory (user can check this by typing "pwd" in terminal)
+
 **Please Note:** Environment creation will take around 30-45 minutes to complete.
 
 **4. Configure Ensembl VEP For Variant Annotation & MAF Conversion (Local Cache Installation):**
@@ -104,9 +106,14 @@ $ conda env create -f environment.yml (environment.yml can be found in SLUPipe r
    
 **Please Note:** Download time will vary depending on time of day (1 Hr+)
    
-**5. Configuring Strelka 2:**
-   1. Locate "configureSomaticWorkflow.py" found in conda env bin directory (~/.conda/envs/SLUPipe/bin)
-   2. Copy file into SLUPipe working directory (~/SLUPipe/src)
+**5. Copying Strelka 2 Configuration File to SLUPipe Working Directory:**
+   1. Locate "configureStrelkaSomaticWorkflow.py" found in conda env bin directory (~/.conda/envs/SLUPipe/bin)
+   2. Copy file into SLUPipe working directory ($SLUPipe/src)
+   
+   ``` console
+   $ cp ~/.conda/envs/SLUPipe/bin/configureStrelkaSomaticWorkflow.py $SLUPipe/src
+   ```
+   
    
 **Tip:** If unable to locate ./conda/envs/SLUPipe/bin directory, please run the following two commands to locate path:
 ```
@@ -196,9 +203,16 @@ $ conda install -c bioconda vcf2maf
   
 **Please Note:** Download time will vary depending on time of day (1 Hr+)
    
-**7. Configuring Strelka 2:**
-   1. Locate "configureSomaticWorkflow.py" found in SLUPipe conda env bin directory (~/.conda/envs/SLUPipe/bin)
-   2. Copy file into SLUPipe working directory (~/SLUPipe/src)
+**7. Copying Strelka 2 Configuration File to SLUPipe Working Directory:**
+   1. Locate "configureStrelkaSomaticWorkflow.py" found in SLUPipe conda env bin directory (~/.conda/envs/SLUPipe/bin)
+   2. Copy file into SLUPipe working directory ($SLUPipe/src)
+   
+   ``` console
+   $ cp ~/.conda/envs/SLUPipe/bin/configureStrelkaSomaticWorkflow.py $SLUPipe/src
+   ```
+   
+   
+   **Please Note:** $SLUIPipePATH is your current working directory (user can check this by typing "pwd" in terminal)
    
 **Tip:** If unable to locate ./conda/envs/SLUPipe/bin directory, please run the following two commands to locate path:
 ```

@@ -78,7 +78,7 @@ class Controller:
         print("Version: v0.1")
         print("         Build Date June 28 2019")
         print("         Build Time 00:43:02")
-        print("         Authors: Dr. Tae-Hyuk (Ted) Ahn , Juan Maldonado , Zohair Siddiqui. St. Louis University, 2019.")
+        print("         Authors: Dr. Tae-Hyuk (Ted) Ahn , Dr. Huazhang Guo, Juan Maldonado , Zohair Siddiqui. St. Louis University, 2019.")
         print()
         print("Usage:   slupipe.py <config.json> -> Execute Pipeline Workflow")
         print("         slupipe.py --update -> Check for most recent software release")

@@ -49,7 +49,7 @@ class Annotator:
         if self.variant_caller_obj.variant_caller_snv_output is not None:
             self.annotator_dict["Input"][1] = self.variant_caller_obj.variant_caller_snv_output
             self.annotator_dict[
-                "Output"][1] = self.output_directory + self.variant_caller_obj.filename + "/annotated_vcf/" + self.variant_caller_obj.filename + "_" + self.variant_caller_obj.variant_caller_id + "snv" + ".annotated.vcf"
+                "Output"][1] = self.output_directory + self.variant_caller_obj.filename + "/annotated_vcf/" + self.variant_caller_obj.filename + "." + self.variant_caller_obj.variant_caller_id + "snv" + ".annotated.vcf"
             self.anno_output_snv_file_path = self.annotator_dict["Output"][1]
             for i in self.annotator_dict.values():
                 for j in i:
@@ -63,7 +63,7 @@ class Annotator:
         Updates Annotated VCF output directory & sample ID needed for MAF Conversion
         """
         self.annotator_dict["Input"][1] = self.variant_caller_obj.variant_caller_output
-        self.annotator_dict["Output"][1] = self.output_directory + self.variant_caller_obj.filename + "/annotated_vcf/" + self.variant_caller_obj.filename + "_" + self.variant_caller_obj.variant_caller_id + ".annotated.vcf"
+        self.annotator_dict["Output"][1] = self.output_directory + self.variant_caller_obj.filename + "/annotated_vcf/" + self.variant_caller_obj.filename + "." + self.variant_caller_obj.variant_caller_id + ".annotated.vcf"
         self.anno_output_file_path = self.annotator_dict["Output"][1]
         self.filename = self.variant_caller_obj.filename
         self.variant_caller_id = self.variant_caller_obj.variant_caller_id

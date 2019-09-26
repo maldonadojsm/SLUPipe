@@ -66,7 +66,7 @@ class Mutect2:
             for j in i:
                 self.mutect2.append(j)
         print("MuTect2: Calling Variants -> " + self.filename)
-        call(self.mutect2)#, stdout=DEVNULL, stderr=DEVNULL)
+        call(self.mutect2, stdout=DEVNULL, stderr=DEVNULL)
         print("Mutect2: Calling Variants Complete -> " + self.filename)
 
     def adjust_tumor_only(self):

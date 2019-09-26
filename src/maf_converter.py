@@ -59,7 +59,7 @@ class mafConverter:
         # SNV VCF Files
         if self.annotated_object.anno_output_snv_file_path is not None:
             self.conversion_dict["Input"][1] = self.annotated_object.anno_output_snv_file_path
-            self.conversion_dict["Output"][1] = self.output_directory + self.annotated_object.filename + "/maf/" + self.annotated_object.filename + "_" + self.annotated_object.variant_caller_id + "snv" + ".maf"
+            self.conversion_dict["Output"][1] = self.output_directory + self.annotated_object.filename + "/maf/" + self.annotated_object.filename + "." + self.annotated_object.variant_caller_id + "snv" + ".maf"
             self.maf_snv_output_file_path = self.conversion_dict["Output"][1]
 
             for i in self.conversion_dict.values():
@@ -76,7 +76,7 @@ class mafConverter:
         """
         # Update Input & Output File Paths
         self.conversion_dict["Input"][1] = self.annotated_object.anno_output_file_path
-        self.conversion_dict["Output"][1] = self.output_directory + self.annotated_object.filename + "/maf/" + self.annotated_object.filename + "_" + self.annotated_object.variant_caller_id + ".maf"
+        self.conversion_dict["Output"][1] = self.output_directory + self.annotated_object.filename + "/maf/" + self.annotated_object.filename + "." + self.annotated_object.variant_caller_id + ".maf"
         self.maf_output_file_path = self.conversion_dict["Output"][1]
 
         # Bind VEP Cache and Script FilePath

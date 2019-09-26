@@ -14,7 +14,7 @@ from subprocess import call, DEVNULL
 
 
 class mafConverter:
-    def __init__(self, annotated_vcf_obj, vep_script, vep_cache, output_dir):
+    def __init__(self, annotated_vcf_obj, vep_script, vep_cache, output_dir, reference_dir):
         """
         Class Constructor
         :param annotated_vcf_obj: Annotator object storing relevant information to process VCF to MAF conversion
@@ -25,6 +25,7 @@ class mafConverter:
         self.vep_script = vep_script
         self.vep_cache = vep_cache
         self.output_directory = output_dir
+        self.reference_dir = reference_dir
         self.conversion_dict = {
             "Exe": ["vcf2maf.pl"],
             "Input": ["--input-vcf", "input_file_path"],
@@ -83,3 +84,6 @@ class mafConverter:
         self.conversion_dict["VEPScript"][1] = self.vep_script
         self.conversion_dict["VEPCache"][1] = self.vep_cache
 
+        # Bind Reference Directory
+
+        self.conversion_dict["Reference"][1] = self.reference_dir + "Homo_sapiens_assembly38.fasta"

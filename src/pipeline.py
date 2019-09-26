@@ -25,7 +25,7 @@ import sys
 
 
 class Pipeline:
-    def __init__(self, user_samples, chromosome_range, vep_script_path, vep_cache_path, pipeline_mode, variant_callers, output_dir):
+    def __init__(self, user_samples, chromosome_range, vep_script_path, vep_cache_path, pipeline_mode, variant_callers, output_dir, reference_dir):
         self.parallel_workflow = []
         self.master_workflow = []
         self.num_variants = 0
@@ -46,6 +46,7 @@ class Pipeline:
         self.set_variant_caller_flags(variant_callers)
         self.variant_annotation_workflow = [list() for i in range(self.num_variants)]
         self.maf_conversion_workflow = [list() for i in range(self.num_variants)]
+        self.reference_dir = reference_dir
 
         #############################################################
 
@@ -207,7 +208,7 @@ class Pipeline:
             # Build Conversion Objects
             for i in range(len(self.maf_conversion_workflow)):
                 for j in range(len(self.variant_annotation_workflow[i])):
-                    self.maf_conversion_workflow[i].append(mc.mafConverter(self.variant_annotation_workflow[i][j], self.vep_script_path, self.vep_cache_path, self.output_directory))
+                    self.maf_conversion_workflow[i].append(mc.mafConverter(self.variant_annotation_workflow[i][j], self.vep_script_path, self.vep_cache_path, self.output_directory, self.reference_dir))
 
             self.master_workflow.append(self.maf_conversion_workflow)
         else:

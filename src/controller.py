@@ -295,7 +295,7 @@ class Controller:
         print()
 
         slu_pipe = pl.Pipeline(self.samplesToProcess, self.chromosome_range, self.vep_script, self.vep_cache,
-                                     self.pipeline_mode, self.variant_callers, self.output_directory)
+                                     self.pipeline_mode, self.variant_callers, self.output_directory, self.reference_directory)
         slu_pipe.run_workflow()
         print()
         print("############################")

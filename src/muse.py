@@ -37,7 +37,7 @@ class Muse:
         self.muse_call_dict = {
             "Exe": ["MuSE", "call"],
             "reference": ["-f", "./referenceFiles/Homo_sapiens_assembly38.fasta"],
-            #"chromosome_range": ["-r", "chr1:16,000,000-215,000,000"],
+            "chromosome_range": ["-r", "chr1:16,000,000-215,000,000"],
             "tumor_bam": ["hcc1143_T_subset50K.bam"],
             "normal_bam": ["hcc1143_N_subset50K.bam"],
             "output": ["-O", "./muse_output/"]
@@ -107,5 +107,5 @@ class Muse:
 
         # Bind Chrome Range
 
-        #self.muse_call_dict["chromosome_range"][1] = self.chromosome_range
+        self.muse_call_dict["chromosome_range"][1] = self.chromosome_range
 

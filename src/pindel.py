@@ -36,7 +36,7 @@ class Pindel:
             "Exe": ["pindel"],
             "reference": ["-f", "./referenceFiles/Homo_sapiens_assembly38.fasta"],
             "configuration_file": ["-i", "config.txt"],
-            #"chromosomeRange": ["-c", "chr6:33,413,000-118,315,000"],
+            "chromosomeRange": ["-c", "chr6:33,413,000-118,315,000"],
             "threads": ["-T", "8"],
             "output": ["-o", "./pindel_output/"]
         }

@@ -25,7 +25,7 @@ import sys
 
 
 class Pipeline:
-    def __init__(self, user_samples, chromosome_range, vep_script_path, vep_cache_path, pipeline_mode, variant_callers, output_dir, reference_dir):
+    def __init__(self, user_samples, chromosome_range, vep_script_path, vep_cache_path, pipeline_mode, variant_callers, output_dir, reference_dir, custom_flag, muse_custom_args=None):
         self.parallel_workflow = []
         self.master_workflow = []
         self.num_variants = 0
@@ -47,6 +47,8 @@ class Pipeline:
         self.variant_annotation_workflow = [list() for i in range(self.num_variants)]
         self.maf_conversion_workflow = [list() for i in range(self.num_variants)]
         self.reference_dir = reference_dir
+        self.custom_flag = custom_flag
+        self.muse_custom_arguments = muse_custom_args
 
         #############################################################
 
@@ -159,9 +161,17 @@ class Pipeline:
             elif flag == 1:
                 for i in self.user_samples:
 
-                    if self.muse_flag == 1:
+                    # MUSE
+
+                    if self.muse_flag == 1 and self.custom_flag == 1:
                         self.muse.append(ms.Muse(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,
-                                                 i.input_directory, i.reference_directory, self.chrome_range))
+                                                 i.input_directory, i.reference_directory, self.chrome_range,self.custom_flag, self.muse_custom_arguments))
+
+                    if self.muse_flag == 1 and self.custom_flag == 0:
+                        self.muse.append(ms.Muse(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,
+                                                 i.input_directory, i.reference_directory, self.chrome_range, self.custom_flag))
+
+                    # MUTECT
 
                     if self.mutect_flag == 1:
                         self.mutect.append(mt.Mutect2(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,

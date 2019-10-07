@@ -19,7 +19,7 @@ from subprocess import call
 
 class Controller:
 
-    def __init__(self, config_dict=None):
+    def __init__(self, custom_flag, config_dict=None, muse_custom=None):
         """
         Class Constructor
         :param config_dict: Python Dictionary Storing Pipeline Configuration
@@ -41,6 +41,9 @@ class Controller:
                 self.node_samples = config_dict[0]["node_samples"]
             else:
                 self.node_samples = None
+            # Custom Args
+            self.muse_custom_args = muse_custom
+            self.custom_flag = custom_flag
 
     def configure_pipeline(self, flag):
         """
@@ -294,9 +297,19 @@ class Controller:
         print("############################")
         print()
 
-        slu_pipe = pl.Pipeline(self.samplesToProcess, self.chromosome_range, self.vep_script, self.vep_cache,
-                                     self.pipeline_mode, self.variant_callers, self.output_directory, self.reference_directory)
-        slu_pipe.run_workflow()
+
+        if self.custom_flag == 0:
+            slu_pipe = pl.Pipeline(self.samplesToProcess, self.chromosome_range, self.vep_script, self.vep_cache,
+                                         self.pipeline_mode, self.variant_callers, self.output_directory, self.reference_directory, self.custom_flag)
+            slu_pipe.run_workflow()
+
+
+        if self.custom_flag == 1:
+            slu_pipe = pl.Pipeline(self.samplesToProcess, self.chromosome_range, self.vep_script, self.vep_cache,
+                                         self.pipeline_mode, self.variant_callers, self.output_directory, self.reference_directory, self.custom_flag, self.muse_custom_args)
+            slu_pipe.run_workflow()
+
+
         print()
         print("############################")
         print(" PIPELINE WORKFLOW COMPLETE")

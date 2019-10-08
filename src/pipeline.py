@@ -23,9 +23,9 @@ import strelka as sl
 import maf_merger as mf
 import sys
 
-
+# ADD LATER: Send JSON files to Pipeline class as a struct. It's cleaner.
 class Pipeline:
-    def __init__(self, user_samples, chromosome_range, vep_script_path, vep_cache_path, pipeline_mode, variant_callers, output_dir, reference_dir, custom_flag, muse_custom_args=None):
+    def __init__(self, user_samples, chromosome_range, vep_script_path, vep_cache_path, pipeline_mode, variant_callers, output_dir, reference_dir, custom_flag, muse_custom_args=None, mutect_custom_args=None):
         self.parallel_workflow = []
         self.master_workflow = []
         self.num_variants = 0
@@ -173,9 +173,17 @@ class Pipeline:
 
                     # MUTECT
 
-                    if self.mutect_flag == 1:
+                    if self.mutect_flag == 1 and self.custom_flag == 0:
                         self.mutect.append(mt.Mutect2(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,
-                                                      i.input_directory, i.reference_directory, self.chrome_range))
+                                                      i.input_directory, i.reference_directory, self.chrome_range,self.custom_flag))
+
+                    if self.mutect_flag == 1 and self.custom_flag == 1:
+                        self.mutect.append(mt.Mutect2(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,
+                                                      i.input_directory, i.reference_directory, self.chrome_range,
+                                                      self.custom_flag, self.custom_mutect_arguments))
+
+                    # VARSCAN
+
 
                     if self.varscan_flag:
                         self.varscan.append(vs.Varscan(i.normal_bam, i.tumor_bam, i.filename,

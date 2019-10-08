@@ -1,0 +1,19 @@
+
+[
+  {
+    "mutect2": {
+      "-R": "./referenceFiles/Homo_sapiens_assembly38.fasta",
+      "-I:tumor": "",
+      "-I:normal": "",
+      "--normal_panel": "./referenceFiles/1kg_40_m2pon_sitesonly_subset50k.vcf",
+      "--dbsnp": "./referenceFiles/dbSNP142_GRCh38_subset50k.vcf",
+      "-nct": "4",
+      "-L": "chr6:33,413,000-118,315,000",
+      "-o": "./mutect2_output/"
+    }
+  }
+]
+
+
+
+

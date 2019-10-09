@@ -210,7 +210,7 @@ class Pipeline:
 
                     if self.strelka_flag == 1 and self.custom_flag == 0:
                         self.strelka2.append(sl.Strelka(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,
-                                                        i.input_directory, i.reference_directory, self.custom_flag))
+                                                        i.input_directory, i.reference_directory))
 
                     if self.strelka_flag == 1 and self.custom_flag == 1:
                         self.strelka2.append(sl.Strelka(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,

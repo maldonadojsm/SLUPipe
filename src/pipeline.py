@@ -25,7 +25,7 @@ import sys
 
 # ADD LATER: Send JSON files to Pipeline class as a struct. It's cleaner.
 class Pipeline:
-    def __init__(self, user_samples, chromosome_range, vep_script_path, vep_cache_path, pipeline_mode, variant_callers, output_dir, reference_dir, custom_flag, muse_custom_args=None, mutect_custom_args=None):
+    def __init__(self, user_samples, chromosome_range, vep_script_path, vep_cache_path, pipeline_mode, variant_callers, output_dir, reference_dir, custom_flag, muse_custom_args=None, mutect_custom_args=None, custom_varscan_arg=None, custom_sniper_args=None, custom_strelka_args=None):
         self.parallel_workflow = []
         self.master_workflow = []
         self.num_variants = 0
@@ -49,6 +49,10 @@ class Pipeline:
         self.reference_dir = reference_dir
         self.custom_flag = custom_flag
         self.muse_custom_arguments = muse_custom_args
+        self.custom_mutect_arguments = mutect_custom_args
+        self.custom_sniper_arguments = custom_sniper_args
+        self.custom_varscan_arguments = custom_varscan_arg
+        self.custom_strelka_arguments = custom_strelka_args
 
         #############################################################
 
@@ -175,7 +179,7 @@ class Pipeline:
 
                     if self.mutect_flag == 1 and self.custom_flag == 0:
                         self.mutect.append(mt.Mutect2(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,
-                                                      i.input_directory, i.reference_directory, self.chrome_range,self.custom_flag))
+                                                      i.input_directory, i.reference_directory, self.chrome_range, self.custom_flag))
 
                     if self.mutect_flag == 1 and self.custom_flag == 1:
                         self.mutect.append(mt.Mutect2(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,
@@ -184,18 +188,33 @@ class Pipeline:
 
                     # VARSCAN
 
-
-                    if self.varscan_flag:
+                    if self.varscan_flag == 1 and self.custom_flag == 0:
                         self.varscan.append(vs.Varscan(i.normal_bam, i.tumor_bam, i.filename,
-                                                       i.results_directory, i.input_directory, i.reference_directory))
+                                                       i.results_directory, i.input_directory, i.reference_directory, self.custom_flag))
 
-                    if self.sniper_flag == 1:
+                    if self.varscan_flag == 1 and self.custom_flag == 1:
+                        self.varscan.append(vs.Varscan(i.normal_bam, i.tumor_bam, i.filename,
+                                                       i.results_directory, i.input_directory, i.reference_directory, self.custom_flag, self.custom_mutect_arguments))
+
+                    # SOMATIC SNIPER
+
+                    if self.sniper_flag == 1 and self.custom_flag == 0:
                         self.sniper.append(sp.Sniper(i.normal_bam, i.tumor_bam, i.filename,
-                                                     i.results_directory, i.input_directory, i.reference_directory))
+                                                     i.results_directory, i.input_directory, i.reference_directory, self.custom_flag))
 
-                    if self.strelka_flag == 1:
+                    if self.sniper_flag == 1 and self.custom_flag == 1:
+                        self.sniper.append(sp.Sniper(i.normal_bam, i.tumor_bam, i.filename,
+                                                     i.results_directory, i.input_directory, i.reference_directory, self.custom_flag, self.custom_sniper_arguments))
+
+                    # STRELKA
+
+                    if self.strelka_flag == 1 and self.custom_flag == 0:
                         self.strelka2.append(sl.Strelka(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,
-                                                        i.input_directory, i.reference_directory))
+                                                        i.input_directory, i.reference_directory, self.custom_flag))
+
+                    if self.strelka_flag == 1 and self.custom_flag == 1:
+                        self.strelka2.append(sl.Strelka(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,
+                                                        i.input_directory, i.reference_directory, self.custom_flag, self.custom_strelka_arguments))
 
                 # Add variant caller objects into variant caller workflow list
 

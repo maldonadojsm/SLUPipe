@@ -12,10 +12,12 @@
 
 from subprocess import call, DEVNULL
 import os
+import json
 
 
 class Sniper:
-    def __init__(self, normal_bam, tumor_bam, filename, result_directory, input_directory, reference_directory):
+    def __init__(self, normal_bam, tumor_bam, filename, result_directory, input_directory, reference_directory, flag,
+                 json_arg_file=None):
         """
         Class Constructor
         :param normal_bam: normal BAM file
@@ -31,9 +33,14 @@ class Sniper:
         self.result_directory = result_directory + "vcf/somatic_sniper_output/"
         self.input_directory = input_directory
         self.reference_directory = reference_directory
+        self.flag = flag
+        if self.flag == 1:
+            with open(json_arg_file, 'r') as json_file:
+                data = json.load(json_file)
+                self.custom_mutect_dict = {i: j for i, j in data[0]['bam_somatic_sniper'].items()}
 
         self.sniper_dict = {
-            "Exe": ["bam-somaticsniper"],
+
             "qualityFilter": ["-q", "1"],
             "omitVariantsLOH": ["-L", "-G"],
             "SomaticSnvQuality": ["-Q", "15"],
@@ -50,7 +57,7 @@ class Sniper:
             "output": ["./sniper_output/"]
         }
         self.file_header = "1i #SomaticSniper"
-        self.sniper = []
+        self.sniper = ["bam-somaticsniper"]
         self.variant_caller_output = ""
         self.variant_caller_snv_output = None
         self.variant_caller_id = "sniper"
@@ -81,13 +88,27 @@ class Sniper:
         Update Output file paths needed to process Annotation Workflow
         Updates Input & Reference File paths
         """
-        self.sniper_dict["tumor_bam"][0] = self.input_directory+ self.tumor_bam
-        self.sniper_dict["normal_bam"][0] = self.input_directory + self.normal_bam
-        self.sniper_dict["output"][0] = self.result_directory + self.filename + ".vcf"
-        self.variant_caller_output += self.sniper_dict["output"][0]
+        if self.flag == 0:
+            self.sniper_dict["tumor_bam"][0] = self.input_directory + self.tumor_bam
+            self.sniper_dict["normal_bam"][0] = self.input_directory + self.normal_bam
+            self.sniper_dict["output"][0] = self.result_directory + self.filename + ".vcf"
+            self.variant_caller_output += self.sniper_dict["output"][0]
 
-        # Update Reference file path
+            # Update Reference file path
 
-        self.sniper_dict["reference"][1] = self.reference_directory + "Homo_sapiens_assembly38.fasta"
+            self.sniper_dict["reference"][1] = self.reference_directory + "Homo_sapiens_assembly38.fasta"
 
+        if self.flag == 1:
+
+            for i, j in self.custom_mutect_dict.items():
+                self.sniper.append(i)
+                self.sniper.append(j)
+
+            self.sniper.append("-f")
+            self.sniper.append(self.reference_directory + "Homo_sapiens_assembly38.fasta")
+            self.sniper.append(self.input_directory + self.tumor_bam)
+            self.sniper.append(self.input_directory + self.normal_bam)
+            self.sniper.append(self.result_directory + self.filename + ".vcf")
+
+            self.variant_caller_output += self.result_directory + self.filename + ".vcf"
 

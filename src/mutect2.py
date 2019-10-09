@@ -12,6 +12,7 @@
 
 
 from subprocess import call, DEVNULL
+import json
 import os
 
 
@@ -113,23 +114,22 @@ class Mutect2:
         # Custom Mode
         if self.flag == 1:
             if self.normal_bam is None:
-                self.mutect_dict["-I:tumor"] = self.input_directory + self.tumor_bam
+                self.custom_mutect_dict["-I:tumor"] = self.input_directory + self.tumor_bam
             else:
-                self.mutect_dict["-I:tumor"] = self.input_directory + self.tumor_bam
-                self.mutect_dict["-I:normal"] = self.input_directory + self.normal_bam
-                self.mutect_dict["--normal_panel"] = self.reference_directory + "1kg_40_m2pon_sitesonly_subset50k.vcf"
-                self.mutect_dict["--dbsnp"] = self.reference_directory + "dbSNP142_GRCh38_subset50k.vcf"
-            self.mutect_dict["-o"] = self.result_directory + self.filename + ".vcf"
+                self.custom_mutect_dict["-I:tumor"] = self.input_directory + self.tumor_bam
+                self.custom_mutect_dict["-I:normal"] = self.input_directory + self.normal_bam
+                self.custom_mutect_dict["--normal_panel"] = self.reference_directory + "1kg_40_m2pon_sitesonly_subset50k.vcf"
+                self.custom_mutect_dict["--dbsnp"] = self.reference_directory + "dbSNP142_GRCh38_subset50k.vcf"
+            self.custom_mutect_dict["-o"] = self.result_directory + self.filename + ".vcf"
             self.variant_caller_output += self.mutect_dict["-o"]
 
             # Bind Reference & DBSNP Files
 
-            self.mutect_dict["-R"] = self.reference_directory + "Homo_sapiens_assembly38.fasta"
+            self.custom_mutect_dict["-R"] = self.reference_directory + "Homo_sapiens_assembly38.fasta"
 
             # Bind Chromosome Range
 
-            self.mutect_dict["-L"] = self.chrome_range
-
+            self.custom_mutect_dict["-L"] = self.chrome_range
 
             for i,j in self.custom_mutect_dict.items():
                 self.mutect2.append(i)

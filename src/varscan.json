@@ -1,0 +1,31 @@
+
+[
+  {
+
+    "varscan_somatic": {
+      "--mpileup": "1",
+      "--min-coverage": "8",
+      "--min-coverage-normal": "8",
+      "--min-coverage-tumor": "6",
+      "--min-var-freq": "0.10",
+      "--min-freq-for-hom":"0.75",
+      "--normal-purity": "1.0",
+      "--tumor-purity":"1.00",
+      "--p-value": "0.99",
+      "--somatic-p-value":"0.05",
+      "--strand-filter": "0"
+
+
+
+    },
+
+    "varscan_processSomatic": {
+      "--min-tumor-freq": "0.10",
+      "--max-normal-freq": "0.05",
+      "--p-value": "0.07"
+
+    }
+  }
+
+]
+

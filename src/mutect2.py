@@ -121,7 +121,7 @@ class Mutect2:
                 self.custom_mutect_dict["--normal_panel"] = self.reference_directory + "1kg_40_m2pon_sitesonly_subset50k.vcf"
                 self.custom_mutect_dict["--dbsnp"] = self.reference_directory + "dbSNP142_GRCh38_subset50k.vcf"
             self.custom_mutect_dict["-o"] = self.result_directory + self.filename + ".vcf"
-            self.variant_caller_output += self.mutect_dict["-o"]
+            self.variant_caller_output += self.custom_mutect_dict["-o"]
 
             # Bind Reference & DBSNP Files
 

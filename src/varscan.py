@@ -76,11 +76,11 @@ class Varscan:
         """
         Execute Variant Caller Workflow
         """
+        for i in self.samtools_dict.values():
+            for j in i:
+                self.samtools.append(j)
         # Samtools
         if self.flag == 0:
-            for i in self.samtools_dict.values():
-                for j in i:
-                    self.samtools.append(j)
             # Varscan Somatic
             for i in self.varscan_somatic_dict.values():
                 for j in i:
@@ -162,7 +162,7 @@ class Varscan:
                 self.process_snv.append(i)
                 self.process_snv.append(j)
 
-            self.variant_caller_output = "./varscan_output/" + self.result_directory + self.filename + ".indel.vcf"
-            self.variant_caller_snv_output = "./varscan_output/" + self.result_directory + self.filename + ".snv.vcf"
+            self.variant_caller_output += self.result_directory + self.filename + ".indel.vcf"
+            self.variant_caller_snv_output +=  + self.result_directory + self.filename + ".snv.vcf"
 
 

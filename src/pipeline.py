@@ -48,11 +48,11 @@ class Pipeline:
         self.maf_conversion_workflow = [list() for i in range(self.num_variants)]
         self.reference_dir = reference_dir
         self.custom_flag = custom_flag
-        self.muse_custom_arguments = muse_custom_args
-        self.custom_mutect_arguments = mutect_custom_args
-        self.custom_sniper_arguments = custom_sniper_args
-        self.custom_varscan_arguments = custom_varscan_arg
-        self.custom_strelka_arguments = custom_strelka_args
+        self.custom_muse_arguments = muse_custom_args
+        self.custom_mutect_arguments = muse_custom_args
+        self.custom_sniper_arguments = muse_custom_args
+        self.custom_varscan_arguments = muse_custom_args
+        self.custom_strelka_arguments = muse_custom_args
 
         #############################################################
 
@@ -169,7 +169,7 @@ class Pipeline:
 
                     if self.muse_flag == 1 and self.custom_flag == 1:
                         self.muse.append(ms.Muse(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,
-                                                 i.input_directory, i.reference_directory, self.chrome_range,self.custom_flag, self.muse_custom_arguments))
+                                                 i.input_directory, i.reference_directory, self.chrome_range,self.custom_flag, self.custom_muse_arguments))
 
                     if self.muse_flag == 1 and self.custom_flag == 0:
                         self.muse.append(ms.Muse(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,
@@ -194,7 +194,7 @@ class Pipeline:
 
                     if self.varscan_flag == 1 and self.custom_flag == 1:
                         self.varscan.append(vs.Varscan(i.normal_bam, i.tumor_bam, i.filename,
-                                                       i.results_directory, i.input_directory, i.reference_directory, self.custom_flag, self.custom_mutect_arguments))
+                                                       i.results_directory, i.input_directory, i.reference_directory, self.custom_flag, self.custom_varscan_arguments))
 
                     # SOMATIC SNIPER
 
@@ -214,7 +214,7 @@ class Pipeline:
 
                     if self.strelka_flag == 1 and self.custom_flag == 1:
                         self.strelka2.append(sl.Strelka(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,
-                                                        i.input_directory, i.reference_directory, self.custom_flag, self.custom_strelka_arguments))
+                                                        i.input_directory, i.reference_directory))
 
                 # Add variant caller objects into variant caller workflow list
 

@@ -13,6 +13,7 @@
  + [Usage - Sample Entry/Output](#usage---sample-entryoutput)
  + [Usage - JSON file Configuration](#usage---json-file-configuration)
  + [Usage - Example Workflow](#usage---example-workflow)
+ + [Usage - Customizing SLUPipe Variant Callers](#usage---customizing-slupipe-variant-callers)
  + [Usage - SLUPipe Configuration for High Performance Computing - SLURM](#usage---slupipe-configuration-for-high-performance-computing---slurm)
  + [Manual Installation - Anaconda](#manual-installation-anaconda)
  
@@ -306,6 +307,166 @@ Users are able to customize SLUPipe workflows to their needs via JSON configurat
     FAM131C 0	.	GRCh38  chr1    16063558        16063558        +	Missense_Mutation	SNP     C	C	T	rs755896471             TUMOR   NORMAL  C	C                                                                                                                               c.101G>A        p.Arg34His	p.R34H  ENST00000375662 2/7     42	38	4	50	50	0	FAM131C,missense_variant,p.Arg34His,ENST00000375662,NM_182623.2;FAM131C,intron_variant,,ENST00000494078,;	T	ENSG00000185519 ENST00000375662 Transcript	missense_variant        285/1695        101/843 34/280  R/H     cGc/cAc rs755896471,COSM6378897 1               -1	FAM131C HGNC    HGNC:26717	protein_coding  YES     CCDS41270.1     ENSP00000364814 Q96AQ9          UPI000022B016   NM_182623.2     tolerated(1)    benign(0)	2/7             hmmpanther:PTHR15736:SF2,hmmpanther:PTHR15736                                                                                   0,1                                             MODERATE        1	SNV     1               0,1                                                                                     Tier5   GCG     .	.                                                                                               2.442e-05               2.979e-05               5.806e-05                               0.00013000000$
     MRPS15  0	.	GRCh38  chr1    36455626        36455626        +	3'Flank SNP     A	A	G	rs2275479               TUMOR   NORMAL  A	A                                                                                                                                                       ENST00000373116         13	11	2	13	13	0	MRPS15,downstream_gene_variant,,ENST00000373116,NM_031280.3;MRPS15,downstream_gene_variant,,ENST00000462067,;MRPS15,downstream_gene_variant,,ENST00000477040,;MRPS15,downstream_gene_variant,,ENST00000488606,; G	ENSG00000116898 ENST00000373116 Transcript	downstream_gene_variant                                         rs2275479	1	92.0    -1	MRPS15  HGNC    HGNC:14504	protein_coding  YES     CCDS411.1	ENSP00000362208 P82914          UPI0000135287   NM_031280.3                                             0.1358  0.0802  0.1297          0.3065  0.0905  0.0859                                                                          MODIFIER        1	SNV     1                                                                                                       Tier5   TAA     .	.                                                                                                                                                                       36455626        maf
     CENPF   0	.	GRCh38  chr1    214608652	214608652	+	Intron  SNP     G	G	A	rs1482929177            TUMOR   NORMAL  G	G                                                                                                                               c.-41-5062G>A                   ENST00000366955         57	45	11	19	19	0	CENPF,intron_variant,,ENST00000366955,NM_016343.3;CENPF,intron_variant,,ENST00000464322,;CENPF,intron_variant,,ENST00000495259,;,regulatory_region_variant,,ENSR00000386218,;ABHD17AP3,non_coding_transcript_exon_variant,,ENST00000503096,;UBE2V1P13,downstream_gene_variant,,ENST00000436983,;        A	ENSG00000117724 ENST00000366955 Transcript	intron_variant                                          rs1482929177    1               1	CENPF   HGNC    HGNC:1857	protein_coding  YES     CCDS31023.1     ENSP00000355922 P49454          UPI00001AE985   NM_016343.3                             1/19                                                                                                                                            MODIFIER        1	SNV     1                                                                                               1.0     PASS    CGG     .	.                                                                                                                    $
+
+## Usage - Customizing SLUPipe's Variant Callers
+SLUPipe's variant callers by default run GDC Guideline arguments. However, each variant caller can be customized to tailor to a user's need. This is accomplished by providing a JSON file during SLUPipe's execution:
+```console
+$ python3 slupipe.py config.json <muse.json> <mutect.json> <varscan.json> <sniper.json> ...
+```
+Please Note: You're not required to provide a JSON file for variant callers you don't intend to run custom arguments. SLUPipe will keep running those variant callers using the base configuration. 
+
+**Creating Custom Variant Caller Files**
+
+Custom variant caller arguments must abide to the following formats:
+
+Muse:
+
+    [
+      {
+        "call": {
+          "-f": "./referenceFiles/Homo_sapiens_assembly38.fasta",
+          "-r": "chr1:16,000,000-215,000,000",
+          "-O":  "./muse_output/"
+    
+        },
+    
+        "sump": {
+          "-I": "./muse_output/muse_call.MuSE.txt",
+          "-E": "",
+          "-D": "./referenceFiles/dbSNP142_GRCh38_subset50k.vcf.gz",
+          "-O": "./muse_output/"
+    
+        }
+    
+      }
+    ]
+    
+**IMPORTANT**: Name config file "muse.json" otherwise SLUPipe won't detect it.    
+
+Mutect:
+
+    [
+      {
+        "mutect2": {
+          "-nct": "8"
+        }
+      }
+    ]
+
+**IMPORTANT**: Name config file "mutect.json" otherwise SLUPipe won't detect it. 
+
+Varscan: 
+    [
+      {
+    
+        "samtools": {
+          "-q": "1"
+        },
+    
+        "varscan_somatic": {
+          "--mpileup": "1",
+          "--min-coverage": "8",
+          "--min-coverage-normal": "8",
+          "--min-coverage-tumor": "6",
+          "--min-var-freq": "0.10",
+          "--min-freq-for-hom":"0.75",
+          "--normal-purity": "1.0",
+          "--tumor-purity":"1.00",
+          "--p-value": "0.99",
+          "--somatic-p-value":"0.05",
+          "--strand-filter": "0"
+    
+    
+    
+        },
+    
+        "varscan_processSomatic": {
+          "--min-tumor-freq": "0.10",
+          "--max-normal-freq": "0.05",
+          "--p-value": "0.07"
+    
+        }
+      }
+    
+    ]
+
+**IMPORTANT**: Name config file "varscan.json" otherwise SLUPipe won't detect it. 
+
+Bam Somatic Sniper
+
+    [
+      {
+    
+        "bam_somatic_sniper": {
+          "-q": "1",
+          "-L": "-G",
+          "-Q": "15",
+          "-s": "0.01",
+          "-T": "0.85",
+          "-N": "2",
+          "-r": "0.001",
+          "-n": "NORMAL",
+          "-t": "TUMOR",
+          "-F": "vcf"
+        }
+    
+      }
+    
+    ]
+
+
+**IMPORTANT**: Name config file "sniper.json" otherwise SLUPipe won't detect it. 
+
+Strelka 2
+
+    [
+      {
+        "strelka_config": {
+          "--outputCallableRegions": "",
+          "--exome": ""
+        },
+    
+        "strelka_run": {
+          "-m": "local",
+          "-j": "4"
+        }
+      }
+    ]
+
+**IMPORTANT**: Name config file "strelka.json" otherwise SLUPipe won't detect it. 
+
+Pindel 
+
+    [
+      {
+    
+        "pindel_read": {
+          "-T": "4"
+        },
+    
+        "pindel2vcf": {
+          "-R": "Homo_Sapiens_Assembly38",
+          "-d": "20101123"
+        }
+      }
+    
+    ]
+
+**IMPORTANT**: Name config file "strelka.json" otherwise SLUPipe won't detect it. 
+
+Platypus
+
+    [
+      {
+        "call_Variants": {
+          "--nCPU=": "4"
+        }
+      }
+    ]
+    
+**IMPORTANT**: Name config file "platypus.json" otherwise SLUPipe won't detect it. 
+
+
 
 
 ## Usage - SLUPipe Configuration for High Performance Computing - SLURM

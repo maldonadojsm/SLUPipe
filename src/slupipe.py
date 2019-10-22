@@ -44,7 +44,7 @@ def main():
     """
     parser = argparse.ArgumentParser(description="Process Custom Variant Caller Configs")
 
-    parser.add_argument('slupipe_conf',metavar='<config.json>', action='store', type=str, help='SLUPipe Config File')
+    parser.add_argument('slupipe_conf',nargs='?', help='SLUPipe Configuration File', default='')
     parser.add_argument('variant_one', nargs='?', help='Variant Caller Config 1', default='')
     parser.add_argument('variant_two', nargs='?', help='Variant Caller Config 2',default='')
     parser.add_argument('variant_three',nargs='?', help='Variant Caller Config 3',default='')
@@ -53,25 +53,28 @@ def main():
 
     args = parser.parse_args()
 
-    variant_caller = ["muse.json", "mutect.json", "varscan.json", "sniper.json"]
+    variant_caller = ["muse.json", "mutect.json", "varscan.json", "sniper.json",]
+    custom_files = []
+
+    # Store the JSON into list. List will then be fed to Controller
     if args.variant_one:
         if args.variant_one in variant_caller:
-            print(os.path.abspath(args.variant_one))
+            custom_files.append(args.variant_one)
     if args.variant_two:
         if args.variant_two in variant_caller:
-            print(os.path.abspath(args.variant_two))
+            custom_files.append(args.variant_two)
 
     if args.variant_three:
         if args.variant_three in variant_caller:
-            print(os.path.abspath(args.variant_three))
+            custom_files.append(args.variant_three)
 
     if args.variant_four:
         if args.variant_four in variant_caller:
-            print(os.path.abspath(args.variant_four))
+            custom_files.append(args.variant_four)
 
     if args.variant_five:
         if args.variant_five in variant_caller:
-            print(os.path.abspath(args.variant_five))
+            custom_files.append(args.variant_five)
 
 
 
@@ -89,7 +92,7 @@ def main():
             slu_pipe = cn.Controller(0,config_dict)
             slu_pipe.configure_pipeline(0)
     # Test MuSE
-    elif len(sys.argv) == 3:
+    elif len(sys.argv) >= 3:
         # User has indicated to check for updates
         if sys.argv[1] == "--update":
             check_version()
@@ -104,7 +107,7 @@ def main():
             print(args)
 
             print(os.path.abspath(sys.argv[2]))
-            slu_pipe = cn.Controller(1, config_dict, os.path.abspath(sys.argv[2]))
+            slu_pipe = cn.Controller(1, config_dict, custom_files)
             slu_pipe.configure_pipeline(0)
 
 
@@ -116,9 +119,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-

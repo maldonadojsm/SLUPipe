@@ -22,10 +22,11 @@ import platypus as py
 import strelka as sl
 import maf_merger as mf
 import sys
+import os
 
 # ADD LATER: Send JSON files to Pipeline class as a struct. It's cleaner.
 class Pipeline:
-    def __init__(self, user_samples, chromosome_range, vep_script_path, vep_cache_path, pipeline_mode, variant_callers, output_dir, reference_dir, custom_flag, muse_custom_args=None, mutect_custom_args=None, custom_varscan_arg=None, custom_sniper_args=None, custom_strelka_args=None):
+    def __init__(self, user_samples, chromosome_range, vep_script_path, vep_cache_path, pipeline_mode, variant_callers, output_dir, reference_dir, custom_flag,custom_files=None):
         self.parallel_workflow = []
         self.master_workflow = []
         self.num_variants = 0
@@ -48,11 +49,33 @@ class Pipeline:
         self.maf_conversion_workflow = [list() for i in range(self.num_variants)]
         self.reference_dir = reference_dir
         self.custom_flag = custom_flag
-        self.custom_muse_arguments = muse_custom_args
-        self.custom_mutect_arguments = muse_custom_args
-        self.custom_sniper_arguments = muse_custom_args
-        self.custom_varscan_arguments = muse_custom_args
-        self.custom_strelka_arguments = muse_custom_args
+        if custom_files is not None:
+
+            if "muse.json" in custom_files:
+                self.custom_muse_arguments = os.path.abspath(custom_files[custom_files.index('muse.json')])
+            if "mutect.json" in custom_files:
+                self.custom_mutect_arguments = os.path.abspath(custom_files[custom_file.index('mutect.json')])
+            if "sniper.json" in custom_files:
+                self.custom_sniper_arguments = os.path.abspath(custom_files[custom_files.index('sniper.json')])
+            if "varscan.json" in custom_files:
+                self.custom_varscan_arguments = os.path.abspath(custom_files[custom_files.index('varscan.json')])
+
+        if custom_files is None:
+
+            self.custom_muse_arguments = "./config_files/muse.json"
+
+            self.custom_mutect_arguments = "./config_files/mutect.json"
+
+            self.custom_sniper_arguments = "./config_files/sniper.json"
+
+            self.custom_varscan_arguments = "./config_files/varscan.json"
+
+            self.custom_pindel_arguments = "./config_files/pindel.json"
+
+            self.custom_strelka_arguments = "./config_files/strelka.json"
+
+            self.custom_platypus_arguments = "./config_files/platypus.json"
+
 
         #############################################################
 
@@ -251,17 +274,17 @@ class Pipeline:
         else:
             print("ERROR: Config.json file hasn't been constructed correctly. Please see guidelines for further information.")
             sys.exit(1)
-               
+
     def parallelize_processes(self):
         """
-        parallelizes workflow generated from build_workflow method. 
+        parallelizes workflow generated from build_workflow method.
         """
         for i in range(len(self.master_workflow)):
             for j in self.master_workflow[i]:
                 parallel_process = pl.ParallelP(j)
                 parallel_process.construct_threads(i)
                 self.parallel_workflow.append(parallel_process)
-                
+
     def merge_maf(self):
         """
         Consolidates all generated maf files into a final.maf file
@@ -273,6 +296,3 @@ class Pipeline:
         filenames = list(dict.fromkeys(filenames))
         for i in filenames:
             mf.merge_maf(i, self.output_directory)
-
-
-

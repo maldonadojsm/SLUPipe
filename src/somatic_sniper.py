@@ -16,7 +16,7 @@ import json
 
 
 class Sniper:
-    def __init__(self, normal_bam, tumor_bam, filename, result_directory, input_directory, reference_directory, flag,
+    def __init__(self, normal_bam, tumor_bam, filename, result_directory, input_directory, reference_directory,
                  json_arg_file=None):
         """
         Class Constructor
@@ -33,29 +33,11 @@ class Sniper:
         self.result_directory = result_directory + "vcf/somatic_sniper_output/"
         self.input_directory = input_directory
         self.reference_directory = reference_directory
-        self.flag = flag
-        if self.flag == 1:
-            with open(json_arg_file, 'r') as json_file:
-                data = json.load(json_file)
-                self.custom_mutect_dict = {i: j for i, j in data[0]['bam_somatic_sniper'].items()}
 
-        self.sniper_dict = {
+        with open(json_arg_file, 'r') as json_file:
+            data = json.load(json_file)
+            self.custom_varscan_dict = {i: j for i, j in data[0]['bam_somatic_sniper'].items()}
 
-            "qualityFilter": ["-q", "1"],
-            "omitVariantsLOH": ["-L", "-G"],
-            "SomaticSnvQuality": ["-Q", "15"],
-            "priorProbSomatic": ["-s", "0.01"],
-            "thetaMaqConsensus": ["-T", "0.85"],
-            "numHalotypes": ["-N", "2"],
-            "priorDifHalotypes": ["-r", "0.001"],
-            "normalID": ["-n", "NORMAL"],
-            "tumorID": ["-t", "TUMOR"],
-            "outputFormat": ["-F", "vcf"],
-            "reference": ["-f", "./referenceFiles/Homo_sapiens_assembly38.fasta"],
-            "tumor_bam": ["hcc1143_T_subset50K.bam"],
-            "normal_bam": ["hcc1143_N_subset50K.bam"],
-            "output": ["./sniper_output/"]
-        }
         self.file_header = "1i #SomaticSniper"
         self.sniper = ["bam-somaticsniper"]
         self.variant_caller_output = ""
@@ -68,9 +50,6 @@ class Sniper:
         """
         Execute Variant Caller Workflow
         """
-        for i in self.sniper_dict.values():
-            for j in i:
-                self.sniper.append(j)
 
         print("Somatic Sniper: Calling Variants -> " + self.filename)
         call(self.sniper, stdout=DEVNULL, stderr=DEVNULL)
@@ -88,27 +67,15 @@ class Sniper:
         Update Output file paths needed to process Annotation Workflow
         Updates Input & Reference File paths
         """
-        if self.flag == 0:
-            self.sniper_dict["tumor_bam"][0] = self.input_directory + self.tumor_bam
-            self.sniper_dict["normal_bam"][0] = self.input_directory + self.normal_bam
-            self.sniper_dict["output"][0] = self.result_directory + self.filename + ".vcf"
-            self.variant_caller_output += self.sniper_dict["output"][0]
 
-            # Update Reference file path
+        for i, j in self.custom_varscan_dict.items():
+            self.sniper.append(i)
+            self.sniper.append(j)
 
-            self.sniper_dict["reference"][1] = self.reference_directory + "Homo_sapiens_assembly38.fasta"
+        self.sniper.append("-f")
+        self.sniper.append(self.reference_directory + "Homo_sapiens_assembly38.fasta")
+        self.sniper.append(self.input_directory + self.tumor_bam)
+        self.sniper.append(self.input_directory + self.normal_bam)
+        self.sniper.append(self.result_directory + self.filename + ".vcf")
 
-        if self.flag == 1:
-
-            for i, j in self.custom_mutect_dict.items():
-                self.sniper.append(i)
-                self.sniper.append(j)
-
-            self.sniper.append("-f")
-            self.sniper.append(self.reference_directory + "Homo_sapiens_assembly38.fasta")
-            self.sniper.append(self.input_directory + self.tumor_bam)
-            self.sniper.append(self.input_directory + self.normal_bam)
-            self.sniper.append(self.result_directory + self.filename + ".vcf")
-
-            self.variant_caller_output += self.result_directory + self.filename + ".vcf"
-
+        self.variant_caller_output += self.result_directory + self.filename + ".vcf"

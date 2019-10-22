@@ -18,7 +18,7 @@ import os
 
 class Mutect2:
     def __init__(self, normal_bam, tumor_bam, filename, result_directory, input_directory,
-                 reference_directory, chromosome_range, flag, json_arg_file=None):
+                 reference_directory, chromosome_range, json_arg_file=None):
         """
         Class Constructor
         :param normal_bam: normal BAM file
@@ -36,25 +36,11 @@ class Mutect2:
         self.chrome_range = chromosome_range
         self.input_directory = input_directory
         self.reference_directory = reference_directory
-        self.flag = flag
-        if self.flag == 1:
-            with open(json_arg_file, 'r') as json_file:
-                data = json.load(json_file)
-                self.custom_mutect_dict = {i: j for i, j in data[0]['mutect2'].items()}
 
-        self.mutect_dict = {
-            "reference": ["-R", "./referenceFiles/Homo_sapiens_assembly38.fasta"],
-            "tumor_bam": ["-I:tumor", "hcc1143_T_subset50K.bam"],
-            "normal_bam": ["-I:normal", "hcc1143_N_subset50K.bam"],
-            "normalPanel": ["--normal_panel", "./referenceFiles/1kg_40_m2pon_sitesonly_subset50k.vcf"],
-            "DBSNP": ["--dbsnp", "./referenceFiles/dbSNP142_GRCh38_subset50k.vcf"],
-            "threads": ["-nct", "4"],
-            "chromosomeRange": ["-L", "chr6:33,413,000-118,315,000"],
-            "output": ["-o", "./mutect2_output/"]
+        with open(json_arg_file, 'r') as json_file:
+            data = json.load(json_file)
+            self.custom_mutect_dict = {i: j for i, j in data[0]['mutect2'].items()}
 
-        }
-        if normal_bam is None:
-            self.adjust_tumor_only()
         self.file_header = "1i #Mutect2"
         self.mutect2 = ["java", "-jar", "GenomeAnalysisTK.jar", "-T", "MuTect2"]
         self.variant_caller_output = ""
@@ -67,19 +53,11 @@ class Mutect2:
         """
         Execute Variant Caller Workflow
         """
-        if self.flag == 0:
-            for i in self.mutect_dict.values():
-                for j in i:
-                    self.mutect2.append(j)
         print("MuTect2: Calling Variants -> " + self.filename)
-        call(self.mutect2, stdout=DEVNULL, stderr=DEVNULL)
+        variant_caller_log = open(self.result_directory + "variant_caller_logs.txt", "w")
+        call(self.mutect2, stdout=variant_caller_log, stderr=DEVNULL)
         print("Mutect2: Calling Variants Complete -> " + self.filename)
-
-    def adjust_tumor_only(self):
-        self.mutect_dict.pop('normal_bam', None)
-        self.mutect_dict.pop('normalPanel', None)
-        self.mutect_dict.pop('DBSNP', None)
-
+        variant_caller_log.close()
     def generate_dir(self):
         """
         Generates Output Subdirectory to store VCF results
@@ -92,48 +70,39 @@ class Mutect2:
         Update Output file paths needed to process Annotation Workflow
         Updates Input & Reference File paths
         """
-        # GDC Mode (Default)
-        if self.flag == 0:
-            if self.normal_bam is None:
-                self.mutect_dict["tumor_bam"][1] = self.input_directory + self.tumor_bam
-            else:
-                self.mutect_dict["tumor_bam"][1] = self.input_directory + self.tumor_bam
-                self.mutect_dict["normal_bam"][1] = self.input_directory + self.normal_bam
-                self.mutect_dict["normalPanel"][1] = self.reference_directory + "1kg_40_m2pon_sitesonly_subset50k.vcf"
-                self.mutect_dict["DBSNP"][1] = self.reference_directory + "dbSNP142_GRCh38_subset50k.vcf"
-            self.mutect_dict["output"][1] = self.result_directory + self.filename + ".vcf"
-            self.variant_caller_output += self.mutect_dict["output"][1]
 
-            # Bind Reference & DBSNP Files
+        if self.normal_bam is None:
+            self.mutect2.append("-I:tumor")
+            self.mutect2.append(self.input_directory + self.tumor_bam)
+        else:
 
-            self.mutect_dict["reference"][1] = self.reference_directory + "Homo_sapiens_assembly38.fasta"
+            self.mutect2.append("-I:tumor")
+            self.mutect2.append(self.input_directory + self.tumor_bam)
+            self.mutect2.append("-I:normal")
+            self.mutect2.append(self.input_directory + self.normal_bam)
 
-            # Bind Chromosome Range
+            self.mutect2.append("--normal_panel")
+            self.mutect2.append(self.reference_directory + "1kg_40_m2pon_sitesonly_subset50k.vcf")
 
-            self.mutect_dict["chromosomeRange"][1] = self.chrome_range
-        # Custom Mode
-        if self.flag == 1:
-            if self.normal_bam is None:
-                self.custom_mutect_dict["-I:tumor"] = self.input_directory + self.tumor_bam
-            else:
-                self.custom_mutect_dict["-I:tumor"] = self.input_directory + self.tumor_bam
-                self.custom_mutect_dict["-I:normal"] = self.input_directory + self.normal_bam
-                self.custom_mutect_dict["--normal_panel"] = self.reference_directory + "1kg_40_m2pon_sitesonly_subset50k.vcf"
-                self.custom_mutect_dict["--dbsnp"] = self.reference_directory + "dbSNP142_GRCh38_subset50k.vcf"
-            self.custom_mutect_dict["-o"] = self.result_directory + self.filename + ".vcf"
-            self.variant_caller_output += self.custom_mutect_dict["-o"]
+            self.mutect2.append("--dbsnp")
+            self.mutect2.append(self.reference_directory + "dbSNP142_GRCh38_subset50k.vcf")
 
-            # Bind Reference & DBSNP Files
+        self.mutect2.append("-o")
+        self.mutect2.append(self.result_directory + self.filename + ".vcf")
 
-            self.custom_mutect_dict["-R"] = self.reference_directory + "Homo_sapiens_assembly38.fasta"
+        self.variant_caller_output += self.result_directory + self.filename + ".vcf"
 
-            # Bind Chromosome Range
+        # Bind Reference & DBSNP Files
+        self.mutect2.append("-R")
+        self.mutect2.append(self.reference_directory + "Homo_sapiens_assembly38.fasta")
 
-            self.custom_mutect_dict["-L"] = self.chrome_range
+        # Bind Chromosome Range
+        self.mutect2.append("-L")
+        self.mutect2.append(self.chrome_range)
 
-            for i,j in self.custom_mutect_dict.items():
-                self.mutect2.append(i)
-                self.mutect2.append(j)
+        for i, j in self.custom_mutect_dict.items():
+            self.mutect2.append(i)
+            self.mutect2.append(j)
 
 
 

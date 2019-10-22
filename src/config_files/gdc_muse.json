@@ -1,0 +1,24 @@
+
+[
+  {
+    "call": {
+      "-f": "./referenceFiles/Homo_sapiens_assembly38.fasta",
+      "-r": "chr1:16,000,000-215,000,000",
+      "-O":  "./muse_output/"
+
+    },
+
+    "sump": {
+      "-I": "./muse_output/muse_call.MuSE.txt",
+      "-E": "",
+      "-D": "./referenceFiles/dbSNP142_GRCh38_subset50k.vcf.gz",
+      "-O": "./muse_output/"
+
+    }
+
+  }
+]
+
+
+
+

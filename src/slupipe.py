@@ -34,10 +34,6 @@ def check_version():
         print("Running Latest Software Release.")
 
 
-
-"""
- python3 slupipe.py config.json node_dir(optional)
-"""
 def main():
     """
     Main method will process differing executions of program depending if the user has provided a config.json file
@@ -53,7 +49,8 @@ def main():
 
     args = parser.parse_args()
 
-    variant_caller = ["muse.json", "mutect.json", "varscan.json", "sniper.json",]
+    variant_caller = ["muse.json", "mutect.json", "varscan.json", "sniper.json", "strelka.json", "pindel.json",
+                      "platypus.json"]
     custom_files = []
 
     # Store the JSON into list. List will then be fed to Controller
@@ -75,7 +72,6 @@ def main():
     if args.variant_five:
         if args.variant_five in variant_caller:
             custom_files.append(args.variant_five)
-
 
 
     #DEFAULT MODE
@@ -101,7 +97,6 @@ def main():
             with open(sys.argv[1], 'r') as file:
                 config_dict = json.load(file)
 
-
             args = parser.parse_args()
 
             print(args)
@@ -109,7 +104,6 @@ def main():
             print(os.path.abspath(sys.argv[2]))
             slu_pipe = cn.Controller(1, config_dict, custom_files)
             slu_pipe.configure_pipeline(0)
-
 
     # User hasn't provided a config.json file
     else:

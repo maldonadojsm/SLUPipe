@@ -1,0 +1,15 @@
+
+[
+  {
+
+    "pindel_read": {
+      "-T": "4"
+    },
+
+    "pindel2vcf": {
+      "-R": "Homo_Sapiens_Assembly38",
+      "-d": "20101123"
+    }
+  }
+
+]

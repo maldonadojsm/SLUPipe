@@ -26,7 +26,7 @@ import os
 
 # ADD LATER: Send JSON files to Pipeline class as a struct. It's cleaner.
 class Pipeline:
-    def __init__(self, user_samples, chromosome_range, vep_script_path, vep_cache_path, pipeline_mode, variant_callers, output_dir, reference_dir, custom_flag,custom_files=None):
+    def __init__(self, user_samples, chromosome_range, vep_script_path, vep_cache_path, pipeline_mode, variant_callers, output_dir, reference_dir,  custom_files=None):
         self.parallel_workflow = []
         self.master_workflow = []
         self.num_variants = 0
@@ -48,33 +48,38 @@ class Pipeline:
         self.variant_annotation_workflow = [list() for i in range(self.num_variants)]
         self.maf_conversion_workflow = [list() for i in range(self.num_variants)]
         self.reference_dir = reference_dir
-        self.custom_flag = custom_flag
         if custom_files is not None:
 
             if "muse.json" in custom_files:
-                self.custom_muse_arguments = os.path.abspath(custom_files[custom_files.index('muse.json')])
+                self.muse_arguments = os.path.abspath(custom_files[custom_files.index('muse.json')])
             if "mutect.json" in custom_files:
-                self.custom_mutect_arguments = os.path.abspath(custom_files[custom_file.index('mutect.json')])
+                self.mutect_arguments = os.path.abspath(custom_files[custom_files.index('mutect.json')])
             if "sniper.json" in custom_files:
-                self.custom_sniper_arguments = os.path.abspath(custom_files[custom_files.index('sniper.json')])
+                self.sniper_arguments = os.path.abspath(custom_files[custom_files.index('sniper.json')])
             if "varscan.json" in custom_files:
-                self.custom_varscan_arguments = os.path.abspath(custom_files[custom_files.index('varscan.json')])
+                self.varscan_arguments = os.path.abspath(custom_files[custom_files.index('varscan.json')])
+            if "strelka.json" in custom_files:
+                self.platypus_arguments = os.path.abspath(custom_files[custom_files.index('strelka.json')])
+            if "platypus.json" in custom_files:
+                self.platypus_arguments = os.path.abspath(custom_files[custom_files.index('platypus.json')])
+            if "pindel.json" in custom_files:
+                self.pindel_arguments = os.path.abspath(custom_files[custom_files.index('pindel.json')])
 
         if custom_files is None:
 
-            self.custom_muse_arguments = "./config_files/muse.json"
+            self.muse_arguments = "./config_files/gdc_muse.json"
 
-            self.custom_mutect_arguments = "./config_files/mutect.json"
+            self.mutect_arguments = "./config_files/gdc_mutect.json"
 
-            self.custom_sniper_arguments = "./config_files/sniper.json"
+            self.sniper_arguments = "./config_files/gdc_sniper.json"
 
-            self.custom_varscan_arguments = "./config_files/varscan.json"
+            self.varscan_arguments = "./config_files/gdc_varscan.json"
 
-            self.custom_pindel_arguments = "./config_files/pindel.json"
+            self.pindel_arguments = "./config_files/gdc_pindel.json"
 
-            self.custom_strelka_arguments = "./config_files/strelka.json"
+            self.strelka_arguments = "./config_files/gdc_strelka.json"
 
-            self.custom_platypus_arguments = "./config_files/platypus.json"
+            self.platypus_arguments = "./config_files/gdc_platypus.json"
 
 
         #############################################################
@@ -161,15 +166,18 @@ class Pipeline:
 
                     if self.pindel_flag == 1:
                         self.pindel.append(pd.Pindel(j.tumor_bam, j.filename, j.results_directory,
-                                                     j.input_directory, j.reference_directory, self.chrome_range))
+                                                     j.input_directory, j.reference_directory,
+                                                     self.chrome_range, self.pindel_arguments))
 
                     if self.platypus_flag == 1:
                         self.platypus.append(py.Platypus(j.tumor_bam, j.filename, j.results_directory,
-                                                         j.input_directory, j.reference_directory))
+                                                         j.input_directory, j.reference_directory,
+                                                         self.platypus_arguments))
 
                     if self.mutect_flag == 1:
                         self.mutect.append(mt.Mutect2(None, j.tumor_bam, j.filename, j.results_directory,
-                                                      j.input_directory, j.reference_directory, self.chrome_range))
+                                                      j.input_directory, j.reference_directory, self.chrome_range,
+                                                      self.mutect_arguments))
 
                 # Add variant caller objects into variant caller workflow list
 
@@ -190,54 +198,37 @@ class Pipeline:
 
                     # MUSE
 
-                    if self.muse_flag == 1 and self.custom_flag == 1:
+                    if self.muse_flag == 1:
                         self.muse.append(ms.Muse(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,
-                                                 i.input_directory, i.reference_directory, self.chrome_range,self.custom_flag, self.custom_muse_arguments))
-
-                    if self.muse_flag == 1 and self.custom_flag == 0:
-                        self.muse.append(ms.Muse(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,
-                                                 i.input_directory, i.reference_directory, self.chrome_range, self.custom_flag))
+                                                 i.input_directory, i.reference_directory, self.chrome_range,
+                                                 self.muse_arguments))
 
                     # MUTECT
 
-                    if self.mutect_flag == 1 and self.custom_flag == 0:
-                        self.mutect.append(mt.Mutect2(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,
-                                                      i.input_directory, i.reference_directory, self.chrome_range, self.custom_flag))
-
-                    if self.mutect_flag == 1 and self.custom_flag == 1:
+                    if self.mutect_flag == 1:
                         self.mutect.append(mt.Mutect2(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,
                                                       i.input_directory, i.reference_directory, self.chrome_range,
-                                                      self.custom_flag, self.custom_mutect_arguments))
+                                                      self.mutect_arguments))
 
                     # VARSCAN
 
-                    if self.varscan_flag == 1 and self.custom_flag == 0:
+                    if self.varscan_flag == 1:
                         self.varscan.append(vs.Varscan(i.normal_bam, i.tumor_bam, i.filename,
-                                                       i.results_directory, i.input_directory, i.reference_directory, self.custom_flag))
-
-                    if self.varscan_flag == 1 and self.custom_flag == 1:
-                        self.varscan.append(vs.Varscan(i.normal_bam, i.tumor_bam, i.filename,
-                                                       i.results_directory, i.input_directory, i.reference_directory, self.custom_flag, self.custom_varscan_arguments))
+                                                       i.results_directory, i.input_directory, i.reference_directory,
+                                                       self.varscan_arguments))
 
                     # SOMATIC SNIPER
 
-                    if self.sniper_flag == 1 and self.custom_flag == 0:
+                    if self.sniper_flag == 1:
                         self.sniper.append(sp.Sniper(i.normal_bam, i.tumor_bam, i.filename,
-                                                     i.results_directory, i.input_directory, i.reference_directory, self.custom_flag))
-
-                    if self.sniper_flag == 1 and self.custom_flag == 1:
-                        self.sniper.append(sp.Sniper(i.normal_bam, i.tumor_bam, i.filename,
-                                                     i.results_directory, i.input_directory, i.reference_directory, self.custom_flag, self.custom_sniper_arguments))
+                                                     i.results_directory, i.input_directory, i.reference_directory,
+                                                     self.sniper_arguments))
 
                     # STRELKA
 
-                    if self.strelka_flag == 1 and self.custom_flag == 0:
+                    if self.strelka_flag == 1:
                         self.strelka2.append(sl.Strelka(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,
-                                                        i.input_directory, i.reference_directory))
-
-                    if self.strelka_flag == 1 and self.custom_flag == 1:
-                        self.strelka2.append(sl.Strelka(i.normal_bam, i.tumor_bam, i.filename, i.results_directory,
-                                                        i.input_directory, i.reference_directory))
+                                                        i.input_directory, i.reference_directory, self.strelka_arguments))
 
                 # Add variant caller objects into variant caller workflow list
 
@@ -261,14 +252,17 @@ class Pipeline:
             # Build Variant Annotation Objects
             for i in range(len(self.variant_annotation_workflow)):
                 for j in range(len(self.variant_caller_workflow[i])):
-                    self.variant_annotation_workflow[i].append(an.Annotator(self.variant_caller_workflow[i][j], self.output_directory))
+                    self.variant_annotation_workflow[i].append(an.Annotator(self.variant_caller_workflow[i][j],
+                                                                            self.output_directory))
 
             self.master_workflow.append(self.variant_annotation_workflow)
 
             # Build Conversion Objects
             for i in range(len(self.maf_conversion_workflow)):
                 for j in range(len(self.variant_annotation_workflow[i])):
-                    self.maf_conversion_workflow[i].append(mc.mafConverter(self.variant_annotation_workflow[i][j], self.vep_script_path, self.vep_cache_path, self.output_directory, self.reference_dir))
+                    self.maf_conversion_workflow[i].append(mc.mafConverter(self.variant_annotation_workflow[i][j],
+                                                                           self.vep_script_path, self.vep_cache_path,
+                                                                           self.output_directory, self.reference_dir))
 
             self.master_workflow.append(self.maf_conversion_workflow)
         else:

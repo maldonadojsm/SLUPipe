@@ -17,7 +17,7 @@ from subprocess import call, DEVNULL
 
 class Muse:
     def __init__(self, normal_bam, tumor_bam, filename, result_directory, input_directory,
-                 reference_directory, chromosome_range, flag, json_arg_file=None):
+                 reference_directory, chromosome_range, json_arg_file=None):
         """
         Class Constructor
         :param normal_bam: normal BAM file
@@ -37,30 +37,14 @@ class Muse:
         self.chromosome_range = chromosome_range
         self.input_directory = input_directory
         self.reference_directory = reference_directory
-        self.flag = flag
 
         # Custom Arguments
-        if self.flag == 1:
-            with open(json_arg_file, 'r') as json_file:
-                data = json.load(json_file)
 
-                self.custom_call_dict = {i: j for i, j in data[0]['call'].items()}
-                self.custom_sump_dict = {i: j for i, j in data[0]['sump'].items()}
+        with open(json_arg_file, 'r') as json_file:
+            data = json.load(json_file)
 
-        # GDC Specific Muse Call Arguments (Default)
-        self.gdc_muse_call_dict = {
-            "reference": ["-f", "./referenceFiles/Homo_sapiens_assembly38.fasta"],
-            "chromosome_range": ["-r", "chr1:16,000,000-215,000,000"],
-            "tumor_bam": ["hcc1143_T_subset50K.bam"],
-            "normal_bam": ["hcc1143_N_subset50K.bam"],
-            "output": ["-O", "./muse_output/"]
-        }
-        # GDC Specific MuSE arguments (Default)
-        self.gdc_muse_sump_dict = {
-            "input": ["-I", "./muse_output/muse_call.MuSE.txt"],
-            "DBSNP": ["-E", "-D", "./referenceFiles/dbSNP142_GRCh38_subset50k.vcf.gz"],
-            "output": ["-O", "./muse_output/"]
-        }
+            self.custom_call_dict = {i: j for i, j in data[0]['call'].items()}
+            self.custom_sump_dict = {i: j for i, j in data[0]['sump'].items()}
 
         self.file_header = "1i #MuSE"
         self.muse_call = ["MuSE", "call"]
@@ -76,13 +60,6 @@ class Muse:
         """
         Execute Variant Caller Workflow
         """
-        if self.flag == 0:
-            for i in self.gdc_muse_call_dict.values():
-                for j in i:
-                    self.muse_call.append(j)
-            for i in self.gdc_muse_sump_dict.values():
-                for j in i:
-                    self.muse_sump.append(j)
         print("MuSE: Calling Variants -> " + self.filename)
         call(self.muse_call, stdout=DEVNULL, stderr=DEVNULL)
         call(self.muse_sump, stdout=DEVNULL, stderr=DEVNULL)
@@ -100,73 +77,42 @@ class Muse:
         Update Output file paths needed to process Annotation Workflow
         Updates Input & Reference File paths
         """
-        # MuSE GDC Arguments (Default)
-        if self.flag == 0:
-            # ./src/input/ + tumor/normal.bam
-            self.gdc_muse_call_dict["tumor_bam"][0] = self.input_directory + self.tumor_bam
-            self.gdc_muse_call_dict["normal_bam"][0] = self.input_directory + self.normal_bam
-            # ./output/demo1/vcf/muse_output/ + demo1
-            self.gdc_muse_call_dict["output"][1] = self.result_directory + self.filename
 
-            # MuSE Sump User Specific Arguments
-            self.gdc_muse_sump_dict["input"][1] = self.gdc_muse_call_dict["output"][1] + ".MuSE" + ".txt"
-            self.gdc_muse_sump_dict["output"][1] = self.result_directory + self.filename + ".vcf"
-            self.variant_caller_output += self.gdc_muse_sump_dict["output"][1]
+        # ./src/input/ + tumor/normal.bam
 
-            # Bind Reference file path
+        # Bind Reference
+        self.custom_call_dict["-f"] = self.reference_directory + "Homo_sapiens_assembly38.fasta"
 
-            # ./src/referenceFiles/ + .fasta file
-            self.gdc_muse_call_dict["reference"][1] = self.reference_directory + "Homo_sapiens_assembly38.fasta"
-            self.gdc_muse_sump_dict["DBSNP"][1] = self.reference_directory + "dbSNP142_GRCh38_subset50k.vcf.gz"
+        # Bind Chromosome Range
 
-            # Bind Chrome Range
+        self.custom_call_dict["-r"] = self.chromosome_range
 
-            self.gdc_muse_call_dict["chromosome_range"][1] = self.chromosome_range
+        # Bind Samples
 
-        # MuSE Custom Arguments
-        if self.flag == 1:
-            # ./src/input/ + tumor/normal.bam
+        # Bind Output
 
+        self.custom_call_dict["-O"] = self.result_directory + self.filename
 
-            # Bind Reference
-            self.custom_call_dict["-f"] = self.reference_directory + "Homo_sapiens_assembly38.fasta"
+        #################
 
+        # MuSE Sump User Specific Arguments
 
-            # Bind Chromosome Range
+        self.custom_sump_dict["-I"] = self.custom_call_dict["-O"] + ".MuSE" + ".txt"
 
-            self.custom_call_dict["-r"] = self.chromosome_range
+        self.custom_sump_dict["-D"] = self.reference_directory + "dbSNP142_GRCh38_subset50k.vcf.gz"
 
+        self.custom_sump_dict["-O"] = self.result_directory + self.filename + ".vcf"
 
-            # Bind Samples
+        self.variant_caller_output += self.custom_sump_dict["-O"]
+        # Bind Chrome Range
 
-            # Bind Output
+        for i, j in self.custom_call_dict.items():
+            self.muse_call.append(i)
+            self.muse_call.append(j)
 
-            self.custom_call_dict["-O"] = self.result_directory + self.filename
+        self.muse_call.append(self.input_directory + self.tumor_bam)
+        self.muse_call.append(self.input_directory + self.normal_bam)
 
-
-            #################
-
-            # MuSE Sump User Specific Arguments
-
-            self.custom_sump_dict["-I"] = self.custom_call_dict["-O"] + ".MuSE" + ".txt"
-
-
-            self.custom_sump_dict["-D"] = self.reference_directory + "dbSNP142_GRCh38_subset50k.vcf.gz"
-
-            self.custom_sump_dict["-O"] = self.result_directory + self.filename + ".vcf"
-
-            self.variant_caller_output += self.custom_sump_dict["-O"]
-            # Bind Chrome Range
-
-            for i,j in self.custom_call_dict.items():
-                self.muse_call.append(i)
-                self.muse_call.append(j)
-
-
-            self.muse_call.append(self.input_directory + self.tumor_bam)
-            self.muse_call.append(self.input_directory + self.normal_bam)
-
-
-            for i, j in self.custom_sump_dict.items():
-                self.muse_sump.append(i)
-                self.muse_sump.append(j)
+        for i, j in self.custom_sump_dict.items():
+            self.muse_sump.append(i)
+            self.muse_sump.append(j)

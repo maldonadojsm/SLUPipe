@@ -1,0 +1,14 @@
+
+[
+  {
+    "strelka_config": {
+      "--outputCallableRegions": "",
+      "--exome": ""
+    },
+
+    "strelka_run": {
+      "-m": "local",
+      "-j": "4"
+    }
+  }
+]

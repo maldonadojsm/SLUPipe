@@ -13,10 +13,12 @@
 
 from subprocess import call, DEVNULL
 import os
+import json
 
 
 class Strelka:
-    def __init__(self, normal_bam, tumor_bam, filename, result_directory, input_directory, reference_directory):
+    def __init__(self, normal_bam, tumor_bam, filename, result_directory, input_directory, reference_directory,
+                 json_arg_file):
         """
         Class Constructor
         :param normal_bam: normal BAM file
@@ -32,27 +34,16 @@ class Strelka:
         self.result_directory = result_directory + "vcf/strelka2_output/"
         self.input_directory = input_directory
         self.reference_directory = reference_directory
-        
-        self.strelka_config_dict = {
-            "Exe": ["python", "./configureStrelkaSomaticWorkflow.py"],
-            "normal_bam": ["--normalBam", "./hcc1143_N_subset50K.bam"],
-            "tumor_bam": ["--tumorBam", "./hcc1143_T_subset50K.bam"],
-            "reference": ["--referenceFasta", "./referenceFiles/Homo_sapiens_assembly38.fasta"],
-            "run_directory": ["--runDir", "./vcf/strelka2_output"]
-        }
-        
-        self.strelka_run_dict = {
-            "run_directory": ["python", "./strelka2_output/runWorkflow.py"],
-            "localMachine": ["-m", "local"],
-            "threads": ["-j", "4"]
-
-        }
-
-        self.file_header = "1i #Strelka2"
-        self.strelka_config = []
-        self.strelka_run = []
+        with open(json_arg_file, 'r') as json_file:
+            data = json.load(json_file)
+            self.custom_strelka_config_dict = {i: j for i, j in data[0]['strelka_config'].items()}
+            self.custom_strelka_run_dict = {i: j for i, j in data[0]['strelka_run'].items()}
 
         self.run_directory = result_directory + "vcf/strelka2_output"
+        self.file_header = "1i #Strelka2"
+        self.strelka_config = ["python", "./configureStrelkaSomaticWorkflow.py"]
+        self.strelka_run = ["python", self.run_directory + "/runWorkflow.py"]
+
         # List type signifies to annotator.py to expect 2 VCFs, 1 snvs and 1 indels VCF file
         self.variant_caller_output = self.result_directory + "results/variants/somatic.indels.vcf"
         self.variant_caller_snv_output = self.result_directory + "results/variants/somatic.snvs.vcf"
@@ -64,20 +55,15 @@ class Strelka:
         """
         Generates Output Subdirectory to store VCF results
         """
-        for i in self.strelka_config_dict.values():
-            for j in i:
-                self.strelka_config.append(j)
-        for i in self.strelka_run_dict.values():
-            for j in i:
-                self.strelka_run.append(j)
         print("Strelka 2: Calling Variants -> " + self.filename)
 
         # Creating the Strelka2 temporary directory
         call(self.strelka_config, stdout=DEVNULL, stderr=DEVNULL)
-
-        call(self.strelka_run, stdout=DEVNULL, stderr=DEVNULL)
+        variant_caller_log = open(self.result_directory + "variant_caller_logs.txt", "w")
+        call(self.strelka_run, stdout=variant_caller_log, stderr=DEVNULL)
         call(["gunzip", self.run_directory + "/results/variants/somatic.snvs.vcf.gz",
               self.run_directory + "/results/variants/somatic.indels.vcf.gz"])
+        variant_caller_log.close()
 
         print("Strelka 2: Calling Variants Complete -> " + self.filename)
 
@@ -94,8 +80,42 @@ class Strelka:
          """
 
         # Strelka Call User Specific Arguments
-        self.strelka_config_dict["tumor_bam"][1] = self.input_directory + self.tumor_bam
-        self.strelka_config_dict["normal_bam"][1] = self.input_directory + self.normal_bam
-        self.strelka_config_dict["run_directory"][1] = self.run_directory
-        self.strelka_run_dict["run_directory"][1] = self.run_directory + "/runWorkflow.py"
-        self.strelka_config_dict["reference"][1] = self.reference_directory + "Homo_sapiens_assembly38.fasta"
+
+        """
+        Prepare Strelka Somatic Workflow
+        """
+        # Dump Normal
+        self.strelka_config.append("--normalBam")
+        self.strelka_config.append(self.input_directory + self.normal_bam)
+
+        # Dump Tumor
+
+        self.strelka_config.append("--tumorBam")
+        self.strelka_config.append(self.input_directory + self.tumor_bam)
+
+        # Set Reference
+
+        self.strelka_config.append("--referenceFasta")
+        self.strelka_config.append(self.reference_directory + "Homo_sapiens_assembly38.fasta")
+
+        # Add Custom Arguments
+
+        for i, j in self.custom_strelka_config_dict.items():
+            self.strelka_config.append(i)
+            if j:
+                self.strelka_config.append(j)
+
+        # Set Run Directory
+
+        self.strelka_config.append("--runDir")
+        self.strelka_config.append(self.run_directory)
+
+
+        """
+        Prepare Strelka Run
+        """
+
+        for i, j in self.custom_strelka_run_dict.items():
+            self.strelka_run.append(i)
+            if j:
+                self.strelka_run.append(j)
